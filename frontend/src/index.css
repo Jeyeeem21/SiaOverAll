@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  /* Mobile viewport fix */
+  html, body {
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  /* Responsive containers */
+  .container-responsive {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-sm {
+    @apply w-full max-w-sm mx-auto px-4;
+  }
+  
+  .container-md {
+    @apply w-full max-w-md mx-auto px-4;
+  }
+  
+  .container-lg {
+    @apply w-full max-w-lg mx-auto px-4;
+  }
+
+  /* Responsive buttons */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-primary {
+    @apply btn bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-blue-500 shadow-sm;
+  }
+  
+  /* Action buttons for orders */
+  .order-actions {
+    @apply flex flex-wrap gap-1.5 mt-3;
+  }
+  
+  .action-btn {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1;
+  }
+  
+  .action-btn-view {
+    @apply action-btn bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 focus:ring-gray-500;
+  }
+  
+  .action-btn-edit {
+    @apply action-btn bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 focus:ring-blue-500;
+  }
+  
+  .action-btn-danger {
+    @apply action-btn bg-red-50 text-red-700 border-red-200 hover:bg-red-100 focus:ring-red-500;
+  }
+  
+  /* Enhanced bottom navigation */
+  .bottom-nav {
+    @apply bg-white border-t border-gray-100;
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .bottom-nav-item {
+    @apply relative flex flex-col items-center justify-center transition-all duration-200 ease-out;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .bottom-nav-item:active {
+    transform: scale(0.95);
+  }
+  
+  .btn-xs {
+    @apply px-2 py-1 text-xs;
+  }
+  
+  .btn-sm {
+    @apply px-3 py-2 text-sm;
+  }
+  
+  .btn-md {
+    @apply px-4 py-2.5 text-sm sm:text-base;
+  }
+  
+  .btn-lg {
+    @apply px-6 py-3 text-base sm:text-lg;
+  }
+
+  /* Orders Preview Animations */
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.2s ease-out forwards;
+  }
+
+  .animate-fadeInUp {
+    animation: fadeInUp 0.15s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  /* Hover background color */
+  .hover\:bg-gray-25:hover {
+    background-color: #fafafa;
+  }
+  
+  /* Responsive inputs */
+  .input {
+    @apply block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-colors duration-200 text-sm sm:text-base;
+  }
+  
+  .input-sm {
+    @apply py-2 px-3 text-sm;
+  }
+  
+  .input-md {
+    @apply py-2.5 px-3 text-sm sm:text-base;
+  }
+  
+  .input-lg {
+    @apply py-3 px-4 text-base;
+  }
+  
+  /* Responsive cards */
+  .card {
+    @apply bg-white rounded-xl shadow-lg border border-gray-200;
+  }
+  
+  .card-sm {
+    @apply p-3 sm:p-4;
+  }
+  
+  .card-md {
+    @apply p-4 sm:p-6;
+  }
+  
+  .card-lg {
+    @apply p-6 sm:p-8;
+  }
+  
+  /* Responsive text */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl;
+  }
+  
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl;
+  }
+  
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl lg:text-5xl;
+  }
+  
+  /* Mobile-first grid layouts */
+  .grid-responsive-1 {
+    @apply grid grid-cols-1;
+  }
+  
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2;
+  }
+  
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+  }
+  
+  .grid-responsive-5 {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5;
+  }
+  
+  /* Spacing utilities */
+  .space-responsive {
+    @apply space-y-4 sm:space-y-6;
+  }
+  
+  .gap-responsive {
+    @apply gap-4 sm:gap-6;
+  }
+  
+  .gap-responsive-sm {
+    @apply gap-3 sm:gap-4;
+  }
+  
+  .gap-responsive-lg {
+    @apply gap-6 sm:gap-8;
+  }
+  
+  /* Header responsive */
+  .header-responsive {
+    @apply px-4 py-4 sm:px-6 sm:py-6 lg:px-8;
+  }
+  
+  /* Mobile navigation padding */
+  .main-content {
+    @apply pb-20 sm:pb-8;
+  }
+  
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3e%3cg fill='%23e5e7eb' fill-opacity='0.4'%3e%3cpath d='m40 40c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm-40 0c0-11.046 8.954-20 20-20s20 8.954 20 20-8.954 20-20 20-20-8.954-20-20z'/%3e%3c/g%3e%3c/svg%3e");
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile-specific overrides */
+@media (max-width: 640px) {
+  .mobile-full-width {
+    @apply w-full;
+  }
+  
+  .mobile-text-center {
+    @apply text-center;
+  }
+  
+  .mobile-hidden {
+    @apply hidden;
+  }
+  
+  .mobile-block {
+    @apply block;
+  }
+  
+  /* Ensure touch targets are large enough */
+  button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve input handling on mobile */
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
