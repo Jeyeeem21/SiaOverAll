@@ -87,6 +87,7 @@ const Navigation = ({ userRole = 'student' }) => {
 
   // ── Notifications ────────────────────────────────────────
   const fetchNotifications = async () => {
+    if (!ApiService.isAuthenticated()) return;
     try {
       setNotifLoading(true);
       const data = await ApiService.getNotifications();
@@ -171,7 +172,11 @@ const Navigation = ({ userRole = 'student' }) => {
 
   // Fetch on mount
   useEffect(() => {
-    if (!location.pathname.includes('/login') && !location.pathname.includes('/register')) {
+    if (
+      !location.pathname.includes('/login') &&
+      !location.pathname.includes('/register') &&
+      ApiService.isAuthenticated()
+    ) {
       fetchNotifications();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

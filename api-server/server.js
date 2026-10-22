@@ -281,25 +281,39 @@ app.post('/api/register', async (req, res) => {
 // Student Routes
 app.get('/api/student/profile', authenticateToken, async (req, res) => {
   try {
-    const nameColumn = dbType === 'mysql' ? 'full_name' : 'name';
-    const phoneColumn = dbType === 'mysql' ? 'phone' : 'NULL';
-    const avatarColumn = dbType === 'mysql' ? 'u.avatar' : 'NULL as avatar';
-
-    const query = `
-      SELECT u.id, u.${nameColumn} as name, u.email, u.${phoneColumn} as phone, ${avatarColumn}, u.role, u.status, u.email_verified, u.created_at, u.updated_at,
-             s.reference_no, s.student_number, s.college, s.department,
-             s.contact_number, s.status as student_status, s.verified_at, s.verified_by,
-             s.created_at as student_created_at, s.updated_at as student_updated_at
-      FROM users u
-      JOIN students s ON u.id = s.user_id
-      WHERE u.id = ? LIMIT 1
-    `;
+    let query;
+    if (dbType === 'mysql') {
+      query = `
+        SELECT u.id, u.full_name as name, u.email, u.phone, u.avatar,
+               u.role, u.status, u.email_verified, u.created_at, u.updated_at,
+               s.reference_no, s.student_number, s.college, s.department,
+               s.contact_number, s.status as student_status, s.verified_at, s.verified_by,
+               s.created_at as student_created_at, s.updated_at as student_updated_at
+        FROM users u
+        JOIN students s ON u.id = s.user_id
+        WHERE u.id = ? LIMIT 1
+      `;
+    } else {
+      // SQLite — students table may not exist, just return user data
+      query = `SELECT id, name, email, role, status, email_verified, created_at, updated_at FROM users WHERE id = ? LIMIT 1`;
+    }
 
     const result = await dbQuery(query, [req.user.id]);
     const profile = Array.isArray(result) ? result[0] : result;
 
     if (!profile) {
       return res.status(404).json({ error: 'Student not found' });
+    }
+
+    // For SQLite, add default student fields
+    if (dbType !== 'mysql') {
+      profile.student_status = 'pending';
+      profile.student_number = null;
+      profile.college = null;
+      profile.department = null;
+      profile.contact_number = null;
+      profile.reference_no = null;
+      profile.avatar = null;
     }
 
     res.json(profile);

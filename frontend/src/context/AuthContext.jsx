@@ -17,18 +17,17 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if user is already authenticated on app load
     const initAuth = async () => {
       try {
         if (ApiService.isAuthenticated()) {
-          // Fetch user profile to validate token
           const profile = await ApiService.getProfile();
           setUser({
             id: profile.id,
             name: profile.full_name || profile.name,
             email: profile.email,
-            role: 'student', // Always student for this system
+            role: 'student',
             phone: profile.phone || profile.contact_number,
+            avatar: profile.avatar,
             student_number: profile.student_number,
             reference_no: profile.reference_no,
             college: profile.college,
@@ -42,9 +41,28 @@ export const AuthProvider = ({ children }) => {
           });
         }
       } catch (err) {
-        // Token might be invalid, clear it
-        ApiService.removeAuthToken();
-        setError(err.message);
+        // Profile fetch failed — try to decode basic info from the stored token
+        // instead of clearing it (which would log the user out on MySQL downtime)
+        const token = ApiService.getAuthToken();
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            // Only keep session if token is not expired
+            if (payload.exp * 1000 > Date.now()) {
+              setUser({
+                id: payload.id,
+                name: payload.name || payload.email?.split('@')[0] || 'Student',
+                email: payload.email,
+                role: payload.role === 'Customer' ? 'student' : payload.role || 'student',
+              });
+            } else {
+              // Token expired — clear it
+              ApiService.removeAuthToken();
+            }
+          } catch {
+            ApiService.removeAuthToken();
+          }
+        }
       } finally {
         setLoading(false);
       }
