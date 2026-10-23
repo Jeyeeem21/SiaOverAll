@@ -4,5 +4,5 @@ WORKDIR /usr/src/api-server
 COPY package*.json ./
 RUN npm install --production
 COPY . .
-EXPOSE 5000
+EXPOSE 3002
 CMD ["node", "server.js"]
