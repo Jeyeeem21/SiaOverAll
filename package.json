@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start:api": "npm --prefix api-server start",
+    "dev:api": "npm --prefix api-server run dev"
+  },
   "dependencies": {
     "node-fetch": "^3.3.2"
   }

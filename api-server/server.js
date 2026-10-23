@@ -54,11 +54,11 @@ let dbType;
 
 function connectToDatabase() {
   if (laravelEnv.DB_CONNECTION === 'mysql' && laravelEnv.DB_DATABASE) {
-    // Try MySQL connection to businesscenter database
-    console.log('Attempting to connect to MySQL businesscenter database...');
+    const apiDbHost = laravelEnv.API_DB_HOST || laravelEnv.DB_HOST || '127.0.0.1';
+    console.log(`Attempting to connect to MySQL database at ${apiDbHost}:${laravelEnv.DB_PORT || 3306}...`);
     
     const mysqlDb = mysql.createConnection({
-      host: laravelEnv.DB_HOST || '127.0.0.1',
+      host: apiDbHost,
       port: parseInt(laravelEnv.DB_PORT) || 3306,
       user: laravelEnv.DB_USERNAME || 'root',
       password: laravelEnv.DB_PASSWORD || '',
@@ -71,8 +71,8 @@ function connectToDatabase() {
     mysqlDb.connect((err) => {
       if (err) {
         console.error('❌ MySQL connection failed:', err.message);
-        console.log('🔄 Falling back to SQLite...');
-        connectToSQLite();
+        console.error('API startup stopped. Check API_DB_HOST, MySQL credentials, and that the MySQL container is running.');
+        process.exitCode = 1;
       } else {
         console.log('✅ Connected to MySQL database:', laravelEnv.DB_DATABASE);
         db = mysqlDb;
@@ -82,9 +82,8 @@ function connectToDatabase() {
         db.query('SELECT 1', (err, results) => {
           if (err) {
             console.error('❌ MySQL test query failed:', err.message);
-            console.log('🔄 Falling back to SQLite...');
-            db.end(); // Close the MySQL connection before fallback
-            connectToSQLite();
+            db.end();
+            process.exitCode = 1;
           } else {
             console.log('✅ MySQL connection test successful');
           }
@@ -294,8 +293,22 @@ app.get('/api/student/profile', authenticateToken, async (req, res) => {
         WHERE u.id = ? LIMIT 1
       `;
     } else {
-      // SQLite — students table may not exist, just return user data
-      query = `SELECT id, name, email, role, status, email_verified, created_at, updated_at FROM users WHERE id = ? LIMIT 1`;
+      // SQLite uses the Laravel schema, which stores verification state in
+      // email_verified_at and does not have the MySQL-only status columns.
+      query = `
+        SELECT u.id, u.name, u.email, u.role,
+               'active' as status,
+               u.email_verified_at,
+               u.email_verified_at IS NOT NULL as email_verified,
+               u.created_at, u.updated_at,
+               s.reference_no, s.student_number, s.college, s.department,
+               s.contact_number, s.status as student_status, s.verified_at,
+               s.verified_by, s.created_at as student_created_at,
+               s.updated_at as student_updated_at
+        FROM users u
+        LEFT JOIN students s ON u.id = s.user_id
+        WHERE u.id = ? LIMIT 1
+      `;
     }
 
     const result = await dbQuery(query, [req.user.id]);
@@ -303,17 +316,6 @@ app.get('/api/student/profile', authenticateToken, async (req, res) => {
 
     if (!profile) {
       return res.status(404).json({ error: 'Student not found' });
-    }
-
-    // For SQLite, add default student fields
-    if (dbType !== 'mysql') {
-      profile.student_status = 'pending';
-      profile.student_number = null;
-      profile.college = null;
-      profile.department = null;
-      profile.contact_number = null;
-      profile.reference_no = null;
-      profile.avatar = null;
     }
 
     res.json(profile);
