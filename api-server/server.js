@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -16,7 +15,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // Read Laravel .env file for database configuration
 function readLaravelEnv() {
   const envPath = path.join(__dirname, '../backend/.env');
-  const envConfig = {};
+  const envConfig = { ...process.env };
   
   try {
     const envFile = fs.readFileSync(envPath, 'utf8');
@@ -54,7 +53,10 @@ let dbType;
 
 function connectToDatabase() {
   if (laravelEnv.DB_CONNECTION === 'mysql' && laravelEnv.DB_DATABASE) {
-    const apiDbHost = laravelEnv.API_DB_HOST || laravelEnv.DB_HOST || '127.0.0.1';
+    const runningInDocker = fs.existsSync('/.dockerenv');
+    const apiDbHost = runningInDocker
+      ? (laravelEnv.DB_HOST || 'mysql-server')
+      : (laravelEnv.API_DB_HOST || laravelEnv.DB_HOST || '127.0.0.1');
     console.log(`Attempting to connect to MySQL database at ${apiDbHost}:${laravelEnv.DB_PORT || 3306}...`);
     
     const mysqlDb = mysql.createConnection({
@@ -98,6 +100,7 @@ function connectToDatabase() {
 }
 
 function connectToSQLite() {
+  const sqlite3 = require('sqlite3').verbose();
   const DB_PATH = path.join(__dirname, '../backend/database/database.sqlite');
   
   db = new sqlite3.Database(DB_PATH, (err) => {

@@ -555,7 +555,7 @@ const DevProducts = () => {
         <div className="fixed bottom-6 right-6 z-40">
           <a
             href="/dev/orders"
-            className="inline-flex items-center px-4 py-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors group"
+            className="btn-primary btn-lg inline-flex items-center rounded-full group"
             title="View My Orders"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

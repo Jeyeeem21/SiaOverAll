@@ -50,7 +50,7 @@ const DevOrders = () => {
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Login Required</h3>
             <p className="text-gray-600 mb-6">Please log in to view your orders.</p>
-            <a href="/dev/login" className="w-full block px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+            <a href="/dev/login" className="btn-primary btn-md w-full">
               Login to Continue
             </a>
           </div>
@@ -89,7 +89,7 @@ const DevOrders = () => {
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Orders</h3>
             <p className="text-gray-600 mb-6">{error}</p>
-            <button onClick={refreshOrders} className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+            <button onClick={refreshOrders} className="btn-secondary btn-md w-full">
               Try Again
             </button>
           </div>
@@ -155,7 +155,7 @@ const DevOrders = () => {
                     </div>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
                     <p className="text-gray-600 mb-6">You haven't placed any orders yet.</p>
-                    <a href="/dev/products" className="inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    <a href="/dev/products" className="btn-primary btn-md inline-flex items-center">
                       Browse Products
                     </a>
                   </div>
@@ -229,7 +229,7 @@ const DevOrders = () => {
                             </button>
                           )}
                           {order.status === 'completed' && (
-                            <button className="btn-primary btn-sm">Download</button>
+                            <button className="btn-success btn-sm">Download</button>
                           )}
                         </div>
                       </div>

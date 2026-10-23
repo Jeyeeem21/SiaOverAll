@@ -1,8 +1,8 @@
 FROM node:20-alpine
 RUN apk add --no-cache python3 make g++
-WORKDIR /usr/src/app
+WORKDIR /usr/src/api-server
 COPY package*.json ./
 RUN npm install --production
 COPY . .
-EXPOSE 3002
+EXPOSE 5000
 CMD ["node", "server.js"]

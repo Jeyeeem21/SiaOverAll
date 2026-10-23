@@ -24,7 +24,7 @@ const DevDocuments = () => {
             <div className="space-y-3">
               <a
                 href="/dev/login"
-                className="w-full block px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                className="btn-primary btn-md w-full"
               >
                 Login to Continue
               </a>
