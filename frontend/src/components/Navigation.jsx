@@ -21,6 +21,7 @@ const Navigation = ({ userRole = 'student' }) => {
   const [notifications, setNotifications]   = useState([]);
   const [notifLoading, setNotifLoading]     = useState(false);
   const notifRef   = useRef(null);
+  const notifHoverTimeout = useRef(null);
   const userMenuRef = useRef(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -91,25 +92,50 @@ const Navigation = ({ userRole = 'student' }) => {
     try {
       setNotifLoading(true);
       const data = await ApiService.getNotifications();
-      setNotifications(Array.isArray(data) ? data : []);
-    } catch (e) { console.error(e); }
+      const list = Array.isArray(data) ? data : data?.notifications || data?.data || [];
+      setNotifications(Array.isArray(list) ? list : []);
+    } catch (e) {
+      console.error('Failed to fetch notifications:', e);
+    }
     finally { setNotifLoading(false); }
   };
 
   const handleBellClick = () => {
-    setShowNotifPanel(p => { if (!p) fetchNotifications(); return !p; });
+    setShowNotifPanel(p => {
+      if (!p) fetchNotifications();
+      return !p;
+    });
     setShowUserMenu(false);
     setIsMoreMenuOpen(false);
   };
 
   const handleMarkRead = async (id) => {
-    await ApiService.markNotificationRead(id).catch(console.error);
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+    try {
+      await ApiService.markNotificationRead(id);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
   };
 
   const handleMarkAllRead = async () => {
-    await Promise.all(notifications.filter(n => !n.is_read).map(n => ApiService.markNotificationRead(n.id))).catch(console.error);
-    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    const unread = notifications.filter(n => !n.is_read);
+    try {
+      await Promise.all(unread.map(n => ApiService.markNotificationRead(n.id)));
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
+  };
+
+  const handleNotifMouseEnter = () => {
+    if (notifHoverTimeout.current) clearTimeout(notifHoverTimeout.current);
+    fetchNotifications();
+    setShowNotifPanel(true);
+  };
+
+  const handleNotifMouseLeave = () => {
+    notifHoverTimeout.current = setTimeout(() => setShowNotifPanel(false), 180);
   };
 
   const getUserInitials = () => {
@@ -129,6 +155,10 @@ const Navigation = ({ userRole = 'student' }) => {
       document.removeEventListener('mousedown', handler);
       document.removeEventListener('touchstart', handler);
     };
+  }, []);
+
+  useEffect(() => () => {
+    if (notifHoverTimeout.current) clearTimeout(notifHoverTimeout.current);
   }, []);
 
   // ── Scroll hide bottom nav ───────────────────────────────
@@ -304,7 +334,12 @@ const Navigation = ({ userRole = 'student' }) => {
         <div className="flex items-center gap-2 shrink-0">
 
           {/* Bell */}
-          <div className="relative" ref={notifRef}>
+          <div
+            className="relative"
+            ref={notifRef}
+            onMouseEnter={handleNotifMouseEnter}
+            onMouseLeave={handleNotifMouseLeave}
+          >
             <button
               onClick={handleBellClick}
               className={`relative p-2 rounded-lg transition ${showNotifPanel ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
@@ -318,7 +353,7 @@ const Navigation = ({ userRole = 'student' }) => {
               )}
             </button>
             {showNotifPanel && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[70]">
+              <div className="absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[70]">
                 <NotifList />
               </div>
             )}

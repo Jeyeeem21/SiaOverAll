@@ -74,7 +74,7 @@ function connectToDatabase() {
       if (err) {
         console.error('❌ MySQL connection failed:', err.message);
         console.error('API startup stopped. Check API_DB_HOST, MySQL credentials, and that the MySQL container is running.');
-        process.exitCode = 1;
+        process.exit(1);
       } else {
         console.log('✅ Connected to MySQL database:', laravelEnv.DB_DATABASE);
         db = mysqlDb;
@@ -85,7 +85,7 @@ function connectToDatabase() {
           if (err) {
             console.error('❌ MySQL test query failed:', err.message);
             db.end();
-            process.exitCode = 1;
+            process.exit(1);
           } else {
             console.log('✅ MySQL connection test successful');
           }
@@ -731,7 +731,6 @@ app.get('/api/student/notifications', authenticateToken, async (req, res) => {
         FROM notifications n
         WHERE n.user_id = ?
         ORDER BY n.is_important DESC, n.created_at DESC
-        LIMIT 20
       `;
       
       const notifications = await dbQuery(query, [req.user.id]);
@@ -739,7 +738,15 @@ app.get('/api/student/notifications', authenticateToken, async (req, res) => {
       
       res.json(notificationsList.map(notif => ({
         ...notif,
-        data: notif.data ? JSON.parse(notif.data) : null,
+        data: (() => {
+          if (!notif.data) return null;
+          try {
+            return typeof notif.data === 'string' ? JSON.parse(notif.data) : notif.data;
+          } catch (error) {
+            console.error(`Invalid notification data for notification ${notif.id}:`, error);
+            return null;
+          }
+        })(),
         is_read: notif.read_at !== null,
         time_ago: getTimeAgo(notif.created_at)
       })));
@@ -790,6 +797,15 @@ function getTimeAgo(date) {
 }
 
 app.get('/api/health', (req, res) => {
+  if (dbType !== 'mysql') {
+    return res.status(503).json({
+      status: 'NOT_READY',
+      message: 'MySQL database connection is not ready',
+      database: dbType || null,
+      database_name: laravelEnv.DB_DATABASE || null
+    });
+  }
+
   res.json({ 
     status: 'OK', 
     message: 'Student Account API is running',
