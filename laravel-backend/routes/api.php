@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
@@ -43,12 +42,11 @@ Route::get('health', function () {
 
 // Authentication routes (public)
 Route::post('login', [AuthController::class, 'login']);
-Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::get('user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// All business and account endpoints require an authenticated Sanctum token.
+Route::middleware('auth:sanctum')->group(function () {
+Route::post('logout', [AuthController::class, 'logout']);
+Route::get('user', [AuthController::class, 'user']);
 
 // Dashboard API
 Route::get('dashboard', [DashboardController::class, 'index']);
@@ -167,4 +165,5 @@ Route::prefix('toga-rentals')->group(function () {
     Route::post('payments', [\App\Http\Controllers\TogaRentalController::class, 'storePayment']);
     Route::put('payments/{id}', [\App\Http\Controllers\TogaRentalController::class, 'updatePayment']);
     Route::delete('payments/{id}', [\App\Http\Controllers\TogaRentalController::class, 'destroyPayment']);
+});
 });

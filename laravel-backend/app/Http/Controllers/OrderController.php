@@ -7,10 +7,12 @@ use App\Models\OrderItem;
 use App\Models\Inventory;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use App\Services\CacheService;
 
 class OrderController extends Controller
@@ -67,130 +69,111 @@ class OrderController extends Controller
             'payment.notes' => 'nullable|string',
         ]);
 
-        // Get the first product's category for service_type
-        $firstProduct = \App\Models\Product::with('category')->find($validated['order_items'][0]['product_id']);
-        $serviceType = $firstProduct->category->category_name ?? 'Other';
+        $order = DB::transaction(function () use ($validated) {
+            $firstProduct = \App\Models\Product::with('category')->findOrFail($validated['order_items'][0]['product_id']);
+            $serviceType = $firstProduct->category->category_name ?? 'Other';
 
-        // Generate unique order number based on the last order number, not count
-        $lastOrder = Order::orderBy('order_id', 'desc')->first();
-        $nextNumber = $lastOrder ? ($lastOrder->order_id + 1) : 1;
-        $orderNumber = 'ORD-' . date('Y') . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            $lastOrder = Order::orderByDesc('order_id')->lockForUpdate()->first();
+            $nextNumber = $lastOrder ? ($lastOrder->order_id + 1) : 1;
+            $orderNumber = 'ORD-' . date('Y') . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        // STEP 1: Validate stock BEFORE creating order (prevent partial orders)
-        foreach ($validated['order_items'] as $item) {
-            $inventory = Inventory::where('product_id', $item['product_id'])->lockForUpdate()->first();
-            
-            if (!$inventory) {
-                return response()->json([
-                    'error' => 'Product not found in inventory',
-                    'product_id' => $item['product_id']
-                ], 404);
+            foreach ($validated['order_items'] as $item) {
+                $inventory = Inventory::where('product_id', $item['product_id'])->lockForUpdate()->first();
+
+                if (!$inventory) {
+                    throw new HttpResponseException(response()->json([
+                        'error' => 'Product not found in inventory',
+                        'product_id' => $item['product_id'],
+                    ], 404));
+                }
+
+                if ($inventory->quantity < $item['quantity']) {
+                    throw new HttpResponseException(response()->json([
+                        'error' => 'Insufficient stock',
+                        'product_name' => $inventory->product->product_name ?? 'Unknown',
+                        'product_id' => $item['product_id'],
+                        'available' => $inventory->quantity,
+                        'requested' => $item['quantity'],
+                    ], 422));
+                }
             }
-            
-            if ($inventory->quantity < $item['quantity']) {
-                return response()->json([
-                    'error' => 'Insufficient stock',
-                    'product_name' => $inventory->product->product_name ?? 'Unknown',
+
+            $order = Order::create([
+                'order_number' => $orderNumber,
+                'customer_name' => $validated['customer_name'] ?? null,
+                'service_type' => $serviceType,
+                'status' => 'Pending',
+                'notes' => $validated['notes'] ?? null,
+                'preferred_pickup_date' => $validated['preferred_pickup_date'] ?? null,
+                'total_amount' => 0,
+            ]);
+
+            $totalAmount = 0;
+            foreach ($validated['order_items'] as $item) {
+                $product = \App\Models\Product::findOrFail($item['product_id']);
+                $orderItem = OrderItem::create([
+                    'order_id' => $order->order_id,
                     'product_id' => $item['product_id'],
-                    'available' => $inventory->quantity,
-                    'requested' => $item['quantity']
-                ], 422);
+                    'product_name' => $product->product_name,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'notes' => $item['notes'] ?? null,
+                ]);
+
+                $totalAmount += $orderItem->quantity * $orderItem->unit_price;
+                Inventory::where('product_id', $item['product_id'])->decrement('quantity', $item['quantity']);
+
+                \App\Models\ProductTransaction::create([
+                    'product_id' => $item['product_id'],
+                    'type' => 'OUT',
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'total_amount' => $item['quantity'] * $item['unit_price'],
+                    'reference_type' => 'order',
+                    'reference_id' => $order->order_id,
+                    'user_id' => Auth::id(),
+                    'notes' => 'Order ' . $orderNumber . ' - ' . (isset($validated['payment']) ? 'Paid' : 'Pending Payment'),
+                ]);
             }
-        }
 
-        // STEP 2: Create order (stock validated, safe to proceed)
-        $order = Order::create([
-            'order_number' => $orderNumber,
-            'customer_name' => $validated['customer_name'] ?? null,
-            'service_type' => $serviceType,
-            'status' => 'Pending',
-            'notes' => $validated['notes'] ?? null,
-            'preferred_pickup_date' => $validated['preferred_pickup_date'] ?? null,
-            'total_amount' => 0, // Will be calculated from order items
-        ]);
+            $order->update(['total_amount' => $totalAmount]);
 
-        // STEP 3: Create order items and decrease stock atomically
-        $totalAmount = 0;
-        foreach ($validated['order_items'] as $item) {
-            // Get product name for history preservation
-            $product = \App\Models\Product::find($item['product_id']);
-            
-            // Create order item
-            $orderItem = OrderItem::create([
-                'order_id' => $order->order_id,
-                'product_id' => $item['product_id'],
-                'product_name' => $product->product_name, // Save name for deleted product history
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'notes' => $item['notes'] ?? null,
-            ]);
+            if (isset($validated['payment'])) {
+                $paymentData = $validated['payment'];
+                Payment::create([
+                    'order_id' => $order->order_id,
+                    'payment_method' => $paymentData['payment_method'],
+                    'amount' => $paymentData['amount'],
+                    'reference_number' => $paymentData['reference_number'] ?? null,
+                    'payment_date' => Carbon::now(),
+                    'processed_by' => Auth::id(),
+                    'notes' => $paymentData['notes'] ?? null,
+                ]);
 
-            $totalAmount += $orderItem->quantity * $orderItem->unit_price;
+                $order->update([
+                    'status' => 'Completed',
+                    'completed_date' => Carbon::now(),
+                ]);
+            }
 
-            // Decrease stock using atomic decrement (thread-safe)
-            Inventory::where('product_id', $item['product_id'])
-                ->decrement('quantity', $item['quantity']);
+            return $order->fresh();
+        });
 
-            // Create product transaction for OUT movement immediately
-            \App\Models\ProductTransaction::create([
-                'product_id' => $item['product_id'],
-                'type' => 'OUT',
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'total_amount' => $item['quantity'] * $item['unit_price'],
-                'reference_type' => 'order',
-                'reference_id' => $order->order_id,
-                'user_id' => Auth::id(),
-                'notes' => 'Order ' . $orderNumber . ' - ' . ($validated['payment'] ? 'Paid' : 'Pending Payment'),
-            ]);
-        }
+        CacheService::clearOrderCache();
 
-        // Update order total
-        $order->total_amount = $totalAmount;
-        $order->save();
-
-        // If payment data is provided, complete the order immediately (for POS transactions)
-        if (isset($validated['payment'])) {
-            $paymentData = $validated['payment'];
-            
-            // Create payment record
-            $payment = Payment::create([
-                'order_id' => $order->order_id,
-                'payment_method' => $paymentData['payment_method'],
-                'amount' => $paymentData['amount'],
-                'reference_number' => $paymentData['reference_number'] ?? null,
-                'payment_date' => Carbon::now(),
-                'processed_by' => Auth::id() ?? null,
-                'notes' => $paymentData['notes'] ?? null,
-            ]);
-
-            // Update order status to Completed
-            $order->update([
-                'status' => 'Completed',
-                'completed_date' => Carbon::now(),
-            ]);
-
-            // Clear all relevant caches
-            CacheService::clearOrderCache();
-
-            // Return minimal data immediately for INSTANT receipt display (1 second)
-            return response()->json([
-                'order_id' => $order->order_id,
-                'order_number' => $order->order_number,
-                'total_amount' => $order->total_amount,
-                'status' => $order->status,
-                'completed_date' => $order->completed_date,
-                'customer_name' => $order->customer_name,
-            ], 201);
-        }
-
-        // For pending orders, return minimal data
-        return response()->json([
+        $response = [
             'order_id' => $order->order_id,
             'order_number' => $order->order_number,
             'total_amount' => $order->total_amount,
             'status' => $order->status,
-        ], 201);
+        ];
+
+        if ($order->status === 'Completed') {
+            $response['completed_date'] = $order->completed_date;
+            $response['customer_name'] = $order->customer_name;
+        }
+
+        return response()->json($response, 201);
     }
 
     /**
