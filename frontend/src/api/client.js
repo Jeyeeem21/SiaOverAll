@@ -8,7 +8,14 @@ export async function apiRequest(path, options = {}) {
     headers.set('Content-Type', 'application/json')
   }
 
-  const response = await fetch(`${apiUrl}${path}`, {
+  // Get user role from localStorage or default to Admin for testing
+  const userRole = localStorage.getItem('userRole') || 'Admin'
+  
+  // Append role as query parameter
+  const separator = path.includes('?') ? '&' : '?'
+  const pathWithRole = `${path}${separator}role=${userRole}`
+
+  const response = await fetch(`${apiUrl}${pathWithRole}`, {
     credentials: 'include',
     ...options,
     headers,
@@ -21,7 +28,9 @@ export async function apiRequest(path, options = {}) {
   const data = await response.json().catch(() => ({}))
   if (!response.ok) {
     const messages = data.errors ? Object.values(data.errors).flat().join(' ') : data.message
-    throw new Error(messages || 'The request could not be completed.')
+    const error = new Error(messages || 'The request could not be completed.')
+    error.validationErrors = data.errors ?? {}
+    throw error
   }
 
   return data

@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Skip if staff_info table doesn't exist yet
+        if (!Schema::hasTable('staff_info')) {
+            return;
+        }
+        
         if (Schema::hasColumn('staff_info', 'photo_path')) {
             return;
         }
