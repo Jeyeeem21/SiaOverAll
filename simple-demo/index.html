@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎫 Sticker Processing Module - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 16px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-item:hover {
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .card h2 {
+            margin-bottom: 16px;
+            font-size: 24px;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .request-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .request-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .request-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .request-header {
+            padding: 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .request-header h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-pending { background: #ffc107; }
+        .status-approved { background: #17a2b8; }
+        .status-paid { background: #28a745; }
+        .status-printed { background: #007bff; }
+        .status-released { background: #28a745; }
+        .status-rejected { background: #dc3545; }
+
+        .request-body {
+            padding: 16px;
+            font-size: 14px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #777;
+        }
+
+        .request-footer {
+            padding: 12px 16px;
+            background: #fafbfc;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .stickers-list {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .sticker-item {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .type-details {
+            background: #f8f9fa;
+            padding: 12px;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .cost-summary {
+            background: #e8f4f8;
+            padding: 12px 16px;
+            border-radius: 4px;
+            border-left: 4px solid #28a745;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .cost-summary strong {
+            font-size: 18px;
+            color: #28a745;
+        }
+
+        .footer {
+            background: white;
+            border-top: 1px solid #e9ecef;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-top: 40px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 16px;
+        }
+
+        .modal-actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .request-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .nav-item {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-content">
+                <h1>🎫 Sticker Management System</h1>
+                <p>Request, approve, and manage stickers</p>
+            </div>
+        </header>
+
+        <nav class="nav">
+            <button class="nav-item active" onclick="switchView('requests')">My Requests</button>
+            <button class="nav-item" onclick="switchView('new')">New Request</button>
+            <button class="nav-item" onclick="switchView('demo')">Demo Data</button>
+        </nav>
+
+        <main class="main">
+            <!-- Requests View -->
+            <div id="requests" class="section active">
+                <div class="card">
+                    <h2>My Sticker Requests</h2>
+                    <div id="requestsList" class="request-grid"></div>
+                </div>
+            </div>
+
+            <!-- New Request View -->
+            <div id="new" class="section">
+                <div class="card">
+                    <h2>Request New Stickers</h2>
+                    <form onsubmit="createRequest(event)">
+                        <div class="form-group">
+                            <label>Sticker Type *</label>
+                            <select id="stickerType" required onchange="updateTypeInfo()">
+                                <option value="">Choose a sticker type...</option>
+                                <option value="1">Parking Sticker - $10.00</option>
+                                <option value="2">Laboratory Access - $5.00</option>
+                                <option value="3">Event Access - Free</option>
+                            </select>
+                        </div>
+
+                        <div id="typeInfo" class="type-details" style="display:none;"></div>
+
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="quantity" min="1" max="100" value="1" required>
+                        </div>
+
+                        <div id="vehicleSection" style="display:none;">
+                            <div class="form-group">
+                                <label>Vehicle Registration</label>
+                                <input type="text" id="vehicleReg" placeholder="e.g., ABC1234">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Vehicle Type</label>
+                                    <select id="vehicleType">
+                                        <option value="">Select...</option>
+                                        <option value="car">Car</option>
+                                        <option value="motorcycle">Motorcycle</option>
+                                        <option value="truck">Truck</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Color</label>
+                                    <input type="text" id="vehicleColor" placeholder="e.g., Blue">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Purpose</label>
+                            <textarea id="purpose" rows="3" placeholder="Explain the purpose..."></textarea>
+                        </div>
+
+                        <div id="costSummary" class="cost-summary" style="display:none;">
+                            Total Cost: <strong id="totalCost">$0.00</strong>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Demo View -->
+            <div id="demo" class="section">
+                <div class="card">
+                    <h2>Load Demo Data</h2>
+                    <div class="alert alert-info">
+                        Click the button below to load sample sticker requests to see the system in action.
+                    </div>
+                    <button class="btn btn-info" onclick="loadDemoData()">Load Demo Requests</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Sticker Management System. Built with HTML/CSS/JavaScript + Node.js Backend</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Actions -->
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Action</h3>
+            <div id="modalBody"></div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="performAction()">Confirm</button>
+                <button class="btn" onclick="closeModal()" style="background: #ccc;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        let requests = [];
+        let currentAction = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchRequests();
+        });
+
+        // API Calls
+        async function fetchRequests() {
+            try {
+                const response = await fetch(`${API_URL}/sticker-requests`);
+                const data = await response.json();
+                requests = data.data || [];
+                displayRequests();
+            } catch (error) {
+                console.log('API not ready yet. Using local data.');
+            }
+        }
+
+        async function createRequest(event) {
+            event.preventDefault();
+            
+            const typeId = document.getElementById('stickerType').value;
+            const quantity = document.getElementById('quantity').value;
+            const purpose = document.getElementById('purpose').value;
+            const vehicleReg = document.getElementById('vehicleReg').value;
+            const vehicleType = document.getElementById('vehicleType').value;
+            const vehicleColor = document.getElementById('vehicleColor').value;
+
+            const requestData = {
+                sticker_type_id: parseInt(typeId),
+                quantity: parseInt(quantity),
+                vehicle_registration: vehicleReg,
+                vehicle_type: vehicleType,
+                vehicle_color: vehicleColor,
+                purpose: purpose
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/sticker-requests`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+                const newRequest = await response.json();
+                requests.push(newRequest);
+                displayRequests();
+                switchView('requests');
+                event.target.reset();
+                showAlert('Request created successfully!', 'success');
+            } catch (error) {
+                showAlert('Error creating request: ' + error.message, 'error');
+            }
+        }
+
+        // UI Functions
+        function switchView(viewName) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(viewName).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function updateTypeInfo() {
+            const typeId = document.getElementById('stickerType').value;
+            const types = {
+                '1': { name: 'Parking Sticker', price: 10, validity: 365, needsVehicle: true },
+                '2': { name: 'Laboratory Access', price: 5, validity: 180, needsVehicle: false },
+                '3': { name: 'Event Access', price: 0, validity: 30, needsVehicle: false }
+            };
+
+            const typeInfo = document.getElementById('typeInfo');
+            const vehicleSection = document.getElementById('vehicleSection');
+            const costSummary = document.getElementById('costSummary');
+
+            if (typeId && types[typeId]) {
+                const type = types[typeId];
+                typeInfo.style.display = 'block';
+                typeInfo.innerHTML = `<strong>${type.name}</strong><br>Valid for ${type.validity} days`;
+                
+                vehicleSection.style.display = type.needsVehicle ? 'block' : 'none';
+                
+                updateCostSummary();
+            } else {
+                typeInfo.style.display = 'none';
+                vehicleSection.style.display = 'none';
+                costSummary.style.display = 'none';
+            }
+        }
+
+        function updateCostSummary() {
+            const typeId = document.getElementById('stickerType').value;
+            const quantity = parseInt(document.getElementById('quantity').value) || 0;
+            const prices = { '1': 10, '2': 5, '3': 0 };
+            const total = (prices[typeId] || 0) * quantity;
+            
+            const costSummary = document.getElementById('costSummary');
+            if (typeId) {
+                costSummary.style.display = 'block';
+                document.getElementById('totalCost').textContent = '$' + total.toFixed(2);
+            }
+        }
+
+        function displayRequests() {
+            const list = document.getElementById('requestsList');
+            
+            if (requests.length === 0) {
+                list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No sticker requests yet. Create your first one!</div>';
+                return;
+            }
+
+            list.innerHTML = requests.map(req => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <div>
+                            <h3>${getTypeName(req.sticker_type_id)}</h3>
+                            <span class="status-badge status-${req.status}">${req.status}</span>
+                        </div>
+                        <span style="font-size: 18px; font-weight: 700; color: #667eea;">$${req.total_amount.toFixed(2)}</span>
+                    </div>
+                    <div class="request-body">
+                        <div class="info-row">
+                            <span class="info-label">Quantity:</span>
+                            <span class="info-value">${req.quantity}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value">${formatStatus(req.status)}</span>
+                        </div>
+                        ${req.purpose ? `<div class="info-row">
+                            <span class="info-label">Purpose:</span>
+                            <span class="info-value">${req.purpose.substring(0, 50)}...</span>
+                        </div>` : ''}
+                        ${req.vehicle_registration ? `<div class="info-row">
+                            <span class="info-label">Vehicle:</span>
+                            <span class="info-value">${req.vehicle_registration}</span>
+                        </div>` : ''}
+                        ${req.stickers && req.stickers.length > 0 ? `
+                            <div class="stickers-list">
+                                <strong style="font-size: 12px;">Generated Stickers:</strong>
+                                ${req.stickers.map(s => `<div class="sticker-item">${s.serial_number}</div>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="request-footer">
+                        ${req.status === 'pending' ? `
+                            <button class="btn btn-success" onclick="approveRequest(${req.id})">Approve</button>
+                            <button class="btn btn-danger" onclick="rejectRequest(${req.id})">Reject</button>
+                        ` : ''}
+                        ${req.status === 'approved' ? `
+                            <button class="btn btn-info" onclick="markPaid(${req.id})">Mark Paid</button>
+                        ` : ''}
+                        ${req.status === 'paid' ? `
+                            <button class="btn btn-primary" onclick="generateStickers(${req.id})">Generate</button>
+                        ` : ''}
+                        ${req.status === 'printed' ? `
+                            <button class="btn btn-success" onclick="releaseStickers(${req.id})">Release</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Staff Actions
+        async function approveRequest(id) {
+            try {
+                const response = await fetch(`${API_URL}/sticker-requests/${id}/approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ approval_notes: 'Approved' })
+                });
+                const updated = await response.json();
+                updateRequest(updated);
+                showAlert('Request approved!', 'success');
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function rejectRequest(id) {
+            try {
+                const response = await fetch(`${API_URL}/sticker-requests/${id}/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rejection_reason: 'Rejected by staff' })
+                });
+                const updated = await response.json();
+                updateRequest(updated);
+                showAlert('Request rejected!', 'success');
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function markPaid(id) {
+            try {
+                const response = await fetch(`${API_URL}/sticker-requests/${id}/mark-paid`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ payment_reference: 'PAY-' + Date.now() })
+                });
+                const updated = await response.json();
+                updateRequest(updated);
+                showAlert('Marked as paid!', 'success');
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function generateStickers(id) {
+            try {
+                const response = await fetch(`${API_URL}/sticker-requests/${id}/print`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const updated = await response.json();
+                updateRequest(updated);
+                showAlert('Stickers generated!', 'success');
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function releaseStickers(id) {
+            try {
+                const response = await fetch(`${API_URL}/sticker-requests/${id}/release`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const updated = await response.json();
+                updateRequest(updated);
+                showAlert('Stickers released!', 'success');
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        function updateRequest(updated) {
+            const idx = requests.findIndex(r => r.id === updated.id);
+            if (idx >= 0) {
+                requests[idx] = updated;
+                displayRequests();
+            }
+        }
+
+        // Utility Functions
+        function getTypeName(id) {
+            const types = { 1: 'Parking Sticker', 2: 'Laboratory Access', 3: 'Event Access' };
+            return types[id] || 'Unknown';
+        }
+
+        function formatStatus(status) {
+            const statuses = {
+                'pending': 'Pending Approval',
+                'approved': 'Approved',
+                'paid': 'Payment Received',
+                'printed': 'Printed',
+                'released': 'Released',
+                'rejected': 'Rejected'
+            };
+            return statuses[status] || status;
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            document.querySelector('.main').insertBefore(alertDiv, document.querySelector('.main').firstChild);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        function closeModal() {
+            document.getElementById('actionModal').classList.remove('active');
+        }
+
+        function loadDemoData() {
+            requests = [
+                {
+                    id: 1,
+                    sticker_type_id: 1,
+                    quantity: 2,
+                    vehicle_registration: 'ABC-1234',
+                    vehicle_type: 'car',
+                    purpose: 'Campus parking',
+                    status: 'pending',
+                    total_amount: 20.00,
+                    created_at: new Date().toISOString(),
+                    stickers: []
+                },
+                {
+                    id: 2,
+                    sticker_type_id: 2,
+                    quantity: 1,
+                    purpose: 'Lab access for research',
+                    status: 'approved',
+                    total_amount: 5.00,
+                    created_at: new Date(Date.now() - 86400000).toISOString(),
+                    stickers: []
+                },
+                {
+                    id: 3,
+                    sticker_type_id: 1,
+                    quantity: 1,
+                    vehicle_registration: 'XYZ-9876',
+                    vehicle_type: 'motorcycle',
+                    purpose: 'Staff parking',
+                    status: 'released',
+                    total_amount: 10.00,
+                    created_at: new Date(Date.now() - 172800000).toISOString(),
+                    stickers: [
+                        { id: 1, serial_number: 'STK-1-20240101-abc123', expiry_date: '2025-01-15' },
+                        { id: 2, serial_number: 'STK-1-20240101-def456', expiry_date: '2025-01-15' }
+                    ]
+                }
+            ];
+            displayRequests();
+            switchView('requests');
+            showAlert('Demo data loaded!', 'success');
+        }
+
+        // Auto-update cost when quantity changes
+        document.addEventListener('DOMContentLoaded', () => {
+            const quantityInput = document.getElementById('quantity');
+            if (quantityInput) {
+                quantityInput.addEventListener('change', updateCostSummary);
+            }
+        });
+    </script>
+</body>
+</html>
