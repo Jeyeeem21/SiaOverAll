@@ -6,3 +6,6 @@
 # Exclude all markdown and text documentation files
 *.MD
 *.TXT
+
+# Exclude Kiro configuration
+.kiro/
