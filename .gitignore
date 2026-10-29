@@ -9,3 +9,6 @@
 
 # Exclude Kiro configuration
 .kiro/
+
+# Exclude VSCode settings
+.vscode/
