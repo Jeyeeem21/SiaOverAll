@@ -41,8 +41,8 @@ export const AuthProvider = ({ children }) => {
           });
         }
       } catch (err) {
-        // Profile fetch failed — try to decode basic info from the stored token
-        // instead of clearing it (which would log the user out on MySQL downtime)
+        // Profile fetch failed — try to decode basic info only when the token
+        // was not rejected by the API (for example, during a database outage).
         const token = ApiService.getAuthToken();
         if (token) {
           try {
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      const response = await ApiService.login(email, password);
+      const response = await ApiService.login(email.trim(), password);
       
       // Set basic user data first from login response
       setUser({

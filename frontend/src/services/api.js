@@ -56,6 +56,9 @@ class ApiService {
       }
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          this.removeAuthToken();
+        }
         throw new Error((data && data.error) || `Request failed with status ${response.status}`);
       }
 

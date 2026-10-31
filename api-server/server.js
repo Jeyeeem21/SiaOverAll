@@ -181,7 +181,10 @@ function dbQuery(query, params = []) {
 
 // Auth Routes
 app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
+  const email = typeof req.body.email === 'string'
+    ? req.body.email.trim().toLowerCase()
+    : '';
+  const { password } = req.body;
 
   try {
     const query = 'SELECT * FROM users WHERE email = ? LIMIT 1';
@@ -795,6 +798,14 @@ function getTimeAgo(date) {
     return `${Math.floor(diffInMinutes / 1440)} days ago`;
   }
 }
+
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Student Account API',
+    status: 'OK',
+    health: '/api/health'
+  });
+});
 
 app.get('/api/health', (req, res) => {
   if (dbType !== 'mysql') {

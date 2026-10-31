@@ -6,8 +6,8 @@ const DevLogin = () => {
   const navigate = useNavigate();
   const { login, loading: authLoading, error: authError } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: 'melaldrin.reyes@gmail.com',
+    password: 'password123',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -1,0 +1,124 @@
+name: docker-activity
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: portal-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secretpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-businesscenter}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      - app_network
+
+  laravel:
+    build:
+      context: ..
+      dockerfile: Docker activity/docker/laravel.Dockerfile
+    container_name: portal-laravel
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-businesscenter}
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    ports:
+      - "8080:80"
+    volumes:
+      - ../backend:/var/www/html
+      - laravel_vendor:/var/www/html/vendor
+      - laravel_storage:/var/www/html/storage
+    networks:
+      - app_network
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: portal-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 128M
+    ports:
+      - "8081:80"
+    networks:
+      - app_network
+
+  nodejs:
+    build:
+      context: ..
+      dockerfile: Docker activity/docker/node.Dockerfile
+    container_name: portal-nodejs
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PORT: 3002
+      JWT_SECRET: ${JWT_SECRET:-local-development-secret}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-businesscenter}
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secretpassword}
+    ports:
+      - "3002:3002"
+    volumes:
+      - ../api-server:/usr/src/api-server
+      - node_modules:/usr/src/api-server/node_modules
+      - uploads:/usr/src/api-server/uploads
+    command: ["npm", "start"]
+    networks:
+      - app_network
+
+  react:
+    image: node:20-alpine
+    container_name: portal-react
+    restart: unless-stopped
+    depends_on:
+      - nodejs
+    working_dir: /usr/src/frontend
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../frontend:/usr/src/frontend
+      - frontend_node_modules:/usr/src/frontend/node_modules
+    command: ["sh", "-c", "npm ci && npm run dev -- --host 0.0.0.0"]
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+  laravel_vendor:
+  laravel_storage:
+  node_modules:
+  frontend_node_modules:
+  uploads:
+
+networks:
+  app_network:
+    name: portal-network
