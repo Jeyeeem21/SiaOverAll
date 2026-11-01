@@ -72,7 +72,7 @@ export const StickerProvider = ({ children }) => {
       );
       return response.data;
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Failed to upload attachment';
+      const errorMsg = err.response?.data?.message || 'Failed to upload attachments';
       setError(errorMsg);
       throw err;
     }
