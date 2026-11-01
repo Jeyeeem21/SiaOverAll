@@ -26,7 +26,7 @@ services:
   # Laravel Backend
   backend:
     build:
-      context: ./laravel-backend-new
+      context: ./laravel-backend
       dockerfile: Dockerfile
     container_name: sticker_backend
     restart: unless-stopped
@@ -42,7 +42,7 @@ services:
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000
     volumes:
-      - ./laravel-backend-new:/var/www
+      - ./laravel-backend:/var/www
       - backend_vendor:/var/www/vendor
     depends_on:
       db:
