@@ -34,11 +34,15 @@ This will:
 - Start MySQL database on port 3306
 - Start Laravel backend on port 8000
 - Start React frontend on port 3000
+- Start phpMyAdmin on port 8080
 
 ### 3. Access the application
 
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000/api
+- **phpMyAdmin**: http://localhost:8080
+  - Username: `root`
+  - Password: `root_password`
 - **Database**: localhost:3306
 
 ### 4. Stop all services
