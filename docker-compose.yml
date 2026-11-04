@@ -1,27 +1,26 @@
 version: '3.8'
 
 services:
-  # MySQL Database
-  db:
-    image: mysql:8.0
-    container_name: sticker_db
+  # Node.js Development Container
+  nodejs:
+    image: node:18-alpine
+    container_name: sticker_nodejs
     restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: sticker_module
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_USER: sticker_user
-      MYSQL_PASSWORD: sticker_pass
-    ports:
-      - "3306:3306"
+    working_dir: /app
     volumes:
-      - db_data:/var/lib/mysql
+      - ./react-frontend:/app
+      - node_modules:/app/node_modules
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:8000/api
     networks:
       - sticker_network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    command: sh -c "npm install && npm start"
+    stdin_open: true
+    tty: true
 
   # Laravel Backend
   backend:
@@ -32,75 +31,57 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     environment:
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: sticker_module
-      DB_USERNAME: sticker_user
-      DB_PASSWORD: sticker_pass
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000
     volumes:
       - ./laravel-backend:/var/www
       - backend_vendor:/var/www/vendor
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - sticker_network
     command: >
       sh -c "
         if [ -f composer.json ]; then
           composer install &&
-          php artisan key:generate --force &&
-          php artisan migrate --force;
+          php artisan key:generate --force;
         fi &&
         php artisan serve --host=0.0.0.0 --port=8000 || php -S 0.0.0.0:8000 -t public
       "
     ports:
       - "8000:8000"
 
-  # React Frontend
+  # React Frontend Development (with HMR)
   frontend:
-    build:
-      context: ./react-frontend
-      dockerfile: Dockerfile
+    image: node:18-alpine
     container_name: sticker_frontend
     restart: unless-stopped
-    environment:
-      REACT_APP_API_URL: http://localhost:8000/api
-      REACT_APP_ENV: production
+    working_dir: /app
+    volumes:
+      - ./react-frontend:/app
+      - frontend_node_modules:/app/node_modules
     ports:
-      - "3000:80"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:8000/api
+      - WDS_SOCKET_PORT=3000
+    networks:
+      - sticker_network
+    command: sh -c "npm install && npm start"
+    stdin_open: true
+    tty: true
     depends_on:
       - backend
-    networks:
-      - sticker_network
 
-  # phpMyAdmin
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: sticker_phpmyadmin
-    restart: unless-stopped
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: root_password
-      MYSQL_ROOT_PASSWORD: root_password
-    ports:
-      - "8080:80"
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - sticker_network
+
 
 networks:
   sticker_network:
     driver: bridge
 
 volumes:
-  db_data:
   backend_vendor:
+  node_modules:
+  frontend_node_modules:
+

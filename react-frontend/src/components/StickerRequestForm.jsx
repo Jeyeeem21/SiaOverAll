@@ -6,7 +6,7 @@ const StickerRequestForm = ({ onSuccess }) => {
   const { stickerTypes, createRequest, uploadAttachment, loading, error } = useStickerContext();
   const [formData, setFormData] = useState({
     sticker_type_id: '',
-    quantity: 1,
+    quantity: '',
     vehicle_registration: '',
     vehicle_type: '',
     vehicle_color: '',
@@ -30,15 +30,55 @@ const StickerRequestForm = ({ onSuccess }) => {
   };
 
   const handleFileSelect = async (e, uploadType) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
     try {
-      // File will be uploaded after request creation
-      setAttachments(prev => [
-        ...prev,
-        { file, uploadType, name: file.name }
-      ]);
+      // For license, allow max 2 files (front and back)
+      if (uploadType === 'license') {
+        const existingLicenseFiles = attachments.filter(att => att.uploadType === 'license');
+        const availableSlots = 2 - existingLicenseFiles.length;
+        
+        if (availableSlots <= 0) {
+          setSubmitError('Maximum 2 license files allowed (front and back)');
+          return;
+        }
+
+        const filesToAdd = files.slice(0, availableSlots);
+        
+        filesToAdd.forEach(file => {
+          setAttachments(prev => [
+            ...prev,
+            { file, uploadType, name: file.name }
+          ]);
+        });
+
+        if (files.length > availableSlots) {
+          setSubmitError(`Only ${availableSlots} more license file(s) can be added`);
+        } else {
+          setSubmitError(null);
+        }
+      } else {
+        // For other documents, allow only one file
+        const existingFile = attachments.find(att => att.uploadType === uploadType);
+        if (existingFile) {
+          // Replace existing file
+          setAttachments(prev => prev.map(att => 
+            att.uploadType === uploadType 
+              ? { file: files[0], uploadType, name: files[0].name }
+              : att
+          ));
+        } else {
+          setAttachments(prev => [
+            ...prev,
+            { file: files[0], uploadType, name: files[0].name }
+          ]);
+        }
+        setSubmitError(null);
+      }
+
+      // Clear the input
+      e.target.value = '';
     } catch (err) {
       setSubmitError('Failed to prepare file for upload');
     }
@@ -46,12 +86,36 @@ const StickerRequestForm = ({ onSuccess }) => {
 
   const removeAttachment = (index) => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
+    setSubmitError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
     setFormSubmitting(true);
+
+    // Validate attachments
+    const licenseFiles = attachments.filter(att => att.uploadType === 'license');
+    const officialReceiptFiles = attachments.filter(att => att.uploadType === 'official_receipt');
+    const certFiles = attachments.filter(att => att.uploadType === 'certificate_of_registration');
+
+    if (licenseFiles.length === 0) {
+      setSubmitError('Please upload at least one license file');
+      setFormSubmitting(false);
+      return;
+    }
+
+    if (officialReceiptFiles.length === 0) {
+      setSubmitError('Please upload the official receipt');
+      setFormSubmitting(false);
+      return;
+    }
+
+    if (certFiles.length === 0) {
+      setSubmitError('Please upload the certificate of registration');
+      setFormSubmitting(false);
+      return;
+    }
 
     try {
       // Create the sticker request
@@ -71,7 +135,7 @@ const StickerRequestForm = ({ onSuccess }) => {
       // Reset form
       setFormData({
         sticker_type_id: '',
-        quantity: 1,
+        quantity: '',
         vehicle_registration: '',
         vehicle_type: '',
         vehicle_color: '',
@@ -101,55 +165,10 @@ const StickerRequestForm = ({ onSuccess }) => {
 
       <form onSubmit={handleSubmit}>
         <div className="form-section">
-          <h3>Select Sticker Type</h3>
-          <div className="form-group">
-            <label htmlFor="sticker_type_id">Sticker Type *</label>
-            <select
-              id="sticker_type_id"
-              name="sticker_type_id"
-              value={formData.sticker_type_id}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Choose a sticker type...</option>
-              {stickerTypes.map(type => (
-                <option key={type.id} value={type.id}>
-                  {type.name} (${type.price.toFixed(2)})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {selectedType && (
-            <div className="type-details">
-              <p className="description">{selectedType.description}</p>
-              <p className="validity">
-                Valid for {selectedType.validity_days} days
-              </p>
-            </div>
-          )}
-
-          <div className="form-group">
-            <label htmlFor="quantity">Quantity *</label>
-            <input
-              type="number"
-              id="quantity"
-              name="quantity"
-              min="1"
-              max="100"
-              value={formData.quantity}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-        </div>
-
-        {selectedType?.requires_vehicle_details && (
-          <div className="form-section">
-            <h3>Vehicle Details</h3>
+          <h3>Vehicle Details</h3>
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="vehicle_registration">Registration Number</label>
+                <label htmlFor="vehicle_registration">Plate Number</label>
                 <input
                   type="text"
                   id="vehicle_registration"
@@ -170,8 +189,6 @@ const StickerRequestForm = ({ onSuccess }) => {
                   <option value="">Select type...</option>
                   <option value="car">Car</option>
                   <option value="motorcycle">Motorcycle</option>
-                  <option value="truck">Truck</option>
-                  <option value="van">Van</option>
                   <option value="other">Other</option>
                 </select>
               </div>
@@ -202,67 +219,43 @@ const StickerRequestForm = ({ onSuccess }) => {
               </div>
             </div>
           </div>
-        )}
 
         <div className="form-section">
-          <h3>Request Details</h3>
-          <div className="form-group">
-            <label htmlFor="purpose">Purpose</label>
-            <textarea
-              id="purpose"
-              name="purpose"
-              value={formData.purpose}
-              onChange={handleInputChange}
-              rows="3"
-              placeholder="Explain the purpose of this sticker request..."
-            ></textarea>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="start_date">Start Date</label>
-              <input
-                type="date"
-                id="start_date"
-                name="start_date"
-                value={formData.start_date}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="end_date">End Date</label>
-              <input
-                type="date"
-                id="end_date"
-                name="end_date"
-                value={formData.end_date}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="form-section">
-          <h3>Upload Requirements</h3>
+          <h3>Required Documents</h3>
+          <p className="section-description">Please upload the following documents (PDF, JPG, or PNG format)</p>
+          
           <div className="upload-group">
             <div className="upload-field">
-              <label>Vehicle Document</label>
+              <label>License (Back to Back) * (Max 2 files)</label>
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => handleFileSelect(e, 'vehicle_document')}
+                onChange={(e) => handleFileSelect(e, 'license')}
+                multiple
               />
-              <p className="help-text">Registration or ownership document</p>
+              <p className="help-text">Driver's license front and back (upload up to 2 files)</p>
             </div>
 
             <div className="upload-field">
-              <label>Identity Proof</label>
+              <label>Official Receipt *</label>
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => handleFileSelect(e, 'identity')}
+                onChange={(e) => handleFileSelect(e, 'official_receipt')}
+                required
               />
-              <p className="help-text">ID card or student/staff card</p>
+              <p className="help-text">Official receipt of vehicle registration</p>
+            </div>
+
+            <div className="upload-field">
+              <label>Certificate of Registration *</label>
+              <input
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => handleFileSelect(e, 'certificate_of_registration')}
+                required
+              />
+              <p className="help-text">Vehicle certificate of registration</p>
             </div>
           </div>
 
@@ -271,7 +264,7 @@ const StickerRequestForm = ({ onSuccess }) => {
               <h4>Attached Files:</h4>
               {attachments.map((att, idx) => (
                 <div key={idx} className="attachment-item">
-                  <span>{att.name} ({att.uploadType})</span>
+                  <span>{att.name} ({att.uploadType.replace(/_/g, ' ')})</span>
                   <button
                     type="button"
                     onClick={() => removeAttachment(idx)}
@@ -284,14 +277,6 @@ const StickerRequestForm = ({ onSuccess }) => {
             </div>
           )}
         </div>
-
-        {selectedType && (
-          <div className="cost-summary">
-            <p>
-              Total Cost: <strong>${(selectedType.price * formData.quantity).toFixed(2)}</strong>
-            </p>
-          </div>
-        )}
 
         <div className="form-actions">
           <button

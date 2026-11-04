@@ -72,7 +72,7 @@ export const StickerProvider = ({ children }) => {
       );
       return response.data;
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Failed to upload attachments';
+      const errorMsg = err.response?.data?.message || 'Failed to upload attachmentsb ';
       setError(errorMsg);
       throw err;
     }
@@ -204,9 +204,7 @@ export const StickerProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchStickerTypes();
-  }, [fetchStickerTypes]);
+  // Removed fetchStickerTypes from useEffect since we don't need sticker types anymore
 
   const value = {
     stickerTypes,
