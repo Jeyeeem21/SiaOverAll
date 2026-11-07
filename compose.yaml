@@ -1,0 +1,248 @@
+﻿name: integrated-system
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: integrated-system-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-RootPass123}
+      MYSQL_DATABASE: ${DB_DATABASE:-business_center}
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - integrated-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-RootPass123}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # phpMyAdmin (connects to local MySQL)
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: integrated-system-phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-RootPass123}
+      UPLOAD_LIMIT: 128M
+    networks:
+      - integrated-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Main System - Business Center
+  main-backend:
+    build: ./main-system/laravel-backend
+    working_dir: /var/www/html
+    volumes:
+      - ./main-system/laravel-backend:/var/www/html
+      - main_vendor:/var/www/html/vendor
+    ports:
+      - "${MAIN_BACKEND_PORT}:8000"
+    environment:
+      APP_URL: ${MAIN_BACKEND_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+    networks:
+      - integrated-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "composer install --no-interaction && php artisan serve --host=0.0.0.0 --port=8000"
+
+  main-frontend:
+    build: ./main-system/react-frontend
+    working_dir: /app
+    volumes:
+      - ./main-system/react-frontend:/app
+      - main_node_modules:/app/node_modules
+    ports:
+      - "${MAIN_FRONTEND_PORT}:5173"
+    environment:
+      VITE_API_URL: ${MAIN_API_URL}
+      VITE_PRINT_API_URL: ${PRINT_API_URL}
+      VITE_STAFF_ID_API_URL: ${STAFF_ID_API_URL}
+      VITE_STICKER_API_URL: ${STICKER_API_URL}
+      VITE_STAFF_ID_URL: ${STAFF_ID_FRONTEND_URL}
+      VITE_STUDENT_ACCOUNT_URL: ${ACCOUNT_FRONTEND_URL}
+      VITE_STUDENT_REGISTER_URL: ${ACCOUNT_REGISTER_URL}
+      VITE_HMR_CLIENT_PORT: ${MAIN_FRONTEND_PORT}
+    networks:
+      - integrated-network
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+
+  # Staff ID Management Module
+  staff-id-backend:
+    build: ./staff_id_managament/backend
+    working_dir: /var/www/html
+    volumes:
+      - ./staff_id_managament/backend:/var/www/html
+      - staff_id_vendor:/var/www/html/vendor
+    ports:
+      - "${STAFF_ID_BACKEND_PORT}:8000"
+    environment:
+      APP_URL: ${STAFF_ID_BACKEND_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+    networks:
+      - integrated-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "composer install --no-interaction && php artisan serve --host=0.0.0.0 --port=8000"
+
+  staff-id-frontend:
+    build: ./staff_id_managament/frontend
+    working_dir: /app
+    volumes:
+      - ./staff_id_managament/frontend:/app
+      - staff_id_node_modules:/app/node_modules
+    ports:
+      - "${STAFF_ID_FRONTEND_PORT}:5173"
+    environment:
+      VITE_API_URL: ${STAFF_ID_API_URL}
+      VITE_MAIN_SYSTEM_API_URL: ${MAIN_API_URL}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
+      VITE_HMR_CLIENT_PORT: ${STAFF_ID_FRONTEND_PORT}
+    networks:
+      - integrated-network
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+
+  # Student Print Module
+  print-backend:
+    build: ./Student_print_module/backend
+    working_dir: /var/www/html
+    volumes:
+      - ./Student_print_module/backend:/var/www/html
+      - print_vendor:/var/www/html/vendor
+    ports:
+      - "${PRINT_BACKEND_PORT}:8000"
+    environment:
+      APP_URL: ${PRINT_BACKEND_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+    networks:
+      - integrated-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "composer install --no-interaction && php artisan serve --host=0.0.0.0 --port=8000"
+
+  print-frontend:
+    build: ./Student_print_module/frontend
+    working_dir: /app
+    volumes:
+      - ./Student_print_module/frontend:/app
+      - print_node_modules:/app/node_modules
+    ports:
+      - "${PRINT_FRONTEND_PORT}:5173"
+    environment:
+      VITE_API_URL: ${PRINT_API_URL}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
+      VITE_STUDENT_PORTAL_URL: ${ACCOUNT_FRONTEND_URL}
+      VITE_HMR_CLIENT_PORT: ${PRINT_FRONTEND_PORT}
+      PRINT_API_PROXY_TARGET: ${PRINT_API_PROXY_TARGET}
+    networks:
+      - integrated-network
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+
+  # Staff Sticker Module
+  sticker-backend:
+    build: ./Staff_Sticker_module/laravel-backend
+    working_dir: /var/www/html
+    volumes:
+      - ./Staff_Sticker_module/laravel-backend:/var/www/html
+      - sticker_vendor:/var/www/html/vendor
+    ports:
+      - "${STICKER_BACKEND_PORT}:8000"
+    environment:
+      APP_URL: ${STICKER_BACKEND_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+    networks:
+      - integrated-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "composer install --no-interaction && php artisan serve --host=0.0.0.0 --port=8000"
+
+  sticker-frontend:
+    build: ./Staff_Sticker_module/react-frontend
+    working_dir: /app
+    volumes:
+      - ./Staff_Sticker_module/react-frontend:/app
+      - sticker_node_modules:/app/node_modules
+    ports:
+      - "${STICKER_FRONTEND_PORT}:5173"
+    environment:
+      VITE_API_URL: ${STICKER_API_URL}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
+      VITE_HMR_CLIENT_PORT: ${STICKER_FRONTEND_PORT}
+    networks:
+      - integrated-network
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+
+  # Student Account Module
+  account-backend:
+    build: ./student_account_module/backend
+    working_dir: /var/www/html
+    volumes:
+      - ./student_account_module/backend:/var/www/html
+      - account_vendor:/var/www/html/vendor
+    ports:
+      - "${ACCOUNT_BACKEND_PORT}:8000"
+    environment:
+      APP_URL: ${ACCOUNT_BACKEND_URL}
+      FRONTEND_URL: ${ACCOUNT_FRONTEND_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      CORE_API_URL: http://main-backend:8000/api
+      MAIN_SYSTEM_API_URL: http://main-backend:8000/api
+    networks:
+      - integrated-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "composer install --no-interaction && php artisan serve --host=0.0.0.0 --port=8000"
+
+  account-frontend:
+    build: ./student_account_module/frontend
+    working_dir: /app
+    volumes:
+      - ./student_account_module/frontend:/app
+      - account_node_modules:/app/node_modules
+    ports:
+      - "${ACCOUNT_FRONTEND_PORT}:5173"
+    environment:
+      VITE_API_URL: ${ACCOUNT_API_URL}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
+      VITE_MAIN_SYSTEM_API_URL: ${MAIN_API_URL}
+      VITE_PRINT_API_URL: ${PRINT_API_URL}
+      VITE_PRINT_FRONTEND_URL: ${PRINT_FRONTEND_URL}
+      VITE_ID_MANAGEMENT_API_URL: ${STAFF_ID_API_URL}
+      VITE_HMR_CLIENT_PORT: ${ACCOUNT_FRONTEND_PORT}
+    networks:
+      - integrated-network
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+
+networks:
+  integrated-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  main_vendor:
+  main_node_modules:
+  staff_id_vendor:
+  staff_id_node_modules:
+  print_vendor:
+  print_node_modules:
+  sticker_vendor:
+  sticker_node_modules:
+  account_vendor:
+  account_node_modules:

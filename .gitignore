@@ -1,0 +1,33 @@
+# Docker volumes and data
+mysql_data/
+
+# Node modules (already in sub-modules)
+node_modules/
+
+# Vendor folders (already in sub-modules)
+vendor/
+
+# Environment files with sensitive data
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker volumes
+*_data/
