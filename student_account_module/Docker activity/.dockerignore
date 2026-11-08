@@ -1,0 +1,8 @@
+.git
+.gitignore
+frontend/node_modules
+frontend/dist
+api-server/node_modules
+backend/vendor
+backend/storage/logs
+Docker activity

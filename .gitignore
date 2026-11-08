@@ -8,6 +8,7 @@ node_modules/
 vendor/
 
 # Environment files with sensitive data
+.env
 .env.local
 .env.*.local
 
