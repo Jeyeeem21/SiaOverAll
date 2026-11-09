@@ -11,6 +11,7 @@ import Inventory from './pages/Inventory'
 import Orders from './pages/Orders'
 import Reports from './pages/Reports'
 import Products from './pages/Products'
+import PublicProducts from './pages/PublicProducts'
 import Categories from './pages/Categories'
 import Customers from './pages/Customers'
 import Invoices from './pages/Invoices'
@@ -22,6 +23,7 @@ import Toast from './components/Toast'
 import Pos from './pages/Staff/Pos'
 import PrintOrders from './pages/PrintOrders'
 import StaffManagement from './pages/StaffManagement'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/browse-products" element={<PublicProducts />} />
+          <Route path="/services" element={<PublicProducts />} />
 
           {/* Protected Routes (Conditional Sidebar based on role) */}
           <Route 
@@ -81,6 +85,9 @@ function App() {
             {/* <Route path="invoices" element={<Invoices />} /> */}
             <Route path="settings" element={<Settings />} />
           </Route>
+          
+          {/* 404 Not Found - Catch all unmatched routes */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </Router>

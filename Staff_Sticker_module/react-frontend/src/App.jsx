@@ -62,7 +62,7 @@ function App() {
         </main>
 
         <footer className="app-footer">
-          <p>&copy; 2024 Sticker Management System. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Sticker Management System. All rights reserved.</p>
         </footer>
       </div>
     </StickerProvider>

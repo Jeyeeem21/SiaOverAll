@@ -4,6 +4,7 @@ import StaffIdGeneration from './staff/StaffIdGeneration'
 import StaffIdStatus from './staff/StaffIdStatus'
 import StaffReleaseHistory from './staff/StaffReleaseHistory'
 import StaffStudentRecords from './staff/StaffStudentRecords'
+import { TableSkeleton } from '../components/LoadingSkeletons'
 
 export default function StaffDashboard() {
   const [activeTab, setActiveTab] = useState('student-records')
@@ -207,12 +208,7 @@ export default function StaffDashboard() {
       <main className="staff-main flex-1">
         <div className="h-full">
           {!currentUser ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                <p className="mt-4 text-gray-600">Loading authentication...</p>
-              </div>
-            </div>
+            <DashboardSkeleton />
           ) : (
             <>
               {activeTab === 'student-records' && <StaffStudentRecords />}
@@ -223,6 +219,32 @@ export default function StaffDashboard() {
           )}
         </div>
       </main>
+    </div>
+  )
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="workflow-page" aria-busy="true" aria-label="Loading ID Management">
+      <div className="workflow-surface bg-white">
+        <div className="workflow-header animate-pulse space-y-2">
+          <div className="h-7 w-48 rounded bg-gray-200" />
+          <div className="h-3 w-80 max-w-full rounded bg-gray-200" />
+        </div>
+        <div className="workflow-toolbar animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[0, 1, 2].map((index) => (
+              <div key={index} className="h-24 rounded-2xl border border-gray-100 bg-gray-50 p-5">
+                <div className="h-3 w-20 rounded bg-gray-200" />
+                <div className="mt-3 h-6 w-12 rounded bg-gray-200" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="workflow-content pt-0">
+          <TableSkeleton columns={8} rows={5} />
+        </div>
+      </div>
     </div>
   )
 }

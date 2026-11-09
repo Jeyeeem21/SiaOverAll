@@ -4,6 +4,7 @@ import { useStudentOrders } from '../hooks/useStudentData';
 import OrderDetailsModal from '../components/modals/OrderDetailsModal';
 import PrintService from '../services/printService';
 import { useAuth } from '../context/AuthContext';
+import { CardGridSkeleton, LoadingBar } from '../components/LoadingStates';
 
 const Orders = () => {
   const { user } = useAuth();
@@ -11,9 +12,10 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [printOrders, setPrintOrders] = useState([]);
   const [printOrdersLoading, setPrintOrdersLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [printOrdersPage, setPrintOrdersPage] = useState(1);
   const [productOrdersPage, setProductOrdersPage] = useState(1);
-  const [ordersPerPage, setOrdersPerPage] = useState(10);
+  const [ordersPerPage, setOrdersPerPage] = useState(4);
   
   // Stable email reference to avoid useEffect dependency issues
   const userEmail = user?.student_email || user?.email || null;
@@ -32,11 +34,16 @@ const Orders = () => {
       if (!userEmail) {
         console.log('No email available for fetching print orders');
         setPrintOrdersLoading(false);
+        setIsInitialLoad(false);
         return;
       }
 
       try {
-        setPrintOrdersLoading(true);
+        // Only show loading skeleton on initial load, not on refresh
+        if (isInitialLoad) {
+          setPrintOrdersLoading(true);
+        }
+        
         console.log('Fetching print orders for:', userEmail);
         const printApiUrl = import.meta.env.VITE_PRINT_API_URL;
         const response = await fetch(`${printApiUrl}/print-orders?student_email=${encodeURIComponent(userEmail)}`);
@@ -56,26 +63,30 @@ const Orders = () => {
         console.error('Failed to fetch print orders:', err);
         setPrintOrders([]);
       } finally {
-        setPrintOrdersLoading(false);
+        if (isInitialLoad) {
+          setPrintOrdersLoading(false);
+          setIsInitialLoad(false);
+        }
       }
     };
 
     fetchPrintOrders();
-    // Refresh every 10 seconds
+    // Refresh every 10 seconds - but silently (no loading state)
     const interval = setInterval(fetchPrintOrders, 10000);
     return () => clearInterval(interval);
-  }, [userEmail]); // Now using stable string value
+  }, [userEmail, isInitialLoad]); // Now using stable string value
 
   return (
     <>
+      <LoadingBar isLoading={loading || printOrdersLoading} />
       <Navigation userRole="student" />
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
+      <div className="min-h-screen bg-gray-50">
         
-        <header className="bg-white shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="py-6">
-              <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-              <p className="mt-1 text-sm text-gray-600">
+        <header className="bg-white border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-5 lg:px-6">
+            <div className="py-5">
+              <h1 className="text-xl font-bold text-gray-900 tracking-tight">My Orders</h1>
+              <p className="mt-1.5 text-[11px] text-gray-400">
                 Track your document requests and orders
               </p>
               {/* Debug info - remove after fixing */}
@@ -90,7 +101,7 @@ const Orders = () => {
           </div>
         </header>
 
-        <main className="mt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <main className="mt-7 max-w-7xl mx-auto px-5 lg:px-6 pb-20">
           {false && (
           <>{/* Removed document-request cards: orders are created through Print Services. */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -138,15 +149,16 @@ const Orders = () => {
           </div></>)}
 
           {/* Print Service Orders - Card Grid */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Print Service Orders</h2>
-              <p className="text-sm text-gray-500 mt-1">Your printing, binding, and lamination orders</p>
+          <div className="card mb-6">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h2 className="text-[15px] font-bold text-gray-900">Print Service Orders</h2>
+              <p className="text-[11px] text-gray-400 mt-1">Your printing, binding, and lamination orders</p>
             </div>
-            <div className="p-6">
+            <div className="p-5">
               {printOrdersLoading ? (
-                <div className="text-center py-8 text-gray-500">Loading print orders...</div>
+                <CardGridSkeleton count={4} />
               ) : printOrders && printOrders.length > 0 ? (
+                <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {paginatedPrintOrders.map((order) => (
                     <button
@@ -168,13 +180,13 @@ const Orders = () => {
                             <p className="text-xs text-gray-500">{order.files_count || 0} file(s)</p>
                           </div>
                         </div>
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                          order.status === 'completed' ? 'bg-green-100 text-green-700' :
-                          order.status === 'printing' ? 'bg-blue-100 text-blue-700' :
-                          order.status === 'payment_confirmed' ? 'bg-indigo-100 text-indigo-700' :
-                          order.status === 'submitted' ? 'bg-yellow-100 text-yellow-700' :
-                          order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                          'bg-gray-100 text-gray-700'
+                        <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${
+                          order.status === 'completed' ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' :
+                          order.status === 'printing' ? 'bg-amber-100 text-amber-700 border border-amber-300' :
+                          order.status === 'payment_confirmed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
+                          order.status === 'submitted' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                          order.status === 'cancelled' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
+                          'bg-gray-100 text-gray-700 border border-gray-300'
                         }`}>
                           {order.status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </span>
@@ -233,12 +245,13 @@ const Orders = () => {
                 <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4 text-sm text-gray-600">
                   <span>Showing {(printOrdersPage - 1) * ordersPerPage + 1}-{Math.min(printOrdersPage * ordersPerPage, printOrders.length)} of {printOrders.length}</span>
                   <div className="flex items-center gap-2">
-                    <select className="rounded border border-gray-300 px-2 py-1" value={ordersPerPage} onChange={(e) => { setOrdersPerPage(Number(e.target.value)); setPrintOrdersPage(1); setProductOrdersPage(1); }}><option value={10}>10</option><option value={25}>25</option><option value={50}>50</option></select>
+                    <select className="rounded border border-gray-300 px-2 py-1" value={ordersPerPage} onChange={(e) => { setOrdersPerPage(Number(e.target.value)); setPrintOrdersPage(1); setProductOrdersPage(1); }}><option value={4}>4</option><option value={10}>10</option><option value={25}>25</option><option value={50}>50</option></select>
                     <button className="rounded border px-3 py-1 disabled:opacity-40" disabled={printOrdersPage === 1} onClick={() => setPrintOrdersPage((page) => page - 1)}>Previous</button>
                     <span>Page {printOrdersPage} of {printOrdersTotalPages}</span>
                     <button className="rounded border px-3 py-1 disabled:opacity-40" disabled={printOrdersPage === printOrdersTotalPages} onClick={() => setPrintOrdersPage((page) => page + 1)}>Next</button>
                   </div>
                 </div>
+                </>
               ) : (
                 <div className="text-center py-12 text-gray-500">
                   <svg className="mx-auto h-16 w-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,29 +265,32 @@ const Orders = () => {
           </div>
 
           {/* Business Center Product Orders - 2 Column Grid */}
-          {productOrders && productOrders.length > 0 && (
-            <div className="bg-white shadow rounded-lg mt-6">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-600 rounded-lg">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Business Center Orders</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">Products from school business center</p>
-                  </div>
+          <div className="card">
+            <div className="px-5 py-4 border-b border-gray-100 bg-emerald-50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-600 rounded-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-[15px] font-bold text-gray-900">Business Center Orders</h2>
+                  <p className="text-[11px] text-gray-400 mt-0.5">Products from school business center</p>
                 </div>
               </div>
-              <div className="p-6">
+            </div>
+            <div className="p-5">
+              {loading ? (
+                <CardGridSkeleton count={4} />
+              ) : productOrders && productOrders.length > 0 ? (
+                <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {paginatedProductOrders.map((order, index) => (
                     <button
                       key={order.id || index}
                       type="button"
                       onClick={() => setSelectedOrder({ ...order, type: 'product' })}
-                      className="text-left p-5 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-lg hover:scale-[1.02] transition-all bg-gradient-to-br from-white to-blue-50"
+                      className="text-left p-5 border border-gray-100 rounded-2xl hover:border-emerald-300 hover:shadow-md transition-all bg-white"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1 min-w-0">
@@ -283,14 +299,14 @@ const Orders = () => {
                               ? `${order.items.length} Items` 
                               : order.items?.[0]?.product_name || 'Order'}
                           </p>
-                          <p className="text-xs text-blue-600 font-medium">#{order.order_number}</p>
+                          <p className="text-[11px] text-emerald-600 font-medium">#{order.order_number}</p>
                         </div>
-                        <span className={`text-xs font-semibold px-3 py-1.5 rounded-full ml-2 flex-shrink-0 ${
-                          order.status === 'completed' ? 'bg-green-100 text-green-700' :
-                          order.status === 'processing' ? 'bg-blue-100 text-blue-700' :
-                          order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                          order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                          'bg-gray-100 text-gray-700'
+                        <span className={`text-[10px] font-bold px-3 py-1.5 rounded-full ml-2 flex-shrink-0 ${
+                          order.status === 'completed' ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' :
+                          order.status === 'processing' ? 'bg-amber-100 text-amber-700 border border-amber-300' :
+                          order.status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                          order.status === 'cancelled' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
+                          'bg-gray-100 text-gray-700 border border-gray-300'
                         }`}>
                           {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
                         </span>
@@ -306,7 +322,7 @@ const Orders = () => {
                             </div>
                           ))}
                           {order.items.length > 3 && (
-                            <p className="text-xs text-blue-600 font-medium pl-3">+{order.items.length - 3} more items</p>
+                            <p className="text-[11px] text-emerald-600 font-medium pl-3">+{order.items.length - 3} more items</p>
                           )}
                         </div>
                       )}
@@ -318,7 +334,7 @@ const Orders = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                           {order.amount_paid && order.amount_paid > 0 ? (
-                            <span className="font-bold text-blue-700 text-lg">₱{parseFloat(order.amount_paid).toFixed(2)}</span>
+                            <span className="font-bold text-emerald-700 text-lg">₱{parseFloat(order.amount_paid).toFixed(2)}</span>
                           ) : (
                             <span className="text-gray-400 italic">Amount pending</span>
                           )}
@@ -351,7 +367,7 @@ const Orders = () => {
                     </button>
                   ))}
                 </div>
-                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-blue-100 pt-4 text-sm text-gray-600">
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4 text-sm text-gray-600">
                   <span>Showing {(productOrdersPage - 1) * ordersPerPage + 1}-{Math.min(productOrdersPage * ordersPerPage, productOrders.length)} of {productOrders.length}</span>
                   <div className="flex items-center gap-2">
                     <button className="rounded border px-3 py-1 disabled:opacity-40" disabled={productOrdersPage === 1} onClick={() => setProductOrdersPage((page) => page - 1)}>Previous</button>
@@ -359,9 +375,18 @@ const Orders = () => {
                     <button className="rounded border px-3 py-1 disabled:opacity-40" disabled={productOrdersPage === productOrdersTotalPages} onClick={() => setProductOrdersPage((page) => page + 1)}>Next</button>
                   </div>
                 </div>
-              </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  <p className="text-sm font-medium text-gray-900 mb-1">No product orders yet</p>
+                  <p className="text-xs text-gray-400">Visit the products page to place your first order</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Other Orders - 2 Column Grid */}
           {documentOrders && documentOrders.length > 0 && (
@@ -377,19 +402,19 @@ const Orders = () => {
                       key={order.id || index}
                       type="button"
                       onClick={() => setSelectedOrder({ ...order, type: 'other' })}
-                      className="text-left p-4 border-2 border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-md transition-all"
+                      className="text-left p-4 border border-gray-100 rounded-2xl hover:border-emerald-300 hover:shadow-md transition-all"
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-gray-900 truncate">{order.item}</p>
                           <p className="text-xs text-gray-500 mt-0.5">Order #{order.order_number}</p>
                         </div>
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ml-2 flex-shrink-0 ${
-                          order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                          order.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
-                          order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                          order.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
-                          'bg-gray-100 text-gray-700'
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ml-2 flex-shrink-0 ${
+                          order.status === 'Completed' ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' :
+                          order.status === 'In Progress' ? 'bg-amber-100 text-amber-700 border border-amber-300' :
+                          order.status === 'Pending' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                          order.status === 'Cancelled' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
+                          'bg-gray-100 text-gray-600 border border-gray-300'
                         }`}>
                           {order.status}
                         </span>
@@ -399,7 +424,7 @@ const Orders = () => {
                         <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span className="font-bold text-blue-700">₱{order.amount}</span>
+                        <span className="font-bold text-emerald-700">₱{order.amount}</span>
                       </div>
 
                       <div className="pt-3 border-t border-gray-100">
@@ -410,7 +435,7 @@ const Orders = () => {
                           <span>Created {new Date(order.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' })}</span>
                         </div>
                         {order.expected_completion && (
-                          <div className="flex items-center gap-2 text-xs text-blue-600 font-medium mt-1">
+                          <div className="flex items-center gap-2 text-xs text-emerald-600 font-medium mt-1">
                             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>

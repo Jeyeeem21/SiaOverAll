@@ -72,7 +72,7 @@ export default function StaffManagement() {
     <div className="h-full flex flex-col">
       {/* Page Header with Navigation Tabs */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-4">
+        <div className="px-5 lg:px-6 py-4">
           <h1 className="text-2xl font-bold text-gray-900">ID Management</h1>
           <p className="mt-1 text-sm text-gray-500">
             Manage student records, ID production, status tracking, and release history
@@ -80,11 +80,11 @@ export default function StaffManagement() {
         </div>
         
         {/* Navigation Tabs */}
-        <div className="px-6 pb-3">
-          <div className="flex gap-2 border-b border-gray-200">
+        <div className="px-5 lg:px-6">
+          <div className="flex gap-1 border-b border-gray-200 overflow-x-auto scrollbar-thin">
             <button
               onClick={() => handleTabClick('student-records')}
-              className={`px-4 py-2 text-sm font-medium transition-all whitespace-nowrap border-b-2 ${
+              className={`px-3.5 py-2.5 text-sm font-medium transition-colors whitespace-nowrap border-b-2 ${
                 activeTab === 'student-records'
                   ? 'border-emerald-500 text-emerald-700 bg-emerald-50'
                   : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -99,7 +99,7 @@ export default function StaffManagement() {
             </button>
             <button
               onClick={() => handleTabClick('id-management')}
-              className={`px-4 py-2 text-sm font-medium transition-all whitespace-nowrap border-b-2 ${
+              className={`px-3.5 py-2.5 text-sm font-medium transition-colors whitespace-nowrap border-b-2 ${
                 activeTab === 'id-management'
                   ? 'border-emerald-500 text-emerald-700 bg-emerald-50'
                   : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -114,7 +114,7 @@ export default function StaffManagement() {
             </button>
             <button
               onClick={() => handleTabClick('id-status')}
-              className={`px-4 py-2 text-sm font-medium transition-all whitespace-nowrap border-b-2 ${
+              className={`px-3.5 py-2.5 text-sm font-medium transition-colors whitespace-nowrap border-b-2 ${
                 activeTab === 'id-status'
                   ? 'border-emerald-500 text-emerald-700 bg-emerald-50'
                   : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -129,7 +129,7 @@ export default function StaffManagement() {
             </button>
             <button
               onClick={() => handleTabClick('release-history')}
-              className={`px-4 py-2 text-sm font-medium transition-all whitespace-nowrap border-b-2 ${
+              className={`px-3.5 py-2.5 text-sm font-medium transition-colors whitespace-nowrap border-b-2 ${
                 activeTab === 'release-history'
                   ? 'border-emerald-500 text-emerald-700 bg-emerald-50'
                   : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900'

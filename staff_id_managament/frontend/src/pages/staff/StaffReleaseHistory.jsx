@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiRequest } from '../../api/client';
+import { TableRowSkeleton } from '../../components/LoadingSkeletons';
 
 export default function ReleaseHistory() {
   const [releases, setReleases] = useState([]);
@@ -75,12 +76,7 @@ export default function ReleaseHistory() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
-                  <tr>
-                    <td colSpan="5" className="px-6 py-20 text-center">
-                      <div className="inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                      <p className="mt-4 text-sm text-gray-500">Loading...</p>
-                    </td>
-                  </tr>
+                  <TableRowSkeleton columns={5} rows={4} />
                 ) : filteredReleases.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="px-6 py-20 text-center">
@@ -126,7 +122,7 @@ export default function ReleaseHistory() {
 
           {/* Summary */}
           {!loading && filteredReleases.length > 0 && (
-            <div className="px-6 lg:px-8 py-4 border-t border-gray-100 bg-gray-50">
+            <div className="release-history-summary px-6 lg:px-8 py-4 border-t border-gray-100 bg-gray-50">
               <p className="text-sm text-gray-600">
                 Showing <span className="font-medium text-gray-900">{filteredReleases.length}</span> released ID card{filteredReleases.length !== 1 ? 's' : ''}
               </p>

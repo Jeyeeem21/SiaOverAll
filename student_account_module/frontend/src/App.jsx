@@ -12,6 +12,7 @@ import Verification from './pages/Verification';
 import Orders from './pages/Orders';
 import StudentSsoCallback from './pages/StudentSsoCallback';
 import IdRequest from './pages/IdRequest';
+import StickerRequests from './pages/StickerRequests';
 
 // Dev Pages (No authentication required) - STUDENT FOCUSED ONLY
 import DevLogin from './pages/DevLogin';
@@ -22,6 +23,7 @@ import DevOrders from './pages/DevOrders';
 import DevProfile from './pages/DevProfile';
 import DevProducts from './pages/DevProducts';
 import DevDocuments from './pages/DevDocuments';
+import NotFound from './pages/NotFound';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
@@ -185,6 +187,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/sticker-requests" element={<ProtectedRoute><RoleBasedRoute role="student"><StickerRequests /></RoleBasedRoute></ProtectedRoute>} />
               <Route
                 path="/student/dashboard"
                 element={<Navigate replace to="/dashboard" />}
@@ -198,13 +201,8 @@ function App() {
                 }
               />
 
-              {/* Unknown/stale routes must never open the developer login. */}
-              <Route
-                path="*"
-                element={
-                  <Navigate replace to="/login" />
-                }
-              />
+              {/* 404 Not Found - Catch all unmatched routes */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </Router>

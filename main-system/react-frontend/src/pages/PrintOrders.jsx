@@ -294,16 +294,16 @@ export default function PrintOrders() {
     : 'Live queue of student print orders that still need staff handling.';
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="min-h-full space-y-6 p-5 lg:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-          <p className="mt-1 text-sm text-gray-500">{description}</p>
+          <h1 className="text-xl font-bold tracking-tight text-gray-900">{title}</h1>
+          <p className="mt-1 text-[11px] text-gray-400">{description}</p>
         </div>
         {!isAdmin && (
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-[11px] font-semibold text-white transition-all hover:bg-emerald-700 active:scale-[0.97]"
           >
             <Plus className="h-4 w-4" />
             Create Order
@@ -316,10 +316,10 @@ export default function PrintOrders() {
         <SummaryCard icon={ReceiptText} label={isAdmin ? 'Total Revenue' : 'New Submissions'} value={isAdmin ? peso(summary.amount_paid) : summary.new_orders} />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
         {isLoading ? <div className="flex items-center justify-center gap-2 p-12 text-sm text-gray-500"><Loader2 className="h-5 w-5 animate-spin" /> Loading print orders…</div> : isError ? <div className="p-12 text-center text-sm text-red-600">Could not load print orders. Please refresh and sign in again.</div> : (
           <><div className="overflow-x-auto"><table className="min-w-full divide-y divide-gray-200 text-sm">
-            <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+            <thead className="bg-gray-50 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400">
               <tr>
                 <th className="px-5 py-3">Order</th>
                 <th className="px-5 py-3">Student</th>
@@ -331,11 +331,11 @@ export default function PrintOrders() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-               {orders.length === 0 ? <tr><td colSpan="7" className="px-5 py-12 text-center text-gray-500">No {isAdmin ? 'completed' : 'active'} print orders yet.</td></tr> : paginatedOrders.map((order) => <tr key={order.print_order_id} className="hover:bg-gray-50">
-                <td className="px-5 py-4 font-semibold text-gray-900">{order.order_number}</td>
-                <td className="px-5 py-4"><div className="font-medium text-gray-900">{order.student_name}</div><div className="text-xs text-gray-500">{order.student_id || order.student_email}</div></td>
-                <td className="px-5 py-4 text-gray-600">{readable(order.color_type)} · {order.paper_size} · {order.total_pages || order.copies} pages</td>
-                <td className="px-5 py-4 text-right">
+               {orders.length === 0 ? <tr><td colSpan="7" className="px-5 py-12 text-center text-gray-500">No {isAdmin ? 'completed' : 'active'} print orders yet.</td></tr> : paginatedOrders.map((order) => <tr key={order.print_order_id} className="hover:bg-gray-50 transition-colors">
+                <td className="px-5 py-3.5 text-[11px] font-semibold text-gray-900">{order.order_number}</td>
+                <td className="px-5 py-3.5"><div className="text-[11px] font-semibold text-gray-900">{order.student_name}</div><div className="text-[10px] text-gray-500">{order.student_id || order.student_email}</div></td>
+                <td className="px-5 py-3.5 text-[11px] text-gray-600">{readable(order.color_type)} · {order.paper_size} · {order.total_pages || order.copies} pages</td>
+                <td className="px-5 py-3.5 text-right">
                   {order.amount_paid && order.amount_paid > 0 ? (
                     <>
                       <div className="font-semibold text-gray-900">{peso(order.amount_paid)}</div>
@@ -345,12 +345,12 @@ export default function PrintOrders() {
                     <div className="text-gray-400">—</div>
                   )}
                 </td>
-                <td className="px-5 py-4">
+                <td className="px-5 py-3.5">
                   <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusStyle(order.status)}`}>
                     {readable(order.status)}
                   </span>
                 </td>
-                <td className="px-5 py-4">
+                <td className="px-5 py-3.5">
                   <div className="text-xs text-gray-500">
                     <div className="font-medium">{new Date(order.created_at).toLocaleString('en-PH', { dateStyle: 'medium', timeStyle: 'short' })}</div>
                     {order.preferred_pickup_date && (
@@ -367,12 +367,12 @@ export default function PrintOrders() {
                     )}
                   </div>
                 </td>
-                <td className="px-5 py-4">
+                <td className="px-5 py-3.5">
                   <div className="flex items-center justify-center gap-2">
                     {/* View Button - Icon Only */}
                     <button
                       onClick={() => handleViewDetails(order)}
-                      className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors"
+                      className="inline-flex items-center justify-center rounded-lg p-2 text-emerald-600 hover:bg-emerald-50 transition-colors"
                       title="View order details and files"
                     >
                       <Eye className="h-4 w-4" />
@@ -384,7 +384,7 @@ export default function PrintOrders() {
                         <button
                           onClick={() => handleDeleteFiles(order)}
                           disabled={deleteFilesMutation.isPending}
-                          className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="inline-flex items-center justify-center rounded-lg p-2 text-rose-600 hover:bg-rose-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           title="Delete uploaded files to free storage"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -400,7 +400,7 @@ export default function PrintOrders() {
                           <button
                             onClick={() => handleStartPrinting(order)}
                             disabled={updateStatusMutation.isPending}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             title="Start printing this order"
                           >
                             <PlayCircle className="h-3.5 w-3.5" />
@@ -411,7 +411,7 @@ export default function PrintOrders() {
                           <button
                             onClick={() => handleMarkComplete(order)}
                             disabled={updateStatusMutation.isPending}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             title="Mark as completed and record payment"
                           >
                             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -448,11 +448,11 @@ export default function PrintOrders() {
       {/* Order Details Modal */}
       {showDetailsModal && selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowDetailsModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-gray-100 max-w-2xl w-full max-h-[90vh] overflow-y-auto font-sans antialiased text-sm text-slate-800" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Order Details</h2>
+                <h2 className="text-[15px] font-bold text-gray-900">Order Details</h2>
                 <p className="text-sm text-gray-500">{selectedOrder.order_number}</p>
               </div>
               <button
@@ -679,11 +679,11 @@ export default function PrintOrders() {
       {/* Payment Modal */}
       {showPaymentModal && selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowPaymentModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-gray-100 max-w-md w-full font-sans antialiased text-sm text-slate-800" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <div className="text-white">
-                <h2 className="text-xl font-bold">Complete Order</h2>
+                <h2 className="text-[15px] font-bold">Complete Order</h2>
                 <p className="text-sm text-emerald-100">{selectedOrder.order_number}</p>
               </div>
               <button
@@ -789,16 +789,16 @@ export default function PrintOrders() {
       {/* Create Order Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowCreateModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-gray-100 max-w-3xl w-full max-h-[90vh] overflow-y-auto font-sans antialiased text-sm text-slate-800" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-              <div className="text-white">
-                <h2 className="text-xl font-bold">Create Manual Order</h2>
-                <p className="text-sm text-blue-100">For walk-in or phone orders (file upload optional)</p>
+            <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-2xl border-b border-gray-100 bg-white px-6 py-4">
+              <div>
+                <h2 className="text-[15px] font-bold text-gray-900">Create Manual Order</h2>
+                <p className="mt-0.5 text-[12px] text-gray-500">For walk-in or phone orders (file upload optional)</p>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-white hover:text-blue-100 transition-colors"
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1035,7 +1035,7 @@ export default function PrintOrders() {
               <button
                 onClick={handleCreateOrder}
                 disabled={createOrderMutation.isPending || !createForm.student_name.trim()}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {createOrderMutation.isPending ? (
                   <>
@@ -1057,7 +1057,7 @@ export default function PrintOrders() {
       {/* Delete Files Confirmation Modal */}
       {showDeleteModal && orderToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowDeleteModal(false)}>
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full animate-scale-in" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-gray-100 max-w-md w-full animate-scale-in font-sans antialiased text-sm text-slate-800" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="px-8 py-6 bg-gradient-to-r from-red-600 to-red-700">
               <div className="flex items-center gap-4">
@@ -1067,7 +1067,7 @@ export default function PrintOrders() {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-white">Delete Files</h2>
+                  <h2 className="text-[15px] font-bold text-white">Delete Files</h2>
                   <p className="text-red-100 text-sm mt-1">This action cannot be undone</p>
                 </div>
               </div>
@@ -1127,5 +1127,5 @@ export default function PrintOrders() {
 }
 
 function SummaryCard({ icon: Icon, label, value }) {
-  return <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><div className="rounded-lg bg-emerald-50 p-2.5"><Icon className="h-5 w-5 text-emerald-600" /></div><div><p className="text-xs font-medium text-gray-500">{label}</p><p className="mt-1 text-2xl font-bold text-gray-900">{value ?? 0}</p></div></div></div>;
+  return <div className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.06)]"><div className="flex items-center gap-3"><div className="rounded-xl bg-emerald-50 p-2.5"><Icon className="h-4 w-4 text-emerald-600" /></div><div><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{label}</p><p className="mt-1 text-[22px] font-bold leading-none tracking-tight text-gray-900">{value ?? 0}</p></div></div></div>;
 }

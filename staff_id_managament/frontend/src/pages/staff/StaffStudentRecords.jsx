@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { apiRequest } from '../../api/client'
 import Toast from '../../components/Toast'
 import ConfirmationModal from '../../components/ConfirmationModal'
+import { TableSkeleton } from '../../components/LoadingSkeletons'
 
 export default function StaffStudentRecords() {
   // State management
@@ -315,14 +316,14 @@ export default function StaffStudentRecords() {
     <div className="student-records-page">
       {/* Page Header */}
       <div className="records-header bg-white">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Student Records</h1>
             <p className="text-sm text-gray-500 mt-2">Manage all student information and records</p>
           </div>
           <button
             onClick={openAddForm}
-            className="px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors shadow-sm flex items-center"
+            className="self-start px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors shadow-sm flex items-center whitespace-nowrap"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -332,16 +333,16 @@ export default function StaffStudentRecords() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <div className="bg-blue-50 rounded-xl p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
+          <div className="records-summary-card bg-blue-50 rounded-xl p-4">
             <div className="text-sm font-medium text-blue-600">Total Students</div>
             <div className="text-3xl font-bold text-blue-900 mt-1">{summary.total_students}</div>
           </div>
-          <div className="bg-green-50 rounded-xl p-4">
+          <div className="records-summary-card bg-green-50 rounded-xl p-4">
             <div className="text-sm font-medium text-green-600">Verified</div>
             <div className="text-3xl font-bold text-green-900 mt-1">{summary.verified_students}</div>
           </div>
-          <div className="bg-amber-50 rounded-xl p-4">
+          <div className="records-summary-card bg-amber-50 rounded-xl p-4">
             <div className="text-sm font-medium text-amber-600">Pending Verification</div>
             <div className="text-3xl font-bold text-amber-900 mt-1">{summary.pending_verification}</div>
           </div>
@@ -363,10 +364,10 @@ export default function StaffStudentRecords() {
       <div className="records-filters bg-white">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Search & Filter</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
           {/* Search Bar */}
           <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+            <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Search</label>
             <input
               type="text"
               placeholder="Search by name or student ID number..."
@@ -378,7 +379,7 @@ export default function StaffStudentRecords() {
 
           {/* Department Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+            <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Department</label>
             <select
               value={filters.department}
               onChange={(e) => handleFilterChange('department', e.target.value)}
@@ -393,7 +394,7 @@ export default function StaffStudentRecords() {
 
           {/* Program Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Program</label>
+            <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Program</label>
             <select
               value={filters.program}
               onChange={(e) => handleFilterChange('program', e.target.value)}
@@ -408,7 +409,7 @@ export default function StaffStudentRecords() {
 
           {/* Year Level Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Year Level</label>
+            <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Year Level</label>
             <select
               value={filters.year_level}
               onChange={(e) => handleFilterChange('year_level', e.target.value)}
@@ -422,7 +423,7 @@ export default function StaffStudentRecords() {
           </div>
         </div>
 
-        <div className="flex items-center justify-end mt-4">
+        <div className="flex items-center justify-end mt-3">
           <button
             onClick={clearFilters}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
@@ -436,9 +437,7 @@ export default function StaffStudentRecords() {
       <div className="records-table bg-white">
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-gray-500">Loading students...</div>
-            </div>
+            <TableSkeleton columns={8} rows={5} />
           ) : visibleStudents.length === 0 ? (
             <div className="text-center py-12">
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -518,7 +517,7 @@ export default function StaffStudentRecords() {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => viewStudent(student)}
-                          className="record-action text-blue-600 hover:bg-blue-50 hover:text-blue-900"
+                          className="record-action text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
                           title="View"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,7 +536,7 @@ export default function StaffStudentRecords() {
                         </button>
                         <button
                           onClick={() => deleteStudent(student)}
-                          className="record-action text-amber-600 hover:bg-amber-50 hover:text-amber-900"
+                          className="record-action text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                           title="Delete"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -584,29 +583,29 @@ export default function StaffStudentRecords() {
         <div className="app-modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowForm(false)}>
           <div className="app-modal-panel bg-white max-w-4xl" onClick={(e) => e.stopPropagation()}>
             {/* Simple Header */}
-            <div className="app-modal-header flex items-center justify-between bg-white">
-              <h2 className="text-2xl font-semibold text-gray-900">
+            <div className="app-modal-header px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white rounded-t-2xl">
+              <h2 className="text-[15px] font-bold text-gray-900">
                 {editingStudent ? 'Edit Student Record' : 'Add New Student'}
               </h2>
               <button
                 onClick={() => setShowForm(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1.5 rounded-lg hover:bg-gray-100"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {/* Scrollable Content with Side Margin */}
-            <div className="app-modal-body">
-              <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="app-modal-body p-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
               {/* Student ID Number Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-5 pb-2 border-b border-gray-200">Student Identification</h3>
-                <div className="mt-5">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">Student Identification</h3>
+                <div className="mt-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Student ID Number <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -616,19 +615,19 @@ export default function StaffStudentRecords() {
                       onChange={handleInputChange}
                       required
                       placeholder="e.g., MBC2023-00562"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
-                    <p className="text-xs text-gray-500 mt-1.5">Manually enter student's ID number</p>
+                    <p className="text-[10px] text-gray-500 mt-1">Manually enter student's ID number</p>
                   </div>
                 </div>
               </div>
 
               {/* Personal Information */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-5 pb-2 border-b border-gray-200">Personal Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">Personal Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       First Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -637,12 +636,12 @@ export default function StaffStudentRecords() {
                       value={formData.first_name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Middle Initial
                     </label>
                     <input
@@ -651,12 +650,12 @@ export default function StaffStudentRecords() {
                       value={formData.middle_name}
                       onChange={handleInputChange}
                       maxLength="1"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Last Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -665,7 +664,7 @@ export default function StaffStudentRecords() {
                       value={formData.last_name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
                 </div>
@@ -673,10 +672,10 @@ export default function StaffStudentRecords() {
 
               {/* Academic Information */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-5 pb-2 border-b border-gray-200">Academic Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">Academic Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Department <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -686,12 +685,12 @@ export default function StaffStudentRecords() {
                       onChange={handleInputChange}
                       required
                       placeholder="e.g., College of Engineering"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Program/Course <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -701,12 +700,12 @@ export default function StaffStudentRecords() {
                       onChange={handleInputChange}
                       required
                       placeholder="e.g., BS Computer Science"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Year Level <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -714,7 +713,7 @@ export default function StaffStudentRecords() {
                       value={formData.year_level}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     >
                       <option value="">Select Year Level</option>
                       <option value="1st Year">1st Year</option>
@@ -725,7 +724,7 @@ export default function StaffStudentRecords() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Section <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -735,7 +734,7 @@ export default function StaffStudentRecords() {
                       onChange={handleInputChange}
                       required
                       placeholder="e.g., A, B, 1-A"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
                 </div>
@@ -743,10 +742,10 @@ export default function StaffStudentRecords() {
 
               {/* Contact Information */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-5 pb-2 border-b border-gray-200">Contact Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">Contact Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Email Address
                     </label>
                     <input
@@ -755,12 +754,12 @@ export default function StaffStudentRecords() {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="student@example.com"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Contact Number
                     </label>
                     <input
@@ -769,7 +768,7 @@ export default function StaffStudentRecords() {
                       value={formData.contact_number}
                       onChange={handleInputChange}
                       placeholder="09XX-XXX-XXXX"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
                 </div>
@@ -777,10 +776,10 @@ export default function StaffStudentRecords() {
 
               {/* Personal Details */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-5 pb-2 border-b border-gray-200">Personal Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">Personal Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Birthdate
                     </label>
                     <input
@@ -788,12 +787,12 @@ export default function StaffStudentRecords() {
                       name="birthdate"
                       value={formData.birthdate || ''}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
                   
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Address
                     </label>
                     <textarea
@@ -801,7 +800,7 @@ export default function StaffStudentRecords() {
                       value={formData.address || ''}
                       onChange={handleInputChange}
                       rows="2"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none"
                       placeholder="Complete address"
                     />
                   </div>
@@ -810,10 +809,10 @@ export default function StaffStudentRecords() {
 
               {/* Emergency Contact */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-5 pb-2 border-b border-gray-200">Emergency Contact</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">Emergency Contact</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Contact Person Name
                     </label>
                     <input
@@ -822,12 +821,12 @@ export default function StaffStudentRecords() {
                       value={formData.emergency_contact_name || ''}
                       onChange={handleInputChange}
                       placeholder="Full name of emergency contact"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Contact Number
                     </label>
                     <input
@@ -836,7 +835,7 @@ export default function StaffStudentRecords() {
                       value={formData.emergency_contact_number || ''}
                       onChange={handleInputChange}
                       placeholder="09XX-XXX-XXXX"
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     />
                   </div>
                 </div>
@@ -844,10 +843,10 @@ export default function StaffStudentRecords() {
 
               {/* Photo & Signature */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-5 pb-2 border-b border-gray-200">Additional Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">Additional Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Student Photo
                     </label>
                     
@@ -867,13 +866,13 @@ export default function StaffStudentRecords() {
                       name="photo"
                       accept="image/*"
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
                     />
-                    <p className="text-xs text-gray-500 mt-1.5">Upload a clear photo (JPG, PNG)</p>
+                    <p className="text-[10px] text-gray-500 mt-1">Upload a clear photo (JPG, PNG)</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                       Signature (No Background)
                     </label>
                     
@@ -893,9 +892,9 @@ export default function StaffStudentRecords() {
                       name="signature"
                       accept="image/png"
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
-                    <p className="text-xs text-gray-500 mt-1.5">PNG with transparent background only</p>
+                    <p className="text-[10px] text-gray-500 mt-1">PNG with transparent background only</p>
                   </div>
                 </div>
               </div>
@@ -932,8 +931,7 @@ export default function StaffStudentRecords() {
         <div className="app-modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowViewModal(false)}>
           <div className="app-modal-panel bg-white max-w-3xl" onClick={(e) => e.stopPropagation()}>
             {/* Simple Header */}
-            <div className="app-modal-header flex items-center justify-between bg-white">
-              <h2 className="text-2xl font-semibold text-gray-900">Student Details</h2>
+            <div className="app-modal-header px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white rounded-t-2xl">`n              <h2 className="text-[15px] font-bold text-gray-900">Student Details</h2>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors p-1"

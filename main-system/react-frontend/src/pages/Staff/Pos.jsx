@@ -199,7 +199,7 @@ const Pos = () => {
           }
         }
       }
-      
+
       // Ctrl + Arrow Up - Navigate to previous product quantity in cart
       if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowUp' && cart.length > 0) {
         e.preventDefault();
@@ -227,7 +227,7 @@ const Pos = () => {
           }
         }
       }
-      
+
       // Ctrl+Q or Cmd+Q - Focus last added item's quantity
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
         e.preventDefault();
@@ -393,8 +393,8 @@ const Pos = () => {
     
     if (!inventoryItem) return { status: 'unknown', color: 'bg-gray-100 text-gray-700' };
 
-    if (availableQty <= 0) return { status: 'out-of-stock', color: 'bg-red-100 text-red-700' };
-    if (inventoryItem.status === 'low' || availableQty <= 5) return { status: 'low-stock', color: 'bg-amber-100 text-amber-700' };
+    if (availableQty <= 0) return { status: 'out-of-stock', color: 'bg-red-100 text-red-700 border-red-300' };
+    if (inventoryItem.status === 'low' || availableQty <= 5) return { status: 'low-stock', color: 'bg-amber-100 text-amber-700 border-amber-300' };
     return { status: 'available', color: 'bg-green-100 text-green-700' };
   }, [inventory, cart, getAvailableStock]);
 
@@ -864,51 +864,60 @@ const Pos = () => {
   ];
 
   return (
-    <div className="p-8 bg-gradient-to-br from-gray-50 via-indigo-50/30 to-indigo-50/20 min-h-full">
+    <div className="min-h-full bg-gray-50 font-sans antialiased text-sm text-slate-800">
       {/* NO LoadingBar - instant POS updates from cache */}
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end mb-4">
-          <div className="flex gap-3">
-            <button
-              onClick={() => setSearchModal({ isOpen: true, order: null })}
-              className="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-semibold shadow-sm shadow-red-500/30 hover:shadow-sm hover:shadow-red-500/40 transition-all flex items-center gap-2"
-            >
-              <X className="w-5 h-5" />
-              Void Order
-            </button>
-            <button
-              onClick={() => setAddModal(true)}
-              className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl font-semibold shadow-sm shadow-amber-500/30 hover:shadow-sm hover:shadow-amber-500/40 transition-all flex items-center gap-2"
-            >
-              <PlusCircle className="w-5 h-5" />
-              Add Custom Order
-            </button>
+
+      {/* Header Section */}
+      <header className="bg-white border-b border-gray-100">
+        <div className="max-w-full mx-auto px-5 lg:px-6 py-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-gray-900 tracking-tight">Point of Sale</h1>
+              <p className="text-[11px] text-gray-400 mt-1.5">Process customer transactions efficiently</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setSearchModal({ isOpen: true, order: null })}
+                className="px-4 py-2 bg-rose-600 text-white rounded-xl text-[11px] font-semibold hover:bg-rose-700 active:scale-[0.97] transition-all flex items-center gap-2"
+              >
+                <X className="w-4 h-4" />
+                Void Order
+              </button>
+              <button
+                onClick={() => setAddModal(true)}
+                className="px-4 py-2 bg-amber-600 text-white rounded-xl text-[11px] font-semibold hover:bg-amber-700 active:scale-[0.97] transition-all flex items-center gap-2"
+              >
+                <PlusCircle className="w-4 h-4" />
+                Add Custom Order
+              </button>
+            </div>
           </div>
         </div>
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-indigo-800 to-indigo-900 bg-clip-text text-transparent mb-2">
-            Point of Sale
-          </h1>
-          <p className="text-gray-600">Process customer transactions efficiently.</p>
-        </div>
-      </div>
+      </header>
+
+      <main className="mt-7 max-w-full mx-auto px-5 lg:px-6 pb-20">
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-sm transition-all">
-          <ShoppingCart className="w-8 h-8 text-indigo-600 mb-2" />
-          <div className="text-2xl font-bold text-gray-900">{cart.length}</div>
-          <p className="text-sm font-semibold text-gray-600">Items in Cart</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-7">
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-sm transition-all">
+          <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 inline-block mb-3">
+            <ShoppingCart className="w-5 h-5" />
+          </div>
+          <div className="text-[22px] font-bold text-gray-900 tracking-tight">{cart.length}</div>
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Items in Cart</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-sm transition-all">
-          <DollarSign className="w-8 h-8 text-indigo-600 mb-2" />
-          <div className="text-2xl font-bold text-gray-900">₱{calculateTotal.toFixed(2)}</div>
-          <p className="text-sm font-semibold text-gray-600">Cart Total</p>
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-sm transition-all">
+          <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 inline-block mb-3">
+            <DollarSign className="w-5 h-5" />
+          </div>
+          <div className="text-[22px] font-bold text-gray-900 tracking-tight">₱{calculateTotal.toFixed(2)}</div>
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Cart Total</p>
         </div>
-        <div className="bg-gradient-to-br from-indigo-600 to-indigo-600 rounded-xl shadow-sm p-6 text-white hover:shadow-sm transition-all">
-          <TrendingUp className="w-8 h-8 mb-2" />
-          <div className="text-2xl font-bold">
+        <div className="bg-emerald-600 rounded-2xl p-5 text-white hover:shadow-sm transition-all">
+          <div className="p-2.5 rounded-xl bg-white/20 inline-block mb-3">
+            <TrendingUp className="w-5 h-5" />
+          </div>
+          <div className="text-[22px] font-bold tracking-tight">
             {products.filter(product => {
               const categoryMatch = selectedCategory === 'All' ||
                 (product.category && product.category.category_name === selectedCategory);
@@ -918,18 +927,18 @@ const Pos = () => {
               return categoryMatch && searchMatch;
             }).length}
           </div>
-          <p className="text-sm font-semibold">Available Products</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider">Available Products</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
         {/* Product Selection */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="space-y-4 mb-6">
+          <div className="bg-white rounded-2xl border border-gray-100 p-5">
+            <div className="space-y-4 mb-5">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <Package className="w-6 h-6 text-indigo-600" />
+                <h2 className="text-[15px] font-bold text-gray-900 flex items-center gap-2">
+                  <Package className="w-4 h-4 text-emerald-600" />
                   Products
                 </h2>
                 <div className="relative">
@@ -938,7 +947,7 @@ const Pos = () => {
                     placeholder="Search products..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-4 pr-10 py-2 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none text-gray-900 bg-white w-64"
+                    className="pl-4 pr-10 py-2 border border-gray-300 rounded-xl focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-[13px] text-gray-900 bg-white w-64"
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -955,10 +964,10 @@ const Pos = () => {
                   type="text"
                   placeholder="Scan barcode or type product ID..."
                   onKeyDown={handleBarcodeScan}
-                  className="w-full pl-10 pr-4 py-2 border-2 border-indigo-200 rounded-xl focus:border-indigo-500 focus:outline-none text-gray-900 bg-indigo-50"
+                  className="w-full pl-10 pr-4 py-2 border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:outline-none text-gray-900 bg-emerald-50"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                   </svg>
                 </div>
@@ -973,8 +982,8 @@ const Pos = () => {
                   onClick={() => setSelectedCategory(category.category_name)}
                   className={`px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                     selectedCategory === category.category_name
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                      ? 'bg-emerald-600 text-white shadow-md'
+                      : 'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200'
                   }`}
                 >
                   {category.category_name}
@@ -1011,8 +1020,8 @@ const Pos = () => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{product.product_name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{product.category?.category_name || 'Other'}</p>
+                    <h3 className="text-[13px] font-semibold text-gray-900 mb-1">{product.product_name}</h3>
+                    <p className="text-[11px] text-gray-600 mb-2">{product.category?.category_name || 'Other'}</p>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className={`text-sm font-medium px-2 py-1 rounded-full ${getStockStatus(product.product_id).color}`}>
@@ -1027,14 +1036,14 @@ const Pos = () => {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-indigo-600">₱{parseFloat(product.price).toFixed(2)}</span>
+                      <span className="text-[15px] font-bold text-emerald-600">₱{parseFloat(product.price).toFixed(2)}</span>
                       <button
                         onClick={() => addToCart(product)}
                         disabled={getAvailableStock(product.product_id) <= 0}
                         className={`p-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-sm ${
                           getAvailableStock(product.product_id) <= 0
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-indigo-600 text-white hover:from-indigo-700 hover:to-indigo-700'
+                            : 'bg-emerald-600 text-white hover:from-emerald-700 hover:to-emerald-700'
                         }`}
                       >
                         <Plus className="w-4 h-4" />
@@ -1051,8 +1060,8 @@ const Pos = () => {
         <div className="space-y-6">
           {/* Customer Info */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <User className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-[15px] font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <User className="w-4 h-4 text-emerald-600" />
               Customer Information
             </h3>
             <div className="space-y-3">
@@ -1061,22 +1070,22 @@ const Pos = () => {
                 placeholder="Customer Name (Optional)"
                 value={customer.name}
                 onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none text-gray-900 bg-white"
+                className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none text-gray-900 bg-white"
               />
               <input
                 type="text"
                 placeholder="Contact Number (Optional)"
                 value={customer.contact}
                 onChange={(e) => setCustomer({ ...customer, contact: e.target.value })}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none text-gray-900 bg-white"
+                className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none text-gray-900 bg-white"
               />
             </div>
           </div>
 
           {/* Cart */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-[15px] font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <ShoppingCart className="w-4 h-4 text-emerald-600" />
               Cart ({cart.length} items)
             </h3>
             {cart.length === 0 ? (
@@ -1105,7 +1114,7 @@ const Pos = () => {
                         min={item.sale_type === 'weight' ? '0.01' : '1'}
                         step={item.sale_type === 'weight' ? '0.01' : '1'}
                         value={item.quantity}
-                        className="quantity-input w-12 text-center font-semibold border border-gray-300 rounded px-1 py-0.5 focus:border-indigo-500 focus:outline-none text-sm"
+                        className="quantity-input w-12 text-center font-semibold border border-gray-300 rounded px-1 py-0.5 focus:border-emerald-500 focus:outline-none text-sm"
                         data-product-id={item.product_id}
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => {
@@ -1147,9 +1156,9 @@ const Pos = () => {
             )}
             {cart.length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="flex justify-between items-center text-lg font-bold">
+                <div className="flex justify-between items-center text-[15px] font-bold">
                   <span>Total:</span>
-                  <span className="text-indigo-600">₱{calculateTotal.toFixed(2)}</span>
+                  <span className="text-emerald-600">₱{calculateTotal.toFixed(2)}</span>
                 </div>
               </div>
             )}
@@ -1157,15 +1166,15 @@ const Pos = () => {
 
           {/* Payment Quick Action */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-[15px] font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-emerald-600" />
               Payment
             </h3>
             <div className="space-y-4">
-              <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4">
+              <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-semibold text-gray-700">Cart Total:</span>
-                  <span className="text-2xl font-bold text-indigo-600">₱{calculateTotal.toFixed(2)}</span>
+                  <span className="text-[22px] font-bold text-emerald-600">₱{calculateTotal.toFixed(2)}</span>
                 </div>
                 <p className="text-xs text-gray-500">Click Process Payment to select payment method</p>
               </div>
@@ -1173,7 +1182,7 @@ const Pos = () => {
               <button
                 onClick={handleOpenPaymentModal}
                 disabled={cart.length === 0}
-                className="w-full px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold shadow-sm hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold shadow-sm hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <CreditCard className="w-5 h-5" />
                 Process Payment (Ctrl+Enter)
@@ -1190,39 +1199,36 @@ const Pos = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </main>
 
       {/* Search Order Modal */}
       {searchModal.isOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-sm max-w-2xl w-full my-8 max-h-[90vh] flex flex-col">
-            <div className="bg-indigo-600 text-white p-6 rounded-t-2xl flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <Search className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold">Find Order to Void</h2>
-                    <p className="text-indigo-100 text-sm">Enter order number to view details</p>
-                  </div>
+          <div className="bg-white rounded-2xl shadow-sm max-w-2xl w-full my-8 max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white rounded-t-2xl flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-emerald-600" />
+                <div>
+                  <h2 className="text-[15px] font-bold text-gray-900">Find Order to Void</h2>
+                  <p className="text-[11px] text-gray-500 mt-0.5">Enter order number to view details</p>
                 </div>
-                <button
-                  onClick={() => {
-                    setSearchModal({ isOpen: false, order: null });
-                    setVoidOrderNumber('');
-                  }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
               </div>
+              <button
+                onClick={() => {
+                  setSearchModal({ isOpen: false, order: null });
+                  setVoidOrderNumber('');
+                }}
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1">
+            <div className="p-5 overflow-y-auto flex-1">
               {/* Search Input */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Order Number</label>
+              <div className="mb-4">
+                <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">Order Number</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -1255,63 +1261,60 @@ const Pos = () => {
                       }
                     }}
                     placeholder="Type order number (e.g., ORD-2025-0010)"
-                    className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none text-gray-900 bg-white font-medium uppercase"
+                    className="w-full px-3 py-2 text-[13px] pr-10 border border-gray-300 rounded-lg focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none text-gray-900 bg-white font-medium uppercase"
                     autoFocus
                     disabled={searchLoading}
                   />
                   {searchLoading ? (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   ) : (
-                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-[10px] text-gray-500 mt-1.5">
                   <span className="font-semibold text-amber-600">Only Completed orders</span> can be voided • Auto-searches as you type
                 </p>
               </div>
 
               {/* Order Details */}
               {searchModal.order && (
-                <div className="border-2 border-gray-200 rounded-xl p-6 mb-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Receipt className="w-5 h-5 text-indigo-600" />
+                <div className="border border-gray-200 rounded-xl p-4 mb-4">
+                  <h3 className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <Receipt className="w-4 h-4 text-emerald-600" />
                     Order Details
                   </h3>
 
                   {/* Order Info Grid */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p className="text-sm text-gray-500">Order ID</p>
-                      <p className="text-base font-semibold text-gray-900">{searchModal.order.order_id}</p>
+                  <div className="grid grid-cols-2 gap-3 mb-3">`n                    <div>`n                      <p className="text-[10px] text-gray-500">Order ID</p>`n                      <p className="text-[13px] font-semibold text-gray-900">{searchModal.order.order_id}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Order Number</p>
-                      <p className="text-base font-semibold text-gray-900">{searchModal.order.order_number}</p>
+                      <p className="text-[10px] text-gray-500">Order Number</p>
+                      <p className="text-[13px] font-semibold text-gray-900">{searchModal.order.order_number}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Customer</p>
-                      <p className="text-base font-semibold text-gray-900">{searchModal.order.customer_name || 'Walk-in'}</p>
+                      <p className="text-[10px] text-gray-500">Customer</p>
+                      <p className="text-[13px] font-semibold text-gray-900">{searchModal.order.customer_name || 'Walk-in'}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Total Amount</p>
-                      <p className="text-base font-semibold text-indigo-600">₱{parseFloat(searchModal.order.total_amount).toFixed(2)}</p>
+                      <p className="text-[10px] text-gray-500">Total Amount</p>
+                      <p className="text-[13px] font-semibold text-emerald-600">₱{parseFloat(searchModal.order.total_amount).toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Status</p>
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        searchModal.order.status === 'Completed' ? 'bg-indigo-100 text-indigo-700' :
-                        searchModal.order.status === 'In Progress' ? 'bg-indigo-100 text-indigo-700' :
-                        searchModal.order.status === 'Pending' ? 'bg-amber-100 text-amber-700' :
-                        'bg-red-100 text-red-700'
+                      <p className="text-[10px] text-gray-500">Status</p>
+                      <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold border ${
+                        searchModal.order.status === 'Completed' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
+                        searchModal.order.status === 'In Progress' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
+                        searchModal.order.status === 'Pending' ? 'bg-amber-100 text-amber-700 border-amber-300' :
+                        'bg-red-100 text-red-700 border-red-300'
                       }`}>
                         {searchModal.order.status}
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Date</p>
-                      <p className="text-base font-semibold text-gray-900">
+                      <p className="text-[10px] text-gray-500">Date</p>
+                      <p className="text-[13px] font-semibold text-gray-900">
                         {new Date(searchModal.order.created_at).toLocaleDateString('en-US', { 
                           year: 'numeric', 
                           month: 'short', 
@@ -1323,13 +1326,11 @@ const Pos = () => {
 
                   {/* Order Items */}
                   <div className="border-t border-gray-200 pt-4">
-                    <h4 className="text-sm font-bold text-gray-700 mb-3">Order Items ({searchModal.order.order_items?.length || 0})</h4>
+                    <h4 className="text-[11px] font-bold text-gray-700 mb-2">Order Items ({searchModal.order.order_items?.length || 0})</h4>
                     <div className="space-y-2 max-h-60 overflow-y-auto">
                       {searchModal.order.order_items?.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">{item.product?.product_name || 'Product'}</p>
-                            <p className="text-sm text-gray-500">Quantity: {item.quantity} × ₱{parseFloat(item.unit_price).toFixed(2)}</p>
+                        <div key={index} className="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg">`n                          <div className="flex-1">`n                            <p className="text-[13px] font-medium text-gray-900">{item.product?.product_name || 'Product'}</p>
+                            <p className="text-[11px] text-gray-500">Quantity: {item.quantity} × ₱{parseFloat(item.unit_price).toFixed(2)}</p>
                           </div>
                           <p className="font-bold text-gray-900">₱{parseFloat(item.subtotal).toFixed(2)}</p>
                         </div>
@@ -1341,21 +1342,21 @@ const Pos = () => {
             </div>
 
             {/* Action Buttons - Sticky Footer */}
-            <div className="p-6 border-t border-gray-200 bg-gray-50 rounded-b-2xl flex-shrink-0">
-              <div className="flex gap-3">
+            <div className="px-5 py-3 border-t border-gray-200 bg-gray-50 rounded-b-2xl flex-shrink-0">
+              <div className="flex gap-2.5">
                 <button
                   onClick={() => {
                     setSearchModal({ isOpen: false, order: null });
                     setVoidOrderNumber('');
                   }}
-                  className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all"
+                  className="flex-1 px-4 py-2 text-[11px] border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all"
                 >
                   Cancel
                 </button>
                 {searchModal.order && (
                   <button
                     onClick={handleProceedToVoid}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-semibold shadow-sm hover:shadow-sm transition-all flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2 text-[11px] bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-semibold shadow-sm hover:shadow-sm transition-all flex items-center justify-center gap-2"
                   >
                     <AlertTriangle className="w-5 h-5" />
                     Proceed to Void
@@ -1370,35 +1371,33 @@ const Pos = () => {
       {/* Admin Authentication Modal */}
       {authModal.isOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-sm max-w-md w-full my-8 max-h-[90vh] flex flex-col">
-            <div className="bg-gradient-to-r from-red-600 to-rose-600 text-white p-6 rounded-t-2xl flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <Settings className="w-6 h-6" />
-                </div>
+          <div className="bg-white rounded-2xl shadow-sm max-w-md w-full my-8 max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 bg-white rounded-t-2xl flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <Settings className="w-5 h-5 text-rose-600" />
                 <div>
-                  <h2 className="text-2xl font-bold">Admin Authentication Required</h2>
-                  <p className="text-red-100 text-sm">Order: {authModal.order?.order_number}</p>
+                  <h2 className="text-[15px] font-bold text-gray-900">Admin Authentication Required</h2>
+                  <p className="text-[11px] text-gray-500 mt-0.5">Order: {authModal.order?.order_number}</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1">
-              <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
+            <div className="p-5 overflow-y-auto flex-1">
+              <div className="bg-amber-50 border-l-4 border-amber-500 p-3 mb-4">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-amber-900">Security Check</p>
-                    <p className="text-xs text-amber-700 mt-1">
+                    <p className="text-[13px] font-semibold text-amber-900">Security Check</p>
+                    <p className="text-[11px] text-amber-700 mt-1">
                       Voiding an order requires administrator approval. Please enter admin credentials to continue.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                     Admin Email <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -1406,14 +1405,14 @@ const Pos = () => {
                     value={authCredentials.email}
                     onChange={(e) => setAuthCredentials({ ...authCredentials, email: e.target.value })}
                     placeholder="admin@example.com"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-colors"
                     autoFocus
                     onKeyPress={(e) => e.key === 'Enter' && handleAuthSubmit()}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                     Password <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -1421,22 +1420,22 @@ const Pos = () => {
                     value={authCredentials.password}
                     onChange={(e) => setAuthCredentials({ ...authCredentials, password: e.target.value })}
                     placeholder="Enter admin password"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-colors"
                     onKeyPress={(e) => e.key === 'Enter' && handleAuthSubmit()}
                   />
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-sm">Order to Void:</h4>
-                  <div className="text-sm text-gray-700 space-y-1">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                  <h4 className="text-[11px] font-semibold text-gray-900 mb-2">Order to Void:</h4>
+                  <div className="text-[11px] text-gray-700 space-y-1">
                     <p><strong>Order #:</strong> {authModal.order?.order_number}</p>
                     <p><strong>Customer:</strong> {authModal.order?.customer_name || 'Walk-in'}</p>
                     <p><strong>Total:</strong> ₱{parseFloat(authModal.order?.total_amount || 0).toFixed(2)}</p>
-                    <p><strong>Status:</strong> <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                      authModal.order?.status === 'Completed' ? 'bg-indigo-100 text-indigo-700' :
-                      authModal.order?.status === 'In Progress' ? 'bg-indigo-100 text-indigo-700' :
-                      authModal.order?.status === 'Pending' ? 'bg-amber-100 text-amber-700' :
-                      'bg-red-100 text-red-700'
+                    <p><strong>Status:</strong> <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                      authModal.order?.status === 'Completed' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
+                      authModal.order?.status === 'In Progress' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
+                      authModal.order?.status === 'Pending' ? 'bg-amber-100 text-amber-700 border-amber-300' :
+                      'bg-red-100 text-red-700 border-red-300'
                     }`}>{authModal.order?.status}</span></p>
                   </div>
                 </div>
@@ -1444,19 +1443,19 @@ const Pos = () => {
             </div>
 
             {/* Action Buttons - Sticky Footer */}
-            <div className="bg-gray-50 px-6 py-4 rounded-b-2xl flex justify-end gap-3 border-t border-gray-200 flex-shrink-0">
+            <div className="bg-gray-50 px-5 py-3 rounded-b-2xl flex justify-end gap-2.5 border-t border-gray-200 flex-shrink-0">
               <button
                 onClick={() => {
                   setAuthModal({ isOpen: false, order: null });
                   setAuthCredentials({ email: '', password: '' });
                 }}
-                className="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-100 transition-all"
+                className="px-4 py-2 text-[11px] border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-100 transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAuthSubmit}
-                className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-semibold shadow-sm hover:shadow-sm transition-all"
+                className="px-4 py-2 text-[11px] bg-rose-600 text-white rounded-xl font-semibold hover:bg-rose-700 shadow-sm hover:shadow-sm transition-all"
               >
                 Authenticate & Continue
               </button>
@@ -1468,43 +1467,41 @@ const Pos = () => {
       {/* Void Order Modal */}
       {voidModal.isOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-sm max-w-md w-full">
-            <div className="bg-gradient-to-r from-orange-600 to-amber-600 text-white p-6 rounded-t-2xl">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <X className="w-6 h-6" />
-                </div>
+          <div className="bg-white rounded-2xl shadow-sm max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200 bg-white rounded-t-2xl">
+              <div className="flex items-center gap-2">
+                <X className="w-5 h-5 text-rose-600" />
                 <div>
-                  <h2 className="text-2xl font-bold">Void Order</h2>
-                  <p className="text-orange-100 text-sm">Order: {voidModal.order?.order_number}</p>
+                  <h2 className="text-[15px] font-bold text-gray-900">Void Order</h2>
+                  <p className="text-[11px] text-gray-500 mt-0.5">Order: {voidModal.order?.order_number}</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-6">
-              <p className="text-gray-600 mb-4">
+            <div className="p-5">
+              <p className="text-[13px] text-gray-600 mb-3">
                 Voiding this order will cancel it and restore all items back to inventory. Please provide a reason:
               </p>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                     Reason for Voiding <span className="text-rose-500">*</span>
                   </label>
                   <textarea
                     value={voidModal.reason}
                     onChange={(e) => setVoidModal({ ...voidModal, reason: e.target.value })}
                     placeholder="E.g., Customer cancelled, Wrong order, System error..."
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-orange-500 transition-colors"
-                    rows="3"
+                    className="w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-colors"
+                    rows="2"
                     maxLength="500"
                   />
-                  <p className="text-xs text-gray-500 mt-1">{voidModal.reason.length}/500 characters</p>
+                  <p className="text-[10px] text-gray-500 mt-1">{voidModal.reason.length}/500 characters</p>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-amber-900 mb-2 text-sm">Order Details:</h4>
-                  <div className="text-sm text-amber-800 space-y-1">
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <h4 className="text-[11px] font-semibold text-amber-900 mb-2">Order Details:</h4>
+                  <div className="text-[11px] text-amber-800 space-y-1">
                     <p><strong>Customer:</strong> {voidModal.order?.customer_name || 'Walk-in'}</p>
                     <p><strong>Items:</strong> {voidModal.order?.order_items?.length || 0} item(s)</p>
                     <p><strong>Total:</strong> ₱{parseFloat(voidModal.order?.total_amount || 0).toFixed(2)}</p>
@@ -1514,10 +1511,10 @@ const Pos = () => {
               </div>
             </div>
 
-            <div className="bg-gray-50 px-6 py-4 rounded-b-2xl flex justify-end gap-3 border-t border-gray-200">
+            <div className="bg-gray-50 px-5 py-3 rounded-b-2xl flex justify-end gap-2.5 border-t border-gray-200">
               <button
                 onClick={() => setVoidModal({ isOpen: false, order: null, reason: '' })}
-                className="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-100 transition-all"
+                className="px-4 py-2 text-[11px] border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-100 transition-all"
               >
                 Cancel
               </button>
@@ -1536,8 +1533,8 @@ const Pos = () => {
       {showReceipt && receiptData && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-sm max-w-md w-full">
-            <div className="bg-indigo-600 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
+            <div className="bg-emerald-600 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
+              <h2 className="text-[15px] font-bold flex items-center gap-2">
                 <Receipt className="w-6 h-6" />
                 Receipt
               </h2>
@@ -1598,11 +1595,11 @@ const Pos = () => {
       {paymentModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-sm max-w-md w-full">
-            <div className="bg-indigo-600 text-white p-6 rounded-t-2xl">
+            <div className="bg-emerald-600 text-white p-6 rounded-t-2xl">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold">Process Payment</h2>
-                  <p className="text-indigo-100 text-sm">Total: ₱{calculateTotal.toFixed(2)}</p>
+                  <h2 className="text-[15px] font-bold">Process Payment</h2>
+                  <p className="text-emerald-100 text-sm">Total: ₱{calculateTotal.toFixed(2)}</p>
                 </div>
                 <button
                   onClick={() => {
@@ -1639,7 +1636,7 @@ const Pos = () => {
                     onClick={() => setPaymentForm({ ...paymentForm, payment_method: 'Cash' })}
                     className={`px-6 py-4 border-2 rounded-xl font-semibold transition-all ${
                       paymentForm.payment_method === 'Cash'
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}
                   >
@@ -1650,7 +1647,7 @@ const Pos = () => {
                     onClick={() => setPaymentForm({ ...paymentForm, payment_method: 'GCash' })}
                     className={`px-6 py-4 border-2 rounded-xl font-semibold transition-all ${
                       paymentForm.payment_method === 'GCash'
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}
                   >
@@ -1683,7 +1680,7 @@ const Pos = () => {
                   step="0.01"
                   value={paymentForm.amount || ''}
                   onChange={(e) => setPaymentForm({ ...paymentForm, amount: parseFloat(e.target.value) || 0 })}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none text-gray-900 bg-white"
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none text-gray-900 bg-white"
                   placeholder="Enter amount"
                   required
                 />
@@ -1704,7 +1701,7 @@ const Pos = () => {
                     type="text"
                     value={paymentForm.reference_number}
                     onChange={(e) => setPaymentForm({ ...paymentForm, reference_number: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none text-gray-900 bg-white"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none text-gray-900 bg-white"
                     placeholder="Enter GCash reference number"
                     required={paymentForm.payment_method === 'GCash'}
                   />
@@ -1730,7 +1727,7 @@ const Pos = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold shadow-sm hover:shadow-sm transition-all"
+                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold shadow-sm hover:shadow-sm transition-all"
                 >
                   Complete Payment
                 </button>

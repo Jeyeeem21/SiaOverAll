@@ -11,8 +11,6 @@ const Navigation = ({ userRole = 'student' }) => {
   const { logout, user } = useAuth();
   const { getCartCount, toggleCart } = useCart();
 
-  const [isBottomNavVisible, setIsBottomNavVisible] = useState(true);
-  const [lastScrollY, setLastScrollY]               = useState(0);
   const [isMoreMenuOpen, setIsMoreMenuOpen]         = useState(false);
   const [isOrdersPreviewVisible, setIsOrdersPreviewVisible] = useState(false);
   const [orderHoverTimeout, setOrderHoverTimeout]   = useState(null);
@@ -38,7 +36,7 @@ const Navigation = ({ userRole = 'student' }) => {
       to: p('/dashboard', '/dev/dashboard'),
       label: 'Dashboard',
       icon: (a) => (
-        <svg className={`w-6 h-6 ${a ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-6 h-6 ${a ? 'text-emerald-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       ),
@@ -47,7 +45,7 @@ const Navigation = ({ userRole = 'student' }) => {
       to: p('/products', '/dev/products'),
       label: 'Products',
       icon: (a) => (
-        <svg className={`w-6 h-6 ${a ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-6 h-6 ${a ? 'text-emerald-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
       ),
@@ -57,7 +55,7 @@ const Navigation = ({ userRole = 'student' }) => {
       label: 'Orders',
       isOrders: true,
       icon: (a) => (
-        <svg className={`w-6 h-6 ${a ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-6 h-6 ${a ? 'text-emerald-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
       ),
@@ -66,7 +64,7 @@ const Navigation = ({ userRole = 'student' }) => {
       to: '/id-request',
       label: 'ID Request',
       icon: (a) => (
-        <svg className={`w-6 h-6 ${a ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-6 h-6 ${a ? 'text-emerald-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
         </svg>
       ),
@@ -75,7 +73,7 @@ const Navigation = ({ userRole = 'student' }) => {
       to: '/print-services',
       label: 'Print Services',
       icon: (a) => (
-        <svg className={`w-6 h-6 ${a ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-6 h-6 ${a ? 'text-emerald-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
         </svg>
       ),
@@ -84,10 +82,17 @@ const Navigation = ({ userRole = 'student' }) => {
 
   const moreNavItems = [
     {
+      to: '/sticker-requests',
+      label: 'Sticker Requests',
+      icon: (a) => (
+        <svg className={`w-5 h-5 ${a ? 'text-emerald-600' : 'text-gray-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h10v10H7zM9 3h6v4H9zM9 17h6v4H9z" /></svg>
+      ),
+    },
+    {
       to: p('/profile', '/dev/profile'),
       label: 'Profile',
       icon: (a) => (
-        <svg className={`w-5 h-5 ${a ? 'text-blue-600' : 'text-gray-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-5 h-5 ${a ? 'text-emerald-600' : 'text-gray-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       ),
@@ -172,17 +177,6 @@ const Navigation = ({ userRole = 'student' }) => {
     if (notifHoverTimeout.current) clearTimeout(notifHoverTimeout.current);
   }, []);
 
-  // ── Scroll hide bottom nav ───────────────────────────────
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setIsBottomNavVisible(!(y > lastScrollY && y > 100));
-      setLastScrollY(y);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [lastScrollY]);
-
   // ── Orders hover ─────────────────────────────────────────
   const handleOrdersEnter = () => {
     if (orderHoverTimeout) clearTimeout(orderHoverTimeout);
@@ -254,13 +248,13 @@ const Navigation = ({ userRole = 'student' }) => {
           )}
         </div>
         {unreadCount > 0 && (
-          <button onClick={handleMarkAllRead} className="text-xs text-blue-600 hover:text-blue-800 font-medium">Mark all read</button>
+          <button onClick={handleMarkAllRead} className="text-xs text-emerald-600 hover:text-emerald-800 font-medium">Mark all read</button>
         )}
       </div>
       <ul className="divide-y divide-gray-50 max-h-80 overflow-y-auto">
         {notifLoading ? (
           <li className="flex items-center justify-center py-10">
-            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           </li>
         ) : notifications.length === 0 ? (
           <li className="flex flex-col items-center py-10 text-gray-400">
@@ -270,7 +264,7 @@ const Navigation = ({ userRole = 'student' }) => {
             <p className="text-sm">You're all caught up!</p>
           </li>
         ) : notifications.map(notif => (
-          <li key={notif.id} className={`flex gap-3 px-4 py-3 transition ${!notif.is_read ? 'bg-blue-50/50' : 'hover:bg-gray-50'}`}>
+          <li key={notif.id} className={`flex gap-3 px-4 py-3 transition ${!notif.is_read ? 'bg-emerald-50/50' : 'hover:bg-gray-50'}`}>
             <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${typeColor[notif.type] || defaultColor}`}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={typeIcon[notif.type] || defaultIcon} />
@@ -286,8 +280,8 @@ const Navigation = ({ userRole = 'student' }) => {
             </div>
             {!notif.is_read && (
               <div className="flex flex-col items-center gap-1 flex-shrink-0 pt-1">
-                <div className="w-2 h-2 rounded-full bg-blue-500" />
-                <button onClick={() => handleMarkRead(notif.id)} className="text-[10px] text-blue-500 hover:text-blue-700">Read</button>
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <button onClick={() => handleMarkRead(notif.id)} className="text-[10px] text-emerald-500 hover:text-emerald-700">Read</button>
               </div>
             )}
           </li>
@@ -305,12 +299,12 @@ const Navigation = ({ userRole = 'student' }) => {
 
         {/* Logo */}
         <Link to={p('/dashboard', '/dev/dashboard')} className="flex items-center gap-2.5 shrink-0 mr-4">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <span className="text-base font-bold text-gray-900">Student Portal</span>
+          <span className="text-[15px] font-bold text-gray-900">Student Portal</span>
         </Link>
 
         {/* Primary nav */}
@@ -321,8 +315,8 @@ const Navigation = ({ userRole = 'student' }) => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`orders-preview-container relative inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 ${
-                  active ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                className={`orders-preview-container relative inline-flex items-center gap-2 px-3 py-2 text-[13px] font-medium rounded-lg transition-all duration-150 ${
+                  active ? 'bg-emerald-50 text-emerald-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
                 onMouseEnter={item.isOrders ? handleOrdersEnter : undefined}
                 onMouseLeave={item.isOrders ? handleOrdersLeave : undefined}
@@ -347,14 +341,14 @@ const Navigation = ({ userRole = 'student' }) => {
           {/* Shopping Cart */}
           <button
             onClick={toggleCart}
-            className="relative p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition"
+            className="relative p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition"
             aria-label="Shopping Cart"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0l-.4-2M16 19a2 2 0 100-4 2 2 0 000 4zm-7 0a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
             {getCartCount() > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-white">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-600 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-white">
                 {getCartCount()}
               </span>
             )}
@@ -369,7 +363,7 @@ const Navigation = ({ userRole = 'student' }) => {
           >
             <button
               onClick={handleBellClick}
-              className={`relative p-2 rounded-lg transition ${showNotifPanel ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+              className={`relative p-2 rounded-lg transition ${showNotifPanel ? 'bg-emerald-50 text-emerald-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
               aria-label="Notifications"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -392,9 +386,9 @@ const Navigation = ({ userRole = 'student' }) => {
           <div className="relative" ref={userMenuRef}>
             <button
               onClick={() => { setShowUserMenu(p => !p); setShowNotifPanel(false); }}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-100 transition"
+              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition"
             >
-              <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              <div className="w-7 h-7 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {getUserInitials()}
               </div>
               <span className="text-sm font-medium text-gray-700 max-w-[100px] truncate hidden lg:block">
@@ -431,7 +425,7 @@ const Navigation = ({ userRole = 'student' }) => {
       {/* Shown only on mobile — has logo + cart + bell */}
       <header className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 h-14">
         <Link to={p('/dashboard', '/dev/dashboard')} className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center">
             <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
@@ -450,7 +444,7 @@ const Navigation = ({ userRole = 'student' }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0l-.4-2M16 19a2 2 0 100-4 2 2 0 000 4zm-7 0a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
             {getCartCount() > 0 && (
-              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none ring-2 ring-white">
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none ring-2 ring-white">
                 {getCartCount() > 9 ? '9+' : getCartCount()}
               </span>
             )}
@@ -476,9 +470,7 @@ const Navigation = ({ userRole = 'student' }) => {
 
       {/* ══════════════════ MOBILE BOTTOM NAV ══════════════════ */}
       <nav
-        className={`md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg transition-transform duration-300 ${
-          isBottomNavVisible ? 'translate-y-0' : 'translate-y-full'
-        }`}
+        className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-gray-200 shadow-lg"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="grid grid-cols-5 h-16 relative">
@@ -492,13 +484,13 @@ const Navigation = ({ userRole = 'student' }) => {
                 to={item.to}
                 onClick={() => setIsMoreMenuOpen(false)}
                 className={`flex flex-col items-center justify-center gap-0.5 py-2 relative transition-colors ${
-                  active ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
+                  active ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
                 onMouseEnter={item.isOrders ? handleOrdersEnter : undefined}
                 onMouseLeave={item.isOrders ? handleOrdersLeave : undefined}
                 onTouchStart={item.isOrders ? () => setIsOrdersPreviewVisible(p => !p) : undefined}
               >
-                {active && <span className="absolute top-0 left-2 right-2 h-0.5 bg-blue-600 rounded-full" />}
+                {active && <span className="absolute top-0 left-2 right-2 h-0.5 bg-emerald-600 rounded-full" />}
                 <div className={`transition-transform duration-150 ${active ? 'scale-110' : ''}`}>
                   {item.icon(active)}
                 </div>
@@ -514,11 +506,11 @@ const Navigation = ({ userRole = 'student' }) => {
           <button
             onClick={() => { setIsMoreMenuOpen(p => !p); setShowNotifPanel(false); }}
             className={`flex flex-col items-center justify-center gap-0.5 py-2 relative transition-colors ${
-              isMoreActive() || isMoreMenuOpen ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
+              isMoreActive() || isMoreMenuOpen ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'
             }`}
           >
             {(isMoreActive() || isMoreMenuOpen) && (
-              <span className="absolute top-0 left-2 right-2 h-0.5 bg-blue-600 rounded-full" />
+              <span className="absolute top-0 left-2 right-2 h-0.5 bg-emerald-600 rounded-full" />
             )}
             <svg className={`w-6 h-6 transition-transform duration-200 ${isMoreMenuOpen ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
@@ -537,11 +529,11 @@ const Navigation = ({ userRole = 'student' }) => {
                   key={item.to}
                   to={item.to}
                   onClick={() => setIsMoreMenuOpen(false)}
-                  className={`flex items-center px-4 py-3 transition ${isActive(item.to) ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}`}
+                  className={`flex items-center px-4 py-3 transition ${isActive(item.to) ? 'text-emerald-600 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`}
                 >
                   <div className="mr-3">{item.icon(isActive(item.to))}</div>
                   <span className="font-medium">{item.label}</span>
-                  {isActive(item.to) && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r" />}
+                  {isActive(item.to) && <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-600 rounded-r" />}
                 </Link>
               ))}
 

@@ -318,8 +318,8 @@ const DevProfile = () => {
     return (
       <>
         <Navigation userRole="student" />
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-50">
-          <main className="pt-6 sm:pt-8 main-content">
+        <div className="min-h-screen bg-gray-50">
+          <main className="mt-7 max-w-7xl mx-auto px-5 lg:px-6 pb-20">
             <div className="container-responsive space-responsive">
               <ProfileSkeleton />
             </div>
@@ -346,8 +346,15 @@ const DevProfile = () => {
   return (
     <>
       <Navigation userRole="student" />
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-indigo-50">
-        <main className="pt-6 sm:pt-8 main-content">
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-5 lg:px-6 py-5">
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">My Profile</h1>
+            <p className="text-[11px] text-gray-400 mt-1.5">Manage your account information and documents</p>
+          </div>
+        </header>
+        
+        <main className="mt-7 max-w-7xl mx-auto px-5 lg:px-6 pb-20">
           <div className="container-responsive space-responsive">
             {/* Profile Header */}
             <div className="text-center mb-6 sm:mb-8">
@@ -419,12 +426,12 @@ const DevProfile = () => {
                   />
                 </label>
               </div>
-              <h1 className="text-responsive-2xl font-bold text-gray-900">{profile?.name || 'N/A'}</h1>
-              <p className="text-responsive-sm text-gray-600 mt-2">
+              <h1 className="text-xl font-bold text-gray-900 tracking-tight">{profile?.name || 'N/A'}</h1>
+              <p className="text-[11px] text-gray-400 mt-1.5">
                 {profile?.student_number || 'N/A'} • {profile?.department || 'N/A'}
               </p>
               <div className="flex items-center justify-center mt-3">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(profile?.student_status)}`}>
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold ${getStatusColor(profile?.student_status)}`}>
                   {profile?.student_status || 'unknown'}
                 </span>
               </div>
@@ -462,21 +469,21 @@ const DevProfile = () => {
 
             {/* Personal Information */}
             <div className="card animate-slide-up">
-              <div className="header-responsive border-b border-gray-200">
+              <div className="px-5 py-4 border-b border-gray-100">
                 <div className="flex items-center justify-between gap-4">
-                  <h2 className="text-responsive-xl font-semibold text-gray-900">Personal Information</h2>
+                  <h2 className="text-[15px] font-bold text-gray-900">Personal Information</h2>
                   <button onClick={handleEditPersonal} className="btn-secondary btn-sm">Edit Personal Info</button>
                 </div>
               </div>
-              <div className="card-md">
-                <div className="grid-responsive-2 gap-responsive">
+              <div className="px-5 py-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="text-responsive-xs font-medium text-gray-500">Full Name</label>
-                    <p className="mt-1 text-responsive-sm text-gray-900">{profile?.name || 'Not provided'}</p>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Full Name</label>
+                    <p className="mt-1.5 text-[13px] text-gray-900">{profile?.name || 'Not provided'}</p>
                   </div>
                   <div>
-                    <label className="text-responsive-xs font-medium text-gray-500">Email Address</label>
-                    <p className="mt-1 text-responsive-sm text-gray-900 truncate">{profile?.email || 'Not provided'}</p>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
+                    <p className="mt-1.5 text-[13px] text-gray-900 truncate">{profile?.email || 'Not provided'}</p>
                   </div>
                   <div>
                     <label className="text-responsive-xs font-medium text-gray-500">Student ID</label>
@@ -584,21 +591,21 @@ const DevProfile = () => {
 
             {/* Academic Information */}
             <div className="card animate-slide-up" style={{animationDelay: '0.1s'}}>
-              <div className="header-responsive border-b border-gray-200">
-                <div className="flex items-center justify-between gap-4"><h2 className="text-responsive-xl font-semibold text-gray-900">Academic Information</h2><button onClick={handleEditAcademic} className="btn-secondary btn-sm">Edit Academic Info</button></div>
+              <div className="px-5 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between gap-4"><h2 className="text-[15px] font-bold text-gray-900">Academic Information</h2><button onClick={handleEditAcademic} className="btn-secondary btn-sm">Edit Academic Info</button></div>
               </div>
-              <div className="card-md">
-                <div className="grid-responsive-2 gap-responsive">
+              <div className="px-5 py-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="text-responsive-xs font-medium text-gray-500">College</label>
-                    <p className="mt-1 text-responsive-sm text-gray-900">{profile?.college || 'Not specified'}</p>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">College</label>
+                    <p className="mt-1.5 text-[13px] text-gray-900">{profile?.college || 'Not specified'}</p>
                   </div>
                   <div>
-                    <label className="text-responsive-xs font-medium text-gray-500">Department/Program</label>
-                    <p className="mt-1 text-responsive-sm text-gray-900">{profile?.department || 'Not specified'}</p>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Department/Program</label>
+                    <p className="mt-1.5 text-[13px] text-gray-900">{profile?.department || 'Not specified'}</p>
                   </div>
-                  <div><label className="text-responsive-xs font-medium text-gray-500">Year Level</label><p className="mt-1 text-responsive-sm text-gray-900">{profile?.year_level || 'Not specified'}</p></div>
-                  <div><label className="text-responsive-xs font-medium text-gray-500">Section</label><p className="mt-1 text-responsive-sm text-gray-900">{profile?.section || 'Not specified'}</p></div>
+                  <div><label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Year Level</label><p className="mt-1.5 text-[13px] text-gray-900">{profile?.year_level || 'Not specified'}</p></div>
+                  <div><label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Section</label><p className="mt-1.5 text-[13px] text-gray-900">{profile?.section || 'Not specified'}</p></div>
                 </div>
               </div>
             </div>

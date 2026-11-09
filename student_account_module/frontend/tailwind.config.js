@@ -7,8 +7,15 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        heading: ['Poppins', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+      },
+      colors: {
+        primary: {
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          600: '#059669',
+          700: '#047857',
+        },
       },
     },
   },

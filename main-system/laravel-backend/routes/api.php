@@ -44,6 +44,38 @@ Route::get('health', function () {
 // Authentication routes (public)
 Route::post('login', [AuthController::class, 'login']);
 
+// Public routes - Categories (for home page)
+Route::get('categories', [CategoryController::class, 'index']);
+
+// Public routes - Products (for browsing, GET only)
+Route::get('products', [ProductController::class, 'index']);
+
+// Public stats endpoint for home page
+Route::get('public-stats', function () {
+    $db = DB::connection()->getDatabaseName();
+    
+    // Count unique students who have placed orders
+    $studentsServed = DB::table('orders')
+        ->distinct('customer_name')
+        ->whereNotNull('customer_name')
+        ->where('customer_name', '!=', 'Walk-in Customer')
+        ->count();
+    
+    // Count active categories as "services offered"
+    $servicesOffered = DB::table('categories')->count();
+    
+    // Count total completed orders
+    $totalOrders = DB::table('orders')
+        ->where('status', 'Completed')
+        ->count();
+    
+    return response()->json([
+        'students_served' => $studentsServed,
+        'services_offered' => $servicesOffered,
+        'total_orders' => $totalOrders,
+    ]);
+});
+
 // All business and account endpoints require an authenticated Sanctum token.
 Route::middleware('auth:sanctum')->group(function () {
 Route::post('logout', [AuthController::class, 'logout']);
@@ -60,11 +92,11 @@ Route::post('print-orders', [PrintOrdersController::class, 'store']);
 Route::patch('print-orders/{id}/status', [PrintOrdersController::class, 'updateStatus']);
 Route::delete('print-orders/{id}/files', [PrintOrdersController::class, 'deleteFiles']);
 
-// Categories API routes
-Route::apiResource('categories', CategoryController::class);
+// Categories API routes (except index which is public)
+Route::apiResource('categories', CategoryController::class)->except(['index']);
 
-// Products API routes
-Route::apiResource('products', ProductController::class);
+// Products API routes (except index which is public)
+Route::apiResource('products', ProductController::class)->except(['index']);
 
 // Inventory API routes
 Route::apiResource('inventories', InventoryController::class);

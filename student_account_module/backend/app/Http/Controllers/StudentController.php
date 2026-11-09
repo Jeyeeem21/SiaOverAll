@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Order;
 use App\Models\Student;
 use App\Models\StudentVerification;
-use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
@@ -51,14 +51,14 @@ class StudentController extends Controller
         // They are managed by ID Management system only
         $allowedFields = [
             'college',
-            'department', 
+            'department',
             'contact_number',
             'year_level',
             'section',
             'birthdate',
             'address',
             'emergency_contact_name',
-            'emergency_contact_number'
+            'emergency_contact_number',
         ];
 
         foreach ($allowedFields as $field) {
@@ -178,7 +178,7 @@ class StudentController extends Controller
         ]);
 
         // Return file as download
-        $filePath = storage_path('app/' . $verification->file_path);
+        $filePath = storage_path('app/'.$verification->file_path);
 
         if (! file_exists($filePath)) {
             return response()->json(['message' => 'File not found'], 404);
@@ -186,7 +186,7 @@ class StudentController extends Controller
 
         return response()->file($filePath, [
             'Content-Type' => $verification->mime,
-            'Content-Disposition' => 'inline; filename="' . $verification->original_name . '"',
+            'Content-Disposition' => 'inline; filename="'.$verification->original_name.'"',
         ]);
     }
 
@@ -197,7 +197,24 @@ class StudentController extends Controller
     {
         $notifications = $request->user()->notifications()
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($notification): array {
+                $isApproved = Str::endsWith($notification->type, 'VerificationApproved');
+                $isRejected = Str::endsWith($notification->type, 'VerificationRejected');
+
+                return [
+                    'id' => $notification->id,
+                    'title' => $isApproved
+                        ? 'Verification approved'
+                        : ($isRejected ? 'Verification rejected' : 'Account notification'),
+                    'message' => $notification->data['message'] ?? 'You have a new notification.',
+                    'type' => $isApproved ? 'success' : ($isRejected ? 'error' : 'info'),
+                    'is_read' => $notification->read_at !== null,
+                    'time_ago' => $notification->created_at?->diffForHumans(),
+                    'created_at' => $notification->created_at,
+                ];
+            })
+            ->values();
 
         return response()->json($notifications);
     }
@@ -211,13 +228,13 @@ class StudentController extends Controller
             'notification_id' => 'nullable|string',
         ]);
 
-        $notifications = $request->user()->unreadNotifications;
+        $notifications = $request->user()->unreadNotifications();
 
         if ($request->filled('notification_id')) {
-            $notifications = $notifications->where('id', $request->input('notification_id'));
+            $notifications->whereKey($request->input('notification_id'));
         }
 
-        $notifications->markAsRead();
+        $notifications->update(['read_at' => now()]);
 
         return response()->json(['message' => 'Notifications marked as read']);
     }
@@ -230,8 +247,8 @@ class StudentController extends Controller
         try {
             $user = $request->user();
             $student = Student::where('user_id', $user->id)->first();
-            
-            if (!$student) {
+
+            if (! $student) {
                 return response()->json(['error' => 'Student profile not found'], 404);
             }
 
@@ -287,7 +304,7 @@ class StudentController extends Controller
 
             // Store new avatar
             $path = $request->file('avatar')->store('avatars', 'public');
-            
+
             // Update user record
             $user->avatar = $path;
             $user->save();
@@ -295,10 +312,10 @@ class StudentController extends Controller
             return response()->json([
                 'message' => 'Avatar uploaded successfully',
                 'avatar' => $path,
-                'avatar_url' => url('storage/' . $path),
+                'avatar_url' => url('storage/'.$path),
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to upload avatar: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Failed to upload avatar: '.$e->getMessage()], 500);
         }
     }
 
@@ -315,7 +332,7 @@ class StudentController extends Controller
         $user = $request->user();
 
         // Verify current password
-        if (!\Hash::check($request->current_password, $user->password)) {
+        if (! \Hash::check($request->current_password, $user->password)) {
             return response()->json(['error' => 'Current password is incorrect'], 422);
         }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiRequest } from '../../api/client';
+import { StatusPageSkeleton, TableRowSkeleton } from '../../components/LoadingSkeletons';
 import { 
   CheckCircleIcon, 
   ClockIcon, 
@@ -155,11 +156,7 @@ export default function IdRequestManagement() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-500">Loading ID requests...</div>
-      </div>
-    );
+    return <StatusPageSkeleton />;
   }
 
   return (
@@ -202,12 +199,12 @@ export default function IdRequestManagement() {
             {Object.entries(STATUS_CONFIG).filter(([status]) => status !== 'replacement_requested').map(([status, config]) => {
               const count = cards.filter(c => c.status === status).length;
               return (
-                <div key={status} className="text-center bg-gray-50 rounded-xl p-4">
-                  <div className={`inline-block p-2 rounded-full ${config.color} mb-2`}>
+              <div key={status} className="workflow-status-card text-center bg-gray-50 rounded-xl p-4">
+                <div className={`inline-block p-2 rounded-full ${config.color} mb-2`}>
                     <StatusIcon status={status} />
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">{count}</div>
-                  <div className="text-xs text-gray-600">{config.label}</div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{count}</div>
+                <div className="text-xs text-gray-600">{config.label}</div>
                 </div>
               );
             })}
@@ -227,7 +224,9 @@ export default function IdRequestManagement() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredCards.length === 0 ? (
+                {loading ? (
+                  <TableRowSkeleton columns={5} rows={4} />
+                ) : filteredCards.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="px-6 py-12 text-center text-gray-500">No ID requests found</td>
                   </tr>
@@ -270,7 +269,7 @@ export default function IdRequestManagement() {
                                 setSelectedCard(card);
                                 setShowHistoryModal(true);
                               }}
-                              className="status-action text-blue-600 hover:text-blue-900"
+                              className="status-action text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
                               title="View"
                             >
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +283,7 @@ export default function IdRequestManagement() {
                                 setStatusUpdateData({ status: '', notes: '', expiry_date: '', replacement_reason: '' });
                                 setShowStatusModal(true);
                               }}
-                              className="status-action text-emerald-600 hover:text-emerald-900"
+                              className="status-action text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
                               title="Edit Status"
                             >
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,7 +292,7 @@ export default function IdRequestManagement() {
                             </button>
                             <button
                               onClick={() => handleDeleteCard(card.id)}
-                              className="status-action text-amber-600 hover:text-amber-900"
+                              className="status-action text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                               title="Delete"
                             >
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

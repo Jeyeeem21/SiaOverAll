@@ -1,5 +1,6 @@
 import Navigation from '../components/Navigation';
 import { ProductsSkeleton } from '../components/SkeletonLoader';
+import { LoadingBar } from '../components/LoadingStates';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useState, useEffect } from 'react';
@@ -32,8 +33,8 @@ const DevProducts = () => {
         <Navigation />
         <div className="flex items-center justify-center min-h-[80vh]">
           <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-md p-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 mx-auto mb-4 bg-emerald-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
@@ -44,13 +45,13 @@ const DevProducts = () => {
             <div className="space-y-3">
               <a
                 href="/login"
-                className="w-full block px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full block px-4 py-2 text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 Login to Continue
               </a>
               <a
                 href="/register"
-                className="w-full block px-4 py-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                className="w-full block px-4 py-2 text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
               >
                 Create Account
               </a>
@@ -150,7 +151,7 @@ const DevProducts = () => {
     if (!categoryName) return 'bg-gray-100 text-gray-800';
     
     switch (categoryName.toLowerCase()) {
-      case 'school supplies': return 'bg-blue-100 text-blue-800';
+      case 'school supplies': return 'bg-emerald-100 text-emerald-700';
       case 'pe uniform': return 'bg-green-100 text-green-800';
       case 'school uniform': return 'bg-purple-100 text-purple-800';
       case 'accessories': return 'bg-orange-100 text-orange-800';
@@ -222,8 +223,9 @@ const DevProducts = () => {
   if (loading) {
     return (
       <>
+        <LoadingBar isLoading={true} />
         <Navigation userRole="student" />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+        <div className="min-h-screen bg-gray-50">
           <main className="pt-6 sm:pt-8 main-content">
             <div className="container-responsive space-responsive">
               <ProductsSkeleton />
@@ -238,7 +240,7 @@ const DevProducts = () => {
     return (
       <>
         <Navigation userRole="student" />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="text-red-600 text-lg font-medium mb-2">Error Loading Products</div>
             <p className="text-gray-600">{error}</p>
@@ -250,50 +252,33 @@ const DevProducts = () => {
 
   return (
     <>
+      <LoadingBar isLoading={loading} />
       <Navigation userRole="student" />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-        <main className="pt-6 sm:pt-8 main-content">
-          <div className="container-responsive space-responsive">
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-5 lg:px-6 py-5">
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">Business Center Products</h1>
+            <p className="text-[11px] text-gray-400 mt-1.5">School supplies, uniforms, and accessories</p>
+          </div>
+        </header>
+        
+        <main className="mt-7 max-w-7xl mx-auto px-5 lg:px-6 pb-20">
+          <div className="space-y-7">
             
             {/* Header */}
-            <div className="text-center mb-6 sm:mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </div>
-              <h1 className="text-responsive-2xl font-bold text-gray-900 mb-2">Business Center Products</h1>
-              <p className="text-responsive-sm text-gray-600">School supplies, uniforms, and accessories</p>
-              
-              {/* Order Stats */}
-              {orderStats.total > 0 && (
-                <div className="mt-4 flex justify-center">
-                  <div className="inline-flex items-center space-x-4 text-sm">
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                      <span className="text-gray-600">{orderStats.total} orders</span>
-                    </div>
-                    {hasPendingOrders() && (
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                        <span className="text-yellow-700">{orderStats.pending + orderStats.processing} pending</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+            <div className="mb-6 sm:mb-8">
+              <h1 className="text-xl font-bold text-gray-900 tracking-tight">Business Center Products</h1>
+              <p className="text-[11px] text-gray-400 mt-1.5">School supplies, uniforms, and accessories</p>
             </div>
 
             {/* Search and Filters */}
             <div className="card card-lg mb-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                <h2 className="text-responsive-lg font-semibold text-gray-900">Find Products</h2>
+                <h2 className="text-[15px] font-bold text-gray-900">Find Products</h2>
                 {orderStats.total > 0 && (
                   <a
                     href="/orders"
-                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                    className="inline-flex items-center px-3 py-2 text-[11px] font-semibold text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
                   >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -324,13 +309,13 @@ const DevProducts = () => {
 
             {/* Categories */}
             <div className="card card-lg mb-6">
-              <h2 className="text-responsive-lg font-semibold text-gray-900 mb-4">Categories</h2>
+              <h2 className="text-[15px] font-bold text-gray-900 mb-4">Categories</h2>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleCategoryChange('')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-[11px] font-semibold transition-colors ${
                     selectedCategory === '' 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-emerald-600 text-white' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -347,9 +332,9 @@ const DevProducts = () => {
                       <button
                         key={categoryId || `category-${Math.random()}`}
                         onClick={() => handleCategoryChange(categoryId)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`px-4 py-2 rounded-lg text-[11px] font-semibold transition-colors ${
                           selectedCategory === categoryId
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-emerald-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
@@ -363,7 +348,7 @@ const DevProducts = () => {
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-200 transition-all duration-300 overflow-hidden group">
+                <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 overflow-hidden group">
                   {/* Product Image */}
                   <div className="w-full h-48 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden cursor-pointer" onClick={() => handleViewDetails(product)}>
                     {product.image_url || product.product_image ? (
@@ -409,7 +394,7 @@ const DevProducts = () => {
                   {/* Product Info */}
                   <div className="p-5">
                     <div className="mb-3">
-                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors cursor-pointer leading-snug" onClick={() => handleViewDetails(product)}>
+                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-emerald-600 transition-colors cursor-pointer leading-snug" onClick={() => handleViewDetails(product)}>
                         {product.name}
                       </h3>
                       
@@ -426,11 +411,11 @@ const DevProducts = () => {
                     )}
                     
                     {/* Price and Cost */}
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                    <div className="mb-4 p-3 bg-emerald-50 rounded-lg">
                       <div className="flex items-baseline justify-between mb-1">
-                        <span className="text-xl font-bold text-blue-700">{formatPrice(product.price)}</span>
+                        <span className="text-xl font-bold text-emerald-700">{formatPrice(product.price)}</span>
                         {product.unit && (
-                          <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full font-medium">
+                          <span className="text-xs text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full font-medium">
                             per {product.unit}
                           </span>
                         )}
@@ -482,12 +467,12 @@ const DevProducts = () => {
                     <div className="flex flex-col space-y-3" onClick={(e) => e.stopPropagation()}>
                       <button 
                         onClick={() => handleViewDetails(product)}
-                        className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 group/btn"
+                        className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 group/btn"
                       >
-                        <svg className="w-4 h-4 mr-2 group-hover/btn:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 mr-2 group-hover/btn:text-emerald-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span className="group-hover/btn:text-blue-600 transition-colors">View Details</span>
+                        <span className="group-hover/btn:text-emerald-600 transition-colors">View Details</span>
                       </button>
                       
                       {isInCart(product.id) ? (
@@ -512,7 +497,7 @@ const DevProducts = () => {
                           className={`w-full inline-flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-lg shadow-sm transition-all duration-200 ${
                             isExpired(product.expiration_date) || (product.status !== 'active' && !product.is_active)
                               ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
-                              : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transform hover:-translate-y-0.5 hover:shadow-md'
+                              : 'bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 transform hover:-translate-y-0.5 hover:shadow-md'
                           }`}
                           disabled={isExpired(product.expiration_date) || (product.status !== 'active' && !product.is_active)}
                         >
@@ -655,3 +640,4 @@ const DevProducts = () => {
 };
 
 export default DevProducts;
+

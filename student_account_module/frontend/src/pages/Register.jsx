@@ -174,20 +174,20 @@ const Register = () => {
       {toast && (
         <div
           aria-live="polite"
-          className={`fixed right-4 top-4 z-50 flex w-[calc(100%-2rem)] max-w-md items-start gap-3 rounded-lg border p-4 shadow-lg sm:right-6 sm:top-6 ${
+          className={`fixed right-4 top-4 z-50 flex w-[calc(100%-2rem)] max-w-md items-start gap-3 rounded-xl border p-4 shadow-lg sm:right-6 sm:top-6 ${
             toast.type === 'success'
-              ? 'border-green-200 bg-green-50 text-green-900'
-              : 'border-red-200 bg-red-50 text-red-900'
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+              : 'border-rose-200 bg-rose-50 text-rose-900'
           }`}
         >
           <span
-            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-              toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+              toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
             }`}
           >
             {toast.type === 'success' ? '✓' : '!'}
           </span>
-          <p className="flex-1 text-sm font-medium leading-6">{toast.message}</p>
+          <p className="flex-1 text-[13px] font-medium leading-6">{toast.message}</p>
           {toast.type === 'error' && (
             <button
               type="button"
@@ -200,199 +200,228 @@ const Register = () => {
           )}
         </div>
       )}
-      <div className="w-full bg-white rounded-lg shadow-md p-8 space-y-6 max-w-md">
-        <div className="flex items-center justify-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Create Account</h2>
+      <div className="w-full bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100 p-8 space-y-6 max-w-4xl">
+        {/* Header */}
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-emerald-50 mb-4">
+            <svg className="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight">Create Account</h2>
+          <p className="text-[11px] text-gray-500 mt-1">Register to access MinSU services</p>
         </div>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.name}
-              onChange={handleChange}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {/* Two Column Grid for Desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Full Name */}
+            <div>
+              <label htmlFor="name" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Full Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="Juan Dela Cruz"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              {errors.name && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.name}</p>
+              )}
+            </div>
+
+            {/* Email Address */}
+            <div>
+              <label htmlFor="email" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Email Address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="student@minsu.edu.ph"
+                value={formData.email}
+                onChange={handleChange}
+                onInput={handleChange}
+                onBlur={handleChange}
+              />
+              {errors.email && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.email}</p>
+              )}
+              {emailStatus === 'checking' && (
+                <p className="mt-1.5 text-[11px] text-gray-500">Checking email availability...</p>
+              )}
+              {emailStatus === 'available' && !errors.email && (
+                <p className="mt-1.5 text-[11px] text-emerald-600">✓ Email is available</p>
+              )}
+              {emailStatus === 'invalid' && (
+                <p className="mt-1.5 text-[11px] text-rose-600">Enter a valid email address</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minLength={8}
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="Minimum 8 characters"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {errors.password && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.password}</p>
+              )}
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label htmlFor="password_confirmation" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Confirm Password
+              </label>
+              <input
+                id="password_confirmation"
+                name="password_confirmation"
+                type="password"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="Re-enter password"
+                value={formData.password_confirmation}
+                onChange={handleChange}
+              />
+              {errors.password_confirmation && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.password_confirmation}</p>
+              )}
+            </div>
+
+            {/* Student Number */}
+            <div>
+              <label htmlFor="student_number" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Student Number
+              </label>
+              <input
+                id="student_number"
+                name="student_number"
+                type="text"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="2024-00001"
+                value={formData.student_number}
+                onChange={handleChange}
+                onInput={handleChange}
+                onBlur={handleChange}
+              />
+              {errors.student_number && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.student_number}</p>
+              )}
+              {studentNumberStatus === 'checking' && (
+                <p className="mt-1.5 text-[11px] text-gray-500">Checking student number availability...</p>
+              )}
+              {studentNumberStatus === 'available' && !errors.student_number && (
+                <p className="mt-1.5 text-[11px] text-emerald-600">✓ Student number is available</p>
+              )}
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <label htmlFor="phone" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Phone Number
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="09XX XXX XXXX"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+              {errors.phone && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.phone}</p>
+              )}
+            </div>
+
+            {/* College */}
+            <div>
+              <label htmlFor="college" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                College
+              </label>
+              <input
+                id="college"
+                name="college"
+                type="text"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="e.g., College of Engineering"
+                value={formData.college}
+                onChange={handleChange}
+              />
+              {errors.college && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.college}</p>
+              )}
+            </div>
+
+            {/* Department */}
+            <div>
+              <label htmlFor="department" className="block text-[11px] font-semibold text-gray-700 mb-1.5">
+                Department
+              </label>
+              <input
+                id="department"
+                name="department"
+                type="text"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[13px] focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                placeholder="e.g., Computer Science"
+                value={formData.department}
+                onChange={handleChange}
+              />
+              {errors.department && (
+                <p className="mt-1.5 text-[11px] text-rose-600">{errors.department}</p>
+              )}
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.email}
-              onChange={handleChange}
-              onInput={handleChange}
-              onBlur={handleChange}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
-            {emailStatus === 'checking' && (
-              <p className="mt-1 text-sm text-gray-500">Checking email availability...</p>
-            )}
-            {emailStatus === 'available' && !errors.email && (
-              <p className="mt-1 text-sm text-green-600">Email is available.</p>
-            )}
-            {emailStatus === 'invalid' && (
-              <p className="mt-1 text-sm text-red-600">Enter a valid email address.</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
-            </label>
-            <input
-              id="password_confirmation"
-              name="password_confirmation"
-              type="password"
-              required
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.password_confirmation}
-              onChange={handleChange}
-            />
-            {errors.password_confirmation && (
-              <p className="mt-1 text-sm text-red-600">{errors.password_confirmation}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="student_number" className="block text-sm font-medium text-gray-700 mb-1">
-              Student Number
-            </label>
-            <input
-              id="student_number"
-              name="student_number"
-              type="text"
-              required
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.student_number}
-              onChange={handleChange}
-              onInput={handleChange}
-              onBlur={handleChange}
-            />
-            {errors.student_number && (
-              <p className="mt-1 text-sm text-red-600">{errors.student_number}</p>
-            )}
-            {studentNumberStatus === 'checking' && (
-              <p className="mt-1 text-sm text-gray-500">Checking student number availability...</p>
-            )}
-            {studentNumberStatus === 'available' && !errors.student_number && (
-              <p className="mt-1 text-sm text-green-600">Student number is available.</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="college" className="block text-sm font-medium text-gray-700 mb-1">
-              College
-            </label>
-            <input
-              id="college"
-              name="college"
-              type="text"
-              required
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.college}
-              onChange={handleChange}
-            />
-            {errors.college && (
-              <p className="mt-1 text-sm text-red-600">{errors.college}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">
-              Department
-            </label>
-            <input
-              id="department"
-              name="department"
-              type="text"
-              required
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.department}
-              onChange={handleChange}
-            />
-            {errors.department && (
-              <p className="mt-1 text-sm text-red-600">{errors.department}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              required
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-            {errors.phone && (
-              <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
-            >
-              {loading ? 'Creating account...' : 'Register'}
-            </button>
-          </div>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full px-4 py-3 bg-emerald-600 text-white rounded-xl text-[13px] font-semibold hover:bg-emerald-700 active:scale-[0.98] focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          >
+            {loading ? 'Creating account...' : 'Create Account'}
+          </button>
         </form>
 
-        <p className="mt-4 text-sm text-gray-500">
-          Already have an account?{' '}
-          <a
-            href={`${import.meta.env.VITE_MAIN_SYSTEM_URL}/login`}
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            Sign in here
-          </a>
-        </p>
+        {/* Sign In Link */}
+        <div className="text-center pt-4 border-t border-gray-100">
+          <p className="text-[11px] text-gray-600">
+            Already have an account?{' '}
+            <a
+              href={`${import.meta.env.VITE_MAIN_SYSTEM_URL}/login`}
+              className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
+            >
+              Sign in here
+            </a>
+          </p>
+        </div>
       </div>
 
-      <p className="mt-4 text-sm text-gray-500">
+      {/* Footer */}
+      <p className="mt-6 text-[11px] text-gray-400">
         © {new Date().getFullYear()} Student Account System. All rights reserved.
       </p>
     </div>

@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import MobileBottomNav from '../components/MobileBottomNav';
@@ -10,9 +10,18 @@ import { ChevronDown, LogOut, User, Settings } from 'lucide-react';
 
 const MainLayout = () => {
   const { isAdmin, isStaff, user, logout } = useAuth();
+  const { pathname } = useLocation();
   const [showUserMenuPos, setShowUserMenuPos] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const userMenuRefPos = useRef(null);
+  const staffPageLabel = {
+    '/pos': 'Point of Sale',
+    '/orders': 'Order Management',
+    '/print-orders': 'Print Orders',
+    '/rentals': 'Rental Management',
+    '/toga-rentals': 'Toga Rental',
+    '/staff-management': 'ID Management',
+  }[pathname] || 'Business Center';
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -38,30 +47,30 @@ const MainLayout = () => {
       <main className={`flex-1 overflow-y-auto overflow-x-hidden ${isAdmin ? 'md:pb-0' : ''} pb-16 md:pb-0`}>
         {/* Staff Navigation Header - Always visible for Staff */}
         {isStaff && (
-          <div className="bg-gradient-to-r from-indigo-600 to-indigo-500 border-b border-indigo-400 sticky top-0 z-40 shadow-sm">
+          <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
             <div className="px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div>
-                  <h1 className="text-white font-bold text-lg">MinSU Business Center</h1>
-                  <p className="text-indigo-100 text-xs">Point of Sale [Real-time updates]</p>
+                  <h1 className="text-gray-900 font-bold text-lg">MinSU Business Center</h1>
+                  <p className="text-gray-500 text-xs">{staffPageLabel}</p>
                 </div>
               </div>
               <SystemNavigation header />
               <div className="relative" ref={userMenuRefPos}>
                 <button
                   onClick={() => setShowUserMenuPos(!showUserMenuPos)}
-                  className="flex items-center gap-3 p-2 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200 cursor-pointer group"
+                  className="flex items-center gap-3 p-2 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 cursor-pointer group border border-gray-200"
                 >
-                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                    <span className="text-indigo-600 font-semibold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-semibold text-sm">
                       {(user?.name || 'Staff').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                     </span>
                   </div>
                   <div className="text-left hidden lg:block">
-                    <p className="text-white font-semibold text-sm">{user?.name || 'Staff User'}</p>
-                    <p className="text-indigo-100 text-xs">Staff</p>
+                    <p className="text-gray-900 font-semibold text-sm">{user?.name || 'Staff User'}</p>
+                    <p className="text-gray-500 text-xs">Staff</p>
                   </div>
-                  <ChevronDown className={`w-4 h-4 text-white transition-transform duration-200 ${showUserMenuPos ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${showUserMenuPos ? 'rotate-180' : ''}`} />
                 </button>
 
                 {showUserMenuPos && (

@@ -31,7 +31,7 @@ function AppContent() {
         </main>
 
         <footer className="App-footer">
-          <p>© 2026 Print Order System - Powered by Laravel & React</p>
+          <p>© {new Date().getFullYear()} Print Order System - Powered by Laravel & React</p>
         </footer>
       </div>
     );
@@ -72,7 +72,7 @@ function AppContent() {
       </main>
 
       <footer className="App-footer">
-        <p>© 2026 Print Order System - Powered by Laravel & React</p>
+        <p>© {new Date().getFullYear()} Print Order System - Powered by Laravel & React</p>
       </footer>
     </div>
   );

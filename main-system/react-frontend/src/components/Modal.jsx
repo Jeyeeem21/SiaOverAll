@@ -36,7 +36,7 @@ const Modal = ({
       role="dialog"
       aria-modal="true"
     >
-      <div className={`bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] ${sizeClasses[size]} w-full max-h-[90vh] overflow-y-auto animate-fade-in border border-gray-100`}>
+      <div className={`bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] ${sizeClasses[size]} w-full max-h-[90vh] overflow-y-auto animate-fade-in border border-gray-100 font-sans antialiased text-sm text-slate-800`}>
         <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

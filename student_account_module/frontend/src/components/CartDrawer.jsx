@@ -86,7 +86,7 @@ const CartDrawer = () => {
           {/* Drawer */}
           <div className="fixed right-0 top-0 bottom-0 w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-emerald-600">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white/20 rounded-lg">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,8 +94,8 @@ const CartDrawer = () => {
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Shopping Cart</h2>
-              <p className="text-sm text-blue-100">{getCartCount()} items</p>
+              <h2 className="text-[15px] font-bold text-white">Shopping Cart</h2>
+              <p className="text-[11px] text-emerald-100">{getCartCount()} items</p>
             </div>
           </div>
           <button
@@ -121,7 +121,7 @@ const CartDrawer = () => {
               <p className="text-sm text-gray-500 mb-6">Add items to get started!</p>
               <button
                 onClick={closeCart}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 text-[11px] font-semibold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 active:scale-[0.97] transition-all"
               >
                 Continue Shopping
               </button>
@@ -150,7 +150,7 @@ const CartDrawer = () => {
                   {/* Product Info */}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 text-sm mb-1 truncate">{item.name}</h3>
-                    <p className="text-sm font-bold text-blue-600 mb-2">{formatPrice(item.price)}</p>
+                    <p className="text-sm font-bold text-emerald-600 mb-2">{formatPrice(item.price)}</p>
                     
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2">
@@ -167,7 +167,7 @@ const CartDrawer = () => {
                         type="number"
                         value={item.quantity}
                         onChange={(e) => updateQuantity(item.id, parseFloat(e.target.value) || (item.sale_type === 'weight' ? 0.01 : 1))}
-                        className="w-14 h-7 text-center text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-14 h-7 text-center text-sm border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                         min={item.sale_type === 'weight' ? '0.01' : '1'}
                         step={item.sale_type === 'weight' ? '0.01' : '1'}
                       />
@@ -215,7 +215,7 @@ const CartDrawer = () => {
             {/* Total */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
               <span className="text-lg font-semibold text-gray-900">Total:</span>
-              <span className="text-2xl font-bold text-blue-600">{formatPrice(getCartTotal())}</span>
+              <span className="text-xl font-bold text-emerald-600">{formatPrice(getCartTotal())}</span>
             </div>
 
             {/* Action Buttons */}
@@ -223,7 +223,7 @@ const CartDrawer = () => {
               <button
                 onClick={handleCheckout}
                 disabled={isSubmitting}
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 text-[11px] font-semibold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] transition-all flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>

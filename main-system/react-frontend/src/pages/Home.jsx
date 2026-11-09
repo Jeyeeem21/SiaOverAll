@@ -1,28 +1,70 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import usePageTitle from '../hooks/usePageTitle';
-import { Printer, CreditCard, ShoppingBag, FileText, Clock, CheckCircle, Package, Users, ArrowRight, TrendingUp } from 'lucide-react';
+import { Printer, CreditCard, ShoppingBag, FileText, Clock, CheckCircle, Package, Users, ArrowRight, TrendingUp, Box } from 'lucide-react';
+import { useCategories } from '../hooks/useCategories';
+import axios from 'axios';
 
 const Home = () => {
   usePageTitle('Home');
-  const services = [
-    { icon: Printer, title: 'Printing Services', description: 'Fast and affordable photocopying and printing', color: 'bg-emerald-500' },
-    { icon: CreditCard, title: 'ID Creation', description: 'Professional ID card printing and lamination', color: 'bg-emerald-500' },
-    { icon: ShoppingBag, title: 'Uniform & Fabric Sales', description: 'Quality tela and uniform materials', color: 'bg-rose-500' },
-    { icon: FileText, title: 'Document Services', description: 'Binding, lamination, and document processing', color: 'bg-amber-500' },
-  ];
+  const { data: allCategories = [], isLoading: categoriesLoading, error } = useCategories();
+  const [topCategories, setTopCategories] = useState([]);
+  const [stats, setStats] = useState({
+    students_served: 0,
+    services_offered: 0,
+    total_orders: 0,
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  // Fetch public stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const API_BASE_URL = import.meta.env.VITE_API_URL;
+        const response = await axios.get(`${API_BASE_URL}/public-stats`);
+        setStats(response.data);
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  // Get top 4 categories with most products
+  useEffect(() => {
+    if (allCategories && allCategories.length > 0) {
+      // Sort categories by product count (descending) and take top 4
+      const sorted = [...allCategories]
+        .filter(cat => cat.products_count > 0) // Only categories with products
+        .sort((a, b) => b.products_count - a.products_count)
+        .slice(0, 4);
+      setTopCategories(sorted);
+    }
+  }, [allCategories]);
+
+  // Icon mapping for categories
+  const getCategoryIcon = (categoryName) => {
+    const name = categoryName.toLowerCase();
+    if (name.includes('print')) return Printer;
+    if (name.includes('id')) return CreditCard;
+    if (name.includes('fabric') || name.includes('uniform')) return ShoppingBag;
+    if (name.includes('document') || name.includes('binding') || name.includes('lamination')) return FileText;
+    return Box; // Default icon
+  };
+
+  // Color mapping for categories
+  const getCategoryColor = (index) => {
+    const colors = ['bg-emerald-500', 'bg-emerald-600', 'bg-rose-500', 'bg-amber-500'];
+    return colors[index % colors.length];
+  };
 
   const features = [
     { icon: Clock, text: 'Quick Processing' },
     { icon: CheckCircle, text: 'Quality Assured' },
     { icon: Package, text: 'Track Orders' },
     { icon: Users, text: 'Student-Friendly' },
-  ];
-
-  const stats = [
-    { value: '5000+', label: 'Students Served' },
-    { value: '10+', label: 'Services Offered' },
-    { value: '99%', label: 'Satisfaction Rate' },
-    { value: '24/7', label: 'Order Tracking' },
   ];
 
   return (
@@ -69,32 +111,73 @@ const Home = () => {
           <h2 className="text-[28px] font-bold text-gray-900 tracking-tight">Our Services</h2>
           <p className="text-[14px] text-gray-500 mt-2">Comprehensive business solutions for the MinSU community</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {services.map((service, i) => {
-            const Icon = service.icon;
-            return (
-              <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
-                <div className={`${service.color} w-11 h-11 rounded-xl flex items-center justify-center mb-4`}>
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-[13px] font-bold text-gray-900 mb-1.5">{service.title}</h3>
-                <p className="text-[12px] text-gray-500 leading-relaxed">{service.description}</p>
+        
+        {categoriesLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 animate-pulse">
+                <div className="w-11 h-11 rounded-xl bg-gray-200 mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-full" />
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : topCategories.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {topCategories.map((category, i) => {
+              const Icon = getCategoryIcon(category.category_name);
+              const colorClass = getCategoryColor(i);
+              return (
+                <Link 
+                  key={category.category_id} 
+                  to={`/browse-products?category=${category.category_id}`}
+                  className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group"
+                >
+                  <div className={`${colorClass} w-11 h-11 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-[13px] font-bold text-gray-900 mb-1.5">{category.category_name}</h3>
+                  <p className="text-[12px] text-gray-500 leading-relaxed">
+                    {category.products_count} {category.products_count === 1 ? 'product' : 'products'} available
+                  </p>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Box className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-[14px] text-gray-500">No categories available yet</p>
+          </div>
+        )}
       </div>
 
       {/* Stats */}
       <div className="bg-emerald-600 py-14">
         <div className="max-w-5xl mx-auto px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-            {stats.map((s, i) => (
-              <div key={i}>
-                <div className="text-[36px] font-bold tracking-tight mb-1">{s.value}</div>
-                <div className="text-[12px] text-emerald-100 font-medium uppercase tracking-wider">{s.label}</div>
+            <div>
+              <div className="text-[36px] font-bold tracking-tight mb-1">
+                {statsLoading ? '...' : `${stats.students_served}+`}
               </div>
-            ))}
+              <div className="text-[12px] text-emerald-100 font-medium uppercase tracking-wider">Students Served</div>
+            </div>
+            <div>
+              <div className="text-[36px] font-bold tracking-tight mb-1">
+                {statsLoading ? '...' : `${stats.services_offered}+`}
+              </div>
+              <div className="text-[12px] text-emerald-100 font-medium uppercase tracking-wider">Services Offered</div>
+            </div>
+            <div>
+              <div className="text-[36px] font-bold tracking-tight mb-1">
+                {statsLoading ? '...' : `${stats.total_orders}+`}
+              </div>
+              <div className="text-[12px] text-emerald-100 font-medium uppercase tracking-wider">Orders Completed</div>
+            </div>
+            <div>
+              <div className="text-[36px] font-bold tracking-tight mb-1">24/7</div>
+              <div className="text-[12px] text-emerald-100 font-medium uppercase tracking-wider">Order Tracking</div>
+            </div>
           </div>
         </div>
       </div>
@@ -102,7 +185,7 @@ const Home = () => {
       {/* Footer */}
       <footer className="bg-gray-900 py-8">
         <div className="max-w-5xl mx-auto px-8 text-center">
-          <p className="text-[12px] text-gray-500">© 2025 Mindoro State University – Bongabong Campus | Business Center System</p>
+          <p className="text-[12px] text-gray-500">© {new Date().getFullYear()} Mindoro State University – Bongabong Campus | Business Center System</p>
         </div>
       </footer>
     </div>

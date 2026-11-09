@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiRequest } from '../../api/client'
 import Toast from '../../components/Toast'
+import { CardGridSkeleton } from '../../components/LoadingSkeletons'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001'
 
@@ -147,7 +148,7 @@ export default function StudentIdCards() {
 
           {/* Batch Actions */}
           {selectedForBatch.length > 0 && (
-            <div className="mx-6 mt-6 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-5 flex items-center justify-between">
+            <div className="id-batch-toolbar mx-5 mt-5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
                   {selectedForBatch.length}
@@ -172,17 +173,14 @@ export default function StudentIdCards() {
           {/* Content */}
           <div className="workflow-content">
             {loading ? (
-              <div className="py-20 flex flex-col items-center justify-center">
-                <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="mt-4 text-sm text-gray-500">Loading...</p>
-              </div>
+              <CardGridSkeleton count={6} />
             ) : (
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {/* ID Cards in Production */}
                 {cards.length > 0 ? (
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">Cards in Production ({cards.length})</h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                       {cards.map(card => (
                         <IDCardItem
                           key={card.id}
@@ -532,17 +530,17 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-8 py-6 bg-gradient-to-r from-blue-600 to-indigo-600">
+        <div className="px-6 py-4 border-b border-gray-200 bg-white rounded-t-2xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center ring-4 ring-white/30">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                 </svg>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white">Student ID Card Details</h2>
-                <p className="text-blue-100 text-sm mt-1">
+                <h2 className="text-[15px] font-bold text-gray-900">Student ID Card Details</h2>
+                <p className="text-[11px] text-gray-500 mt-0.5">
                   {isEditing ? 'Edit student information' : 'Verify student information before approval'}
                 </p>
               </div>
@@ -551,7 +549,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
               {!isEditing && card.status === 'requested' && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all flex items-center gap-2"
+                  className="px-4 py-2 text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -561,9 +559,9 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
               )}
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+                className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -572,19 +570,19 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto max-h-[calc(90vh-250px)] p-8 bg-gray-50">
-          <div className="space-y-6">
+        <div className="overflow-y-auto max-h-[calc(90vh-180px)] p-5 bg-gray-50">
+          <div className="space-y-4">
             {/* Photos Section */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <h3 className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Photos {!photoPreview && !signaturePreview && <span className="text-sm text-red-600 font-normal">(Required)</span>}
               </h3>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                     Photo {!photoPreview && <span className="text-red-500">*</span>}
                   </label>
                   {isEditing ? (
@@ -595,7 +593,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
                           <button
                             type="button"
                             onClick={() => document.getElementById('photo-upload').click()}
-                            className="absolute bottom-2 right-2 px-3 py-1 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+                            className="absolute bottom-2 right-2 px-3 py-1 text-[11px] bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700"
                           >
                             Change
                           </button>
@@ -604,12 +602,12 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
                         <button
                           type="button"
                           onClick={() => document.getElementById('photo-upload').click()}
-                          className="w-full h-48 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all"
+                          className="w-full h-40 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all"
                         >
-                          <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                           </svg>
-                          <span className="mt-2 text-sm text-gray-600">Upload Photo</span>
+                          <span className="mt-2 text-[11px] text-gray-600">Upload Photo</span>
                         </button>
                       )}
                       <input
@@ -634,7 +632,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[11px] font-semibold text-gray-700 mb-1.5">
                     Signature {!signaturePreview && <span className="text-red-500">*</span>}
                   </label>
                   {isEditing ? (
@@ -645,7 +643,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
                           <button
                             type="button"
                             onClick={() => document.getElementById('signature-upload').click()}
-                            className="absolute bottom-2 right-2 px-3 py-1 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+                            className="absolute bottom-2 right-2 px-3 py-1 text-[11px] bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700"
                           >
                             Change
                           </button>
@@ -654,12 +652,12 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
                         <button
                           type="button"
                           onClick={() => document.getElementById('signature-upload').click()}
-                          className="w-full h-48 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all"
+                          className="w-full h-40 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all"
                         >
-                          <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                           </svg>
-                          <span className="mt-2 text-sm text-gray-600">Upload Signature</span>
+                          <span className="mt-2 text-[11px] text-gray-600">Upload Signature</span>
                         </button>
                       )}
                       <input
@@ -687,9 +685,9 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
             </div>
 
             {/* Personal Information */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <h3 className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 Personal Information
@@ -746,9 +744,9 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
             </div>
 
             {/* Academic Information */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <h3 className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
                 Academic Information
@@ -792,9 +790,9 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
             </div>
 
             {/* Address & Emergency Contact */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <h3 className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
                 Address & Emergency Contact
@@ -832,9 +830,9 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
             </div>
 
             {/* Request Information */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <h3 className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 Request Information
@@ -877,10 +875,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
                   className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-base"
                 >
                   {saving ? (
-                    <>
-                      <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Saving...</span>
-                    </>
+                    <span>Saving...</span>
                   ) : (
                     <>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1008,9 +1003,9 @@ function ReleaseCardModal({ cardNumber, onConfirm, onCancel }) {
             </div>
             <button
               onClick={onCancel}
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+              className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all"
             >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -1019,7 +1014,7 @@ function ReleaseCardModal({ cardNumber, onConfirm, onCancel }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="app-modal-body p-8">
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-3">
                 Recipient Name (Student Name) <span className="text-red-500">*</span>
@@ -1065,10 +1060,7 @@ function ReleaseCardModal({ cardNumber, onConfirm, onCancel }) {
               className="flex-1 px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-bold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-base"
             >
               {loading ? (
-                <>
-                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Releasing...</span>
-                </>
+                <span>Releasing...</span>
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1116,9 +1108,9 @@ function CancelCardModal({ cardNumber, onConfirm, onCancel }) {
             </div>
             <button
               onClick={onCancel}
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+              className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all"
             >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -1139,7 +1131,7 @@ function CancelCardModal({ cardNumber, onConfirm, onCancel }) {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-3">
                 Reason for Cancellation <span className="text-gray-400 font-normal">(Optional)</span>
@@ -1171,10 +1163,7 @@ function CancelCardModal({ cardNumber, onConfirm, onCancel }) {
               className="flex-1 px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl font-bold hover:from-red-600 hover:to-red-700 transition-all shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-base"
             >
               {loading ? (
-                <>
-                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Cancelling...</span>
-                </>
+                <span>Cancelling...</span>
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

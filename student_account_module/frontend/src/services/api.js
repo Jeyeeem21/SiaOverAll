@@ -219,6 +219,35 @@ class ApiService {
     return this.makeRequest('/verifications');
   }
 
+  async getStickerRequests() {
+    return this.makeRequest('/me/sticker-requests');
+  }
+
+  async createStickerRequest(formData) {
+    const response = await fetch(`${this.baseURL}/me/sticker-requests`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${this.getAuthToken()}` },
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || Object.values(data).flat().join(', ') || 'Sticker request failed');
+    }
+
+    return data;
+  }
+
+  async viewStickerRequestDocument(requestId, document) {
+    const response = await fetch(`${this.baseURL}/me/sticker-requests/${requestId}/documents/${document}`, {
+      headers: { Authorization: `Bearer ${this.getAuthToken()}` },
+    });
+    if (!response.ok) throw new Error('Unable to open this document.');
+    const url = URL.createObjectURL(await response.blob());
+    window.open(url, '_blank', 'noopener,noreferrer');
+    window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  }
+
   async uploadAvatar(file) {
     const token = this.getAuthToken();
     const formData = new FormData();

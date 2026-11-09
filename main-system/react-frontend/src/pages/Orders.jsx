@@ -1170,9 +1170,9 @@ const Orders = () => {
  {/* Edit Order Modal */}
  {editModal.isOpen && (
  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
- <div className="bg-white rounded-xl shadow-sm max-w-3xl w-full my-8">
+  <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-gray-100 max-w-3xl w-full my-8 font-sans antialiased text-sm text-slate-800">
  <div className="bg-emerald-600 text-white px-5 py-3 rounded-t-xl">
- <h2 className="text-lg font-bold">Edit Order - {editModal.data?.order_number}</h2>
+  <h2 className="text-[15px] font-bold">Edit Order - {editModal.data?.order_number}</h2>
  </div>
  
  <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
@@ -1364,9 +1364,9 @@ const Orders = () => {
  {/* Complete Order / Payment Modal */}
  {completeModal.isOpen && (
  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
- <div className="bg-white rounded-xl shadow-sm max-w-lg w-full">
+  <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-gray-100 max-w-lg w-full font-sans antialiased text-sm text-slate-800">
  <div className="bg-emerald-600 text-white px-6 py-4 rounded-t-xl">
- <h2 className="text-lg font-bold">Complete Order & Process Payment</h2>
+  <h2 className="text-[15px] font-bold">Complete Order & Process Payment</h2>
  </div>
  
  <form
@@ -1503,14 +1503,14 @@ const Orders = () => {
  {/* Void Order Modal */}
  {voidModal.isOpen && (
  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <div className="bg-white rounded-xl shadow-sm max-w-md w-full">
+  <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] border border-gray-100 max-w-md w-full font-sans antialiased text-sm text-slate-800">
  <div className="bg-red-600 text-white p-6 rounded-t-xl">
  <div className="flex items-center gap-3">
  <div className="p-2 bg-white/20 rounded-lg">
  <XCircle className="w-6 h-6" />
  </div>
  <div>
- <h2 className="text-lg font-bold">Void Order</h2>
+  <h2 className="text-[15px] font-bold">Void Order</h2>
  <p className="text-red-100 text-[11px]">Order: {voidModal.order?.order_number}</p>
  </div>
  </div>

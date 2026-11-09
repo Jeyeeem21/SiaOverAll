@@ -44,7 +44,7 @@ const ConfirmModal = ({
       />
       
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-200">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-200 font-sans antialiased text-sm text-slate-800">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -61,7 +61,7 @@ const ConfirmModal = ({
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-[15px] font-bold text-gray-900 mb-2">
             {title}
           </h3>
 

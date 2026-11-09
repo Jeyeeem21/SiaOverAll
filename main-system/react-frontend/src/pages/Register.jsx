@@ -97,7 +97,7 @@ const Register = () => {
             </p>
           </div>
         </div>
-        <p className="text-center text-[11px] text-gray-400 mt-6">© 2025 Mindoro State University – Bongabong Campus</p>
+        <p className="text-center text-[11px] text-gray-400 mt-6">© {new Date().getFullYear()} Mindoro State University – Bongabong Campus</p>
       </div>
     </div>
   );
