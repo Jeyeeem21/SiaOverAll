@@ -32,3 +32,8 @@ yarn-error.log*
 
 # Docker volumes
 *_data/
+
+# Documentation and notes (root level only)
+/*.txt
+/*.md
+!README.md
