@@ -19,9 +19,9 @@ services:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pRootPass123"]
       interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 60s
+      timeout: 10s
+      retries: 15
+      start_period: 120s
 
   # phpMyAdmin (connects to local MySQL)
   phpmyadmin:
