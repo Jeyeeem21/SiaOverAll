@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum DocumentType: string
 {
-    case STUDENT_ID = 'student_id';
-    case REGISTRATION = 'registration';
-    case PHOTO = 'photo';
+    case OFFICIAL_RECEIPT = 'official_receipt';
+    case CERTIFICATE_OF_REGISTRATION = 'certificate_of_registration';
+    case DRIVERS_LICENSE = 'drivers_license';
     case OTHER = 'other';
 
     /**
@@ -23,9 +23,9 @@ enum DocumentType: string
     public function label(): string
     {
         return match($this) {
-            self::STUDENT_ID => 'Student ID',
-            self::REGISTRATION => 'Vehicle Registration',
-            self::PHOTO => 'Vehicle Photo',
+            self::OFFICIAL_RECEIPT => 'Official Receipt',
+            self::CERTIFICATE_OF_REGISTRATION => 'Certification of Registration',
+            self::DRIVERS_LICENSE => 'Driver\'s License',
             self::OTHER => 'Other Document',
         };
     }
@@ -36,16 +36,11 @@ enum DocumentType: string
     public function allowedMimeTypes(): array
     {
         return match($this) {
-            self::STUDENT_ID, self::REGISTRATION => [
+            self::OFFICIAL_RECEIPT, self::CERTIFICATE_OF_REGISTRATION, self::DRIVERS_LICENSE => [
                 'image/jpeg',
                 'image/png',
                 'image/jpg',
                 'application/pdf',
-            ],
-            self::PHOTO => [
-                'image/jpeg',
-                'image/png',
-                'image/jpg',
             ],
             self::OTHER => [
                 'image/jpeg',
