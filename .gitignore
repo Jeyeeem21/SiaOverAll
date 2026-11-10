@@ -37,3 +37,4 @@ yarn-error.log*
 /*.txt
 /*.md
 !README.md
+!SETUP_GUIDE.md
