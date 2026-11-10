@@ -154,6 +154,9 @@ This is an academic project for Mindoro State University. For contributions or i
 **Problem: "Variable is not set" warnings**
 - Solution: This is normal without a `.env` file. System uses defaults automatically. Warnings can be ignored.
 
+**Problem: phpMyAdmin "Access denied for user 'root'"**
+- Solution: Delete MySQL data and start fresh: `docker compose down && docker volume rm integrated-system_mysql_data && docker compose up -d`
+
 **Problem: Want custom ports or passwords**
 - Solution: Create `.env` file from `.env.example` and customize values
 
@@ -166,7 +169,7 @@ This is an academic project for Mindoro State University. For contributions or i
 **Problem: Frontend shows blank page**
 - Solution: Wait 30-60 seconds for npm dependencies to install on first run
 
-For more troubleshooting, see [SETUP_GUIDE.md](SETUP_GUIDE.md)
+**📘 Full troubleshooting guide:** See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed solutions to all common issues.
 
 ## 📞 Support
 
