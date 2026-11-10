@@ -38,3 +38,4 @@ yarn-error.log*
 /*.md
 !README.md
 !SETUP_GUIDE.md
+!TROUBLESHOOTING.md
