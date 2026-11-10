@@ -8,8 +8,8 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-RootPass123}
+      MYSQL_DATABASE: ${DB_DATABASE:-business_center}
       MYSQL_ROOT_HOST: '%'
     volumes:
       - mysql_data:/var/lib/mysql
@@ -17,7 +17,7 @@ services:
     networks:
       - integrated-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-RootPass123}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,10 +48,10 @@ services:
       - ./main-system/laravel-backend:/var/www/html
       - main_vendor:/var/www/html/vendor
     ports:
-      - "${MAIN_BACKEND_PORT}:8000"
+      - "${MAIN_BACKEND_PORT:-8000}:8000"
     environment:
-      APP_URL: ${MAIN_BACKEND_URL}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      APP_URL: ${MAIN_BACKEND_URL:-http://localhost:8000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:5177}
     networks:
       - integrated-network
     depends_on:
@@ -66,16 +66,16 @@ services:
       - ./main-system/react-frontend:/app
       - main_node_modules:/app/node_modules
     ports:
-      - "${MAIN_FRONTEND_PORT}:5173"
+      - "${MAIN_FRONTEND_PORT:-5173}:5173"
     environment:
-      VITE_API_URL: ${MAIN_API_URL}
-      VITE_PRINT_API_URL: ${PRINT_API_URL}
-      VITE_STAFF_ID_API_URL: ${STAFF_ID_API_URL}
-      VITE_STICKER_API_URL: ${STICKER_API_URL}
-      VITE_STAFF_ID_URL: ${STAFF_ID_FRONTEND_URL}
-      VITE_STUDENT_ACCOUNT_URL: ${ACCOUNT_FRONTEND_URL}
-      VITE_STUDENT_REGISTER_URL: ${ACCOUNT_REGISTER_URL}
-      VITE_HMR_CLIENT_PORT: ${MAIN_FRONTEND_PORT}
+      VITE_API_URL: ${MAIN_API_URL:-http://localhost:8000/api}
+      VITE_PRINT_API_URL: ${PRINT_API_URL:-http://localhost:8002/api/v1}
+      VITE_STAFF_ID_API_URL: ${STAFF_ID_API_URL:-http://localhost:8001/api}
+      VITE_STICKER_API_URL: ${STICKER_API_URL:-http://localhost:8003/api}
+      VITE_STAFF_ID_URL: ${STAFF_ID_FRONTEND_URL:-http://localhost:5174}
+      VITE_STUDENT_ACCOUNT_URL: ${ACCOUNT_FRONTEND_URL:-http://localhost:5177}
+      VITE_STUDENT_REGISTER_URL: ${ACCOUNT_REGISTER_URL:-http://localhost:5177/register}
+      VITE_HMR_CLIENT_PORT: ${MAIN_FRONTEND_PORT:-5173}
     networks:
       - integrated-network
     command: sh -c "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi; exec npm run dev -- --host 0.0.0.0 --port 5173"
@@ -88,10 +88,10 @@ services:
       - ./staff_id_managament/backend:/var/www/html
       - staff_id_vendor:/var/www/html/vendor
     ports:
-      - "${STAFF_ID_BACKEND_PORT}:8000"
+      - "${STAFF_ID_BACKEND_PORT:-8001}:8000"
     environment:
-      APP_URL: ${STAFF_ID_BACKEND_URL}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      APP_URL: ${STAFF_ID_BACKEND_URL:-http://localhost:8001}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:5177}
     networks:
       - integrated-network
     depends_on:
@@ -106,12 +106,12 @@ services:
       - ./staff_id_managament/frontend:/app
       - staff_id_node_modules:/app/node_modules
     ports:
-      - "${STAFF_ID_FRONTEND_PORT}:5173"
+      - "${STAFF_ID_FRONTEND_PORT:-5174}:5173"
     environment:
-      VITE_API_URL: ${STAFF_ID_API_URL}
-      VITE_MAIN_SYSTEM_API_URL: ${MAIN_API_URL}
-      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
-      VITE_HMR_CLIENT_PORT: ${STAFF_ID_FRONTEND_PORT}
+      VITE_API_URL: ${STAFF_ID_API_URL:-http://localhost:8001/api}
+      VITE_MAIN_SYSTEM_API_URL: ${MAIN_API_URL:-http://localhost:8000/api}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL:-http://localhost:5173}
+      VITE_HMR_CLIENT_PORT: ${STAFF_ID_FRONTEND_PORT:-5174}
     networks:
       - integrated-network
     command: sh -c "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi; exec npm run dev -- --host 0.0.0.0 --port 5173"
@@ -124,10 +124,10 @@ services:
       - ./Student_print_module/backend:/var/www/html
       - print_vendor:/var/www/html/vendor
     ports:
-      - "${PRINT_BACKEND_PORT}:8000"
+      - "${PRINT_BACKEND_PORT:-8002}:8000"
     environment:
-      APP_URL: ${PRINT_BACKEND_URL}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      APP_URL: ${PRINT_BACKEND_URL:-http://localhost:8002}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:5177}
     networks:
       - integrated-network
     depends_on:
@@ -142,13 +142,13 @@ services:
       - ./Student_print_module/frontend:/app
       - print_node_modules:/app/node_modules
     ports:
-      - "${PRINT_FRONTEND_PORT}:5173"
+      - "${PRINT_FRONTEND_PORT:-5175}:5173"
     environment:
-      VITE_API_URL: ${PRINT_API_URL}
-      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
-      VITE_STUDENT_PORTAL_URL: ${ACCOUNT_FRONTEND_URL}
-      VITE_HMR_CLIENT_PORT: ${PRINT_FRONTEND_PORT}
-      PRINT_API_PROXY_TARGET: ${PRINT_API_PROXY_TARGET}
+      VITE_API_URL: ${PRINT_API_URL:-http://localhost:8002/api/v1}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL:-http://localhost:5173}
+      VITE_STUDENT_PORTAL_URL: ${ACCOUNT_FRONTEND_URL:-http://localhost:5177}
+      VITE_HMR_CLIENT_PORT: ${PRINT_FRONTEND_PORT:-5175}
+      PRINT_API_PROXY_TARGET: ${PRINT_API_PROXY_TARGET:-http://print-backend:8000}
     networks:
       - integrated-network
     command: sh -c "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi; exec npm run dev -- --host 0.0.0.0 --port 5173"
@@ -161,10 +161,10 @@ services:
       - ./Staff_Sticker_module/laravel-backend:/var/www/html
       - sticker_vendor:/var/www/html/vendor
     ports:
-      - "${STICKER_BACKEND_PORT}:8000"
+      - "${STICKER_BACKEND_PORT:-8003}:8000"
     environment:
-      APP_URL: ${STICKER_BACKEND_URL}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      APP_URL: ${STICKER_BACKEND_URL:-http://localhost:8003}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:5177}
     networks:
       - integrated-network
     depends_on:
@@ -179,11 +179,11 @@ services:
       - ./Staff_Sticker_module/react-frontend:/app
       - sticker_node_modules:/app/node_modules
     ports:
-      - "${STICKER_FRONTEND_PORT}:5173"
+      - "${STICKER_FRONTEND_PORT:-5176}:5173"
     environment:
-      VITE_API_URL: ${STICKER_API_URL}
-      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
-      VITE_HMR_CLIENT_PORT: ${STICKER_FRONTEND_PORT}
+      VITE_API_URL: ${STICKER_API_URL:-http://localhost:8003/api}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL:-http://localhost:5173}
+      VITE_HMR_CLIENT_PORT: ${STICKER_FRONTEND_PORT:-5176}
     networks:
       - integrated-network
     command: sh -c "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi; exec npm run dev -- --host 0.0.0.0 --port 5173"
@@ -196,11 +196,11 @@ services:
       - ./student_account_module/backend:/var/www/html
       - account_vendor:/var/www/html/vendor
     ports:
-      - "${ACCOUNT_BACKEND_PORT}:8000"
+      - "${ACCOUNT_BACKEND_PORT:-8004}:8000"
     environment:
-      APP_URL: ${ACCOUNT_BACKEND_URL}
-      FRONTEND_URL: ${ACCOUNT_FRONTEND_URL}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      APP_URL: ${ACCOUNT_BACKEND_URL:-http://localhost:8004}
+      FRONTEND_URL: ${ACCOUNT_FRONTEND_URL:-http://localhost:5177}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:5177}
       CORE_API_URL: http://main-backend:8000/api
       MAIN_SYSTEM_API_URL: http://main-backend:8000/api
     networks:
@@ -217,15 +217,15 @@ services:
       - ./student_account_module/frontend:/app
       - account_node_modules:/app/node_modules
     ports:
-      - "${ACCOUNT_FRONTEND_PORT}:5173"
+      - "${ACCOUNT_FRONTEND_PORT:-5177}:5173"
     environment:
-      VITE_API_URL: ${ACCOUNT_API_URL}
-      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL}
-      VITE_MAIN_SYSTEM_API_URL: ${MAIN_API_URL}
-      VITE_PRINT_API_URL: ${PRINT_API_URL}
-      VITE_PRINT_FRONTEND_URL: ${PRINT_FRONTEND_URL}
-      VITE_ID_MANAGEMENT_API_URL: ${STAFF_ID_API_URL}
-      VITE_HMR_CLIENT_PORT: ${ACCOUNT_FRONTEND_PORT}
+      VITE_API_URL: ${ACCOUNT_API_URL:-http://localhost:8004/api}
+      VITE_MAIN_SYSTEM_URL: ${MAIN_FRONTEND_URL:-http://localhost:5173}
+      VITE_MAIN_SYSTEM_API_URL: ${MAIN_API_URL:-http://localhost:8000/api}
+      VITE_PRINT_API_URL: ${PRINT_API_URL:-http://localhost:8002/api/v1}
+      VITE_PRINT_FRONTEND_URL: ${PRINT_FRONTEND_URL:-http://localhost:5175}
+      VITE_ID_MANAGEMENT_API_URL: ${STAFF_ID_API_URL:-http://localhost:8001/api}
+      VITE_HMR_CLIENT_PORT: ${ACCOUNT_FRONTEND_PORT:-5177}
     networks:
       - integrated-network
     command: sh -c "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi; exec npm run dev -- --host 0.0.0.0 --port 5173"

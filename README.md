@@ -4,13 +4,14 @@ An integrated multi-module system for managing business center operations at Min
 
 ## 🚀 Quick Start
 
-**New Installation? Start Here:**
+**New Installation? It's super simple:**
 
 1. Clone the repository
-2. Copy `.env.example` to `.env` and configure database password
-3. Run `docker compose up -d`
-4. Run `migrate-all.cmd` to set up databases
-5. Access http://localhost:5173
+2. Run `docker compose up -d` (that's it - no .env needed!)
+3. Run `migrate-all.cmd` to set up databases
+4. Access http://localhost:5173
+
+**Want to customize?** Copy `.env.example` to `.env` and change ports/passwords.
 
 **📖 Full setup instructions:** See [SETUP_GUIDE.md](SETUP_GUIDE.md)
 
@@ -101,11 +102,20 @@ docker compose restart [service-name]
 
 ## 📝 Configuration
 
-The system uses environment variables for configuration. Main configuration file is `.env` at the root level.
+The system works out-of-the-box with sensible defaults! No `.env` file needed.
+
+**Default Configuration:**
+- Database password: `RootPass123`
+- Database name: `business_center`
+- Frontend ports: 5173-5177
+- Backend ports: 8000-8004
+- All services run on `localhost`
+
+**Want to customize?** Create a `.env` file from `.env.example` and override any values:
 
 **Important environment variables:**
 
-- `DB_ROOT_PASSWORD` - MySQL root password
+- `DB_ROOT_PASSWORD` - MySQL root password (default: RootPass123)
 - `DB_DATABASE` - Database name (default: business_center)
 - `LOCAL_HOST` - Hostname (default: localhost)
 - Port configurations for each service
@@ -142,13 +152,16 @@ This is an academic project for Mindoro State University. For contributions or i
 ## 🆘 Troubleshooting
 
 **Problem: "Variable is not set" warnings**
-- Solution: Create `.env` file from `.env.example`
+- Solution: This is normal without a `.env` file. System uses defaults automatically. Warnings can be ignored.
+
+**Problem: Want custom ports or passwords**
+- Solution: Create `.env` file from `.env.example` and customize values
 
 **Problem: Containers won't start**
 - Solution: Check if ports are available, run `docker compose down` then `docker compose up -d`
 
 **Problem: Database connection errors**
-- Solution: Ensure `.env` passwords match module `.env` files
+- Solution: Wait 30-60 seconds for MySQL to fully initialize on first run
 
 **Problem: Frontend shows blank page**
 - Solution: Wait 30-60 seconds for npm dependencies to install on first run

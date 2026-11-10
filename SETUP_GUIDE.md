@@ -17,53 +17,31 @@ git clone https://github.com/Jeyeeem21/SiaOverAll.git
 cd SiaOverAll
 ```
 
-### 2. Create Environment Configuration
+### 2. (Optional) Create Custom Environment Configuration
 
-Copy the example environment file and configure it:
+The system now works out-of-the-box with default values! 
+
+**If you want to customize settings** (different ports, custom database password, etc.):
 
 ```bash
 copy .env.example .env
 ```
 
-**IMPORTANT:** Edit the `.env` file and set your database password:
+Then edit `.env` to customize:
+- Database password (default: `RootPass123`)
+- Port numbers (defaults: 5173-5177 for frontends, 8000-8004 for backends)
+- Other URLs and settings
 
-```env
-# Change these values!
-DB_ROOT_PASSWORD=YourSecurePasswordHere123
-DB_DATABASE=business_center
+**If you skip this step**, the system will use these defaults:
+- Database password: `RootPass123`
+- Database name: `business_center`
+- Main System: http://localhost:5173 (frontend) and http://localhost:8000 (backend)
+- Student Account: http://localhost:5177
+- Print Service: http://localhost:5175
+- Sticker Module: http://localhost:5176
+- Staff ID: http://localhost:5174
 
-# phpMyAdmin credentials
-PHPMYADMIN_PASSWORD=YourSecurePasswordHere123
-```
-
-You can keep the default ports or customize them if needed.
-
-### 3. Create Module .env Files
-
-Each module needs its own `.env` file. You can find `.env.example` files in each module directory.
-
-**Quick setup - Copy all .env.example files:**
-
-```cmd
-copy main-system\laravel-backend\.env.example main-system\laravel-backend\.env
-copy student_account_module\backend\.env.example student_account_module\backend\.env
-copy Student_print_module\backend\.env.example Student_print_module\backend\.env
-copy Staff_Sticker_module\laravel-backend\.env.example Staff_Sticker_module\laravel-backend\.env
-copy staff_id_managament\backend\.env.example staff_id_managament\backend\.env
-```
-
-**IMPORTANT:** Edit each module's `.env` file and ensure the database credentials match your root `.env` file:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=business_center
-DB_USERNAME=root
-DB_PASSWORD=YourSecurePasswordHere123  # Must match DB_ROOT_PASSWORD in root .env
-```
-
-### 4. Start Docker Containers
+### 3. Start Docker Containers
 
 ```bash
 docker compose up -d
@@ -76,7 +54,7 @@ This will:
 
 **Note:** First run will take 5-10 minutes to download images and install dependencies.
 
-### 5. Run Database Migrations
+### 4. Run Database Migrations
 
 After containers are running, execute the migration script:
 
@@ -89,7 +67,7 @@ This will:
 - Create all necessary database tables
 - Set up initial database structure
 
-### 6. Verify Installation
+### 5. Verify Installation
 
 Check that all containers are running:
 
@@ -106,7 +84,7 @@ You should see 13 containers running:
 - `sticker-backend`, `sticker-frontend` (Sticker Module)
 - `account-backend`, `account-frontend` (Student Account Module)
 
-### 7. Access the Applications
+### 6. Access the Applications
 
 Open your browser and navigate to:
 
@@ -120,13 +98,18 @@ Open your browser and navigate to:
 **Default phpMyAdmin Login:**
 - Server: `mysql`
 - Username: `root`
+- Password: `RootPass123` (or your custom password from .env if you created one)
 - Password: (your DB_ROOT_PASSWORD from .env)
 
 ## Troubleshooting
 
 ### Problem: "Variable is not set" warnings
 
-**Solution:** You didn't create the `.env` file in the root directory. Copy `.env.example` to `.env` and configure it.
+**Solution:** This is normal if you don't have a `.env` file. The system will use default values automatically. These warnings can be ignored.
+
+### Problem: Want to customize ports or passwords
+
+**Solution:** Create a `.env` file from `.env.example` and customize the values.
 
 ### Problem: Containers fail to start
 
