@@ -1,0 +1,1688 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.App-header {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.App-header h1 {
+  color: #667eea;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.App-header p {
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card h3 {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-number {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.stat-card.pending .stat-number {
+  color: #f59e0b;
+}
+
+.stat-card.completed .stat-number {
+  color: #10b981;
+}
+
+.stat-card.declined .stat-number {
+  color: #ef4444;
+}
+
+.content-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.content-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+}
+
+/* Request Cards */
+.requests-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.request-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.request-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.request-card.completed {
+  background: #f0fdf4;
+  border-color: #10b981;
+}
+
+.request-card.declined {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.request-info h3 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.student-id {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.vehicle-info {
+  margin: 0.5rem 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.badge.vehicle {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.decline-reason {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #7f1d1d;
+}
+
+.decline-reason strong {
+  color: #991b1b;
+}
+
+.plate {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #333;
+}
+
+.date {
+  color: #999;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.request-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-back {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  margin-bottom: 1.5rem;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+/* Detail View */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.detail-section h3 {
+  color: #667eea;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.detail-section p {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.detail-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.detail-section li {
+  padding: 0.5rem 0;
+  color: #10b981;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Decline Modal Styles */
+.decline-modal {
+  max-width: 600px;
+}
+
+.decline-warning {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  color: #991b1b;
+}
+
+.decline-warning strong {
+  color: #7f1d1d;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-control::placeholder {
+  color: #9ca3af;
+}
+
+/* Customization Layout */
+.customization-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.customization-form {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.customization-form h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Sticker Preview Panel */
+.sticker-preview-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sticker-preview-panel h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.sticker-mock {
+  border: 3px solid #667eea;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.sticker-header {
+  text-align: center;
+  border-bottom: 2px solid white;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.msu-logo {
+  width: 60px;
+  height: 60px;
+  background: white;
+  color: #667eea;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 0 auto 0.5rem;
+}
+
+.sticker-header h4 {
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.sticker-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.sticker-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sticker-field {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.sticker-field .label {
+  font-weight: 600;
+}
+
+.sticker-field .value {
+  font-weight: bold;
+}
+
+/* Final Sticker (Print View) */
+.print-section {
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+.sticker-final {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border: 4px solid #667eea;
+  border-radius: 16px;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.sticker-header-final {
+  text-align: center;
+  border-bottom: 3px solid white;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.msu-logo-large {
+  width: 100px;
+  height: 100px;
+  background: white;
+  color: #667eea;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 2.5rem;
+  margin: 0 auto 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.sticker-header-final h2 {
+  margin: 0.5rem 0;
+  font-size: 1.8rem;
+}
+
+.sticker-header-final h3 {
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: normal;
+}
+
+.sticker-serial {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.sticker-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sticker-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.label-final {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.value-final {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.sticker-footer {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+.sticker-footer p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.generated-date {
+  font-size: 0.8rem !important;
+  opacity: 0.8;
+}
+
+.barcode-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.barcode-mock {
+  font-family: 'Courier New', monospace;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  margin: 1rem 0;
+}
+
+.barcode-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.success-message {
+  background: #d1fae5;
+  border-left: 4px solid #10b981;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.success-message p {
+  margin: 0.5rem 0;
+  color: #065f46;
+}
+
+.info-box {
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.info-box h4 {
+  color: #92400e;
+  margin-bottom: 1rem;
+}
+
+.info-box ul {
+  list-style-position: inside;
+  color: #92400e;
+}
+
+.info-box li {
+  margin: 0.5rem 0;
+}
+
+/* Print Styles */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .App-header {
+    display: none !important;
+  }
+  
+  .App {
+    background: white !important;
+  }
+  
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .container {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .print-section {
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+  }
+  
+  .msu-sticker-preview {
+    width: 6in !important;
+    height: 3.5in !important;
+    page-break-inside: avoid !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    display: block !important;
+  }
+  
+  .msu-sticker-header {
+    background: white !important;
+    border-bottom: 3px solid #1a5f1e !important;
+    padding: 15px 20px !important;
+  }
+  
+  .university-name {
+    color: #1a5f1e !important;
+  }
+  
+  .msu-sticker-body {
+    border-bottom: 3px solid #1a5f1e !important;
+  }
+  
+  .sticker-metadata {
+    display: none !important;
+  }
+  
+  .preview-note {
+    display: none !important;
+  }
+  
+  @page {
+    size: letter portrait;
+    margin: 2in 1in;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .App-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .request-card {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .request-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .request-actions .btn {
+    width: 100%;
+  }
+  
+  .customization-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+  }
+}
+
+/* Document Viewer */
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.document-card {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.document-card:hover {
+  transform: translateY(-5px);
+  border-color: #667eea;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+}
+
+.document-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.document-card h4 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 2px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 2rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 2px solid #e5e7eb;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  background: #f9fafb;
+}
+
+/* Sample Documents */
+.sample-document {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.doc-header {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.doc-header h3 {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.id-photo {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.doc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.doc-info p {
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  margin: 0;
+}
+
+.doc-info strong {
+  color: #667eea;
+  margin-right: 0.5rem;
+}
+
+.doc-footer {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.sample-note {
+  color: #f59e0b;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0.5rem 0;
+  font-style: italic;
+}
+
+/* Vehicle Photo */
+.photo-placeholder {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border: 3px dashed #9ca3af;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.vehicle-icon {
+  font-size: 6rem;
+  margin-bottom: 1rem;
+}
+
+.photo-label {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0.5rem 0;
+}
+
+.photo-plate {
+  font-size: 2rem;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #667eea;
+  background: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 1rem;
+  border: 3px solid #333;
+}
+
+/* Registration Certificate */
+.registration {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+}
+
+.registration .doc-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.registration .doc-header h3 {
+  color: white;
+  margin: 0;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+  
+  .doc-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  .id-photo {
+    width: 100px;
+    height: 100px;
+    font-size: 3rem;
+  }
+  
+  .vehicle-icon {
+    font-size: 4rem;
+  }
+  
+  .photo-plate {
+    font-size: 1.5rem;
+  }
+}
+
+
+/* ========================================
+   MSU STICKER DESIGN - EXACT TEMPLATE MATCH
+   ======================================== */
+
+/* Preview Sticker - SCALED DOWN to fit screen completely */
+.msu-sticker-preview {
+  width: 600px;
+  height: 350px;
+  background: white;
+  border: 4px solid #1a5f1e;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+}
+
+.msu-sticker-header {
+  background: white;
+  border-bottom: 3px solid #1a5f1e;
+  padding: 15px 20px;
+  text-align: center;
+}
+
+.university-name {
+  color: #1a5f1e;
+  font-weight: 900;
+  font-size: 30px;
+  letter-spacing: 0.5px;
+  font-family: 'Georgia', serif;
+}
+
+.msu-sticker-body {
+  position: relative;
+  height: calc(100% - 100px);
+  background: white;
+  display: grid;
+  grid-template-columns: 130px 1fr 80px;
+  grid-template-rows: 1fr 1fr;
+  gap: 0;
+  border-bottom: 3px solid #1a5f1e;
+}
+
+/* MSU Logo (Top Left) */
+.msu-logo-circle {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 3px solid #1a5f1e;
+  background: white;
+  min-height: 100%;
+}
+
+.logo-inner {
+  width: 85px;
+  height: 85px;
+  border: 4px solid #1a5f1e;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a5f1e;
+  font-weight: 900;
+  font-size: 16px;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 2px #ffd700;
+}
+
+.logo-top {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.logo-bottom {
+  font-size: 11px;
+  font-weight: 900;
+  margin-top: 2px;
+}
+
+/* Vehicle Code Section (Top Center) */
+/* Vehicle Code Section (Top Center) - Single line */
+.vehicle-code-section {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+}
+
+.vehicle-code-line {
+  font-size: 70px;
+  font-weight: 900;
+  color: #1a5f1e;
+  font-family: 'Arial Black', sans-serif;
+  letter-spacing: -3px;
+  line-height: 1;
+  margin: 0;
+}
+
+.subtitle-text {
+  font-size: 13px;
+  color: #1a5f1e;
+  font-style: italic;
+  margin-top: 4px;
+  font-family: 'Georgia', serif;
+}
+
+/* Price Badge (Top Right Corner of center section) */
+.price-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #ff8c00;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-weight: 900;
+  font-size: 16px;
+  font-family: 'Arial Black', sans-serif;
+}
+
+/* Vehicle Icon Section (Bottom Left) */
+.vehicle-icon-box {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 3px solid #1a5f1e;
+  border-top: 3px solid #1a5f1e;
+  background: white;
+}
+
+.vehicle-emoji {
+  font-size: 48px;
+}
+
+/* Gate Pass Section (Bottom Center) */
+.gate-pass-section {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 3px solid #1a5f1e;
+  background: white;
+  padding: 10px;
+}
+
+.gate-pass-text {
+  font-size: 52px;
+  font-weight: 900;
+  color: #ff8c00;
+  letter-spacing: 4px;
+  font-family: 'Arial Black', sans-serif;
+  white-space: nowrap;
+}
+
+/* Date Vertical (Right Side) */
+.date-vertical {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 3px solid #1a5f1e;
+  background: white;
+  padding: 12px 6px;
+}
+
+.month-vert {
+  color: #1a5f1e;
+  font-size: 18px;
+  font-weight: 900;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0px;
+  margin-bottom: 18px;
+}
+
+.year-vert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.year-digit {
+  color: #1a5f1e;
+  font-size: 22px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.preview-note {
+  margin-top: 15px;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* FULL SIZE PREVIEW ELEMENTS - SCALED DOWN */
+.msu-logo-circle {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-right: 3px solid #1a5f1e;
+  background: white;
+}
+
+.logo-inner {
+  width: 70px;
+  height: 70px;
+  border: 3px solid #1a5f1e;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #1a5f1e;
+  font-weight: 900;
+  font-size: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.logo-inner::before {
+  content: 'MINDORO STATE UNIVERSITY';
+  position: absolute;
+  top: 8px;
+  font-size: 4.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.logo-inner::after {
+  content: '1907';
+  position: absolute;
+  bottom: 8px;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.vehicle-code-section {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 20px;
+}
+
+.vehicle-code-line {
+  font-size: 60px;
+  font-weight: 900;
+  color: #1a5f1e;
+  font-family: 'Arial Black', sans-serif;
+  letter-spacing: -3px;
+  line-height: 1;
+  margin: 0;
+}
+
+.subtitle-text {
+  font-size: 11px;
+  color: #1a5f1e;
+  font-style: italic;
+  margin-top: 4px;
+  font-family: 'Georgia', serif;
+}
+
+.price-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff8c00;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 5px;
+  font-weight: 900;
+  font-size: 20px;
+  font-family: 'Arial Black', sans-serif;
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
+}
+
+.vehicle-icon-box {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 3px solid #1a5f1e;
+  border-top: 3px solid #1a5f1e;
+  background: white;
+}
+
+.vehicle-emoji {
+  font-size: 42px;
+}
+
+.gate-pass-section {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 3px solid #1a5f1e;
+  background: white;
+}
+
+.gate-pass-text {
+  font-size: 46px;
+  font-weight: 900;
+  color: #ff8c00;
+  letter-spacing: 5px;
+  font-family: 'Arial Black', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.date-vertical {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 3px solid #1a5f1e;
+  background: white;
+  padding: 10px 5px;
+}
+
+.month-vert {
+  color: #1a5f1e;
+  font-size: 16px;
+  font-weight: 900;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: -1px;
+  margin-bottom: 15px;
+}
+
+.year-vert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.year-digit {
+  color: #1a5f1e;
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.info-section {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.info-section p {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+/* ========================================
+   FINAL STICKER (Print View)
+   ======================================== */
+
+.msu-sticker-final {
+  width: 900px;
+  height: 525px;
+  background: white;
+  border: 7px solid #1a5f1e;
+  border-radius: 20px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.msu-final-header {
+  background: white;
+  border-bottom: 5px solid #1a5f1e;
+  padding: 25px 30px;
+  text-align: center;
+}
+
+.university-name-final {
+  color: #1a5f1e;
+  font-weight: 900;
+  font-size: 52px;
+  letter-spacing: 1px;
+  font-family: 'Georgia', serif;
+}
+
+.msu-final-body {
+  position: relative;
+  height: calc(100% - 160px);
+  background: white;
+  display: grid;
+  grid-template-columns: 200px 1fr 120px;
+  grid-template-rows: 1fr 1fr;
+  border-bottom: 5px solid #1a5f1e;
+}
+
+/* MSU Logo Final */
+.msu-logo-final {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-right: 5px solid #1a5f1e;
+}
+
+.logo-circle-final {
+  width: 150px;
+  height: 150px;
+  border: 6px solid #1a5f1e;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo-text-final {
+  color: #1a5f1e;
+  font-weight: 900;
+  font-size: 48px;
+}
+
+/* MSU Logo Image */
+.logo-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #1a5f1e;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+  margin-top: -80px;
+}
+
+/* Vehicle Code Section Final */
+/* Vehicle Code Section Final - Single line */
+.vehicle-code-section-final {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 40px;
+}
+
+.vehicle-code-line-final {
+  font-size: 130px;
+  font-weight: 900;
+  color: #1a5f1e;
+  font-family: 'Arial Black', sans-serif;
+  letter-spacing: -6px;
+  line-height: 1;
+  margin: 0;
+}
+
+.subtitle-final {
+  font-size: 24px;
+  color: #1a5f1e;
+  font-style: italic;
+  margin-top: 8px;
+  font-family: 'Georgia', serif;
+}
+
+/* Price Badge Final */
+.price-badge-final {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #ff8c00;
+  color: white;
+  padding: 12px 32px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 42px;
+  font-family: 'Arial Black', sans-serif;
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
+}
+
+/* Vehicle Icon Final */
+.vehicle-icon-final {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 5px solid #1a5f1e;
+  border-top: 5px solid #1a5f1e;
+  background: white;
+}
+
+.vehicle-emoji-final {
+  font-size: 90px;
+}
+
+/* Gate Pass Final */
+.gate-pass-section-final {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 5px solid #1a5f1e;
+  background: white;
+}
+
+.gate-pass-final {
+  font-size: 100px;
+  font-weight: 900;
+  color: #ff8c00;
+  letter-spacing: 12px;
+  font-family: 'Arial Black', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Date Vertical Final */
+.date-vertical-final {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 5px solid #1a5f1e;
+  background: white;
+  padding: 20px 10px;
+}
+
+.month-final {
+  color: #1a5f1e;
+  font-size: 34px;
+  font-weight: 900;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: -3px;
+  margin-bottom: 30px;
+}
+
+.year-final {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.year-digit-final {
+  color: #1a5f1e;
+  font-size: 42px;
+  font-weight: 900;
+  text-align: center;
+}
+
+/* Serial Number */
+.serial-number-final {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #666;
+  font-family: 'Courier New', monospace;
+  z-index: 4;
+}
+
+/* Sticker Metadata */
+.sticker-metadata {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sticker-metadata h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.sticker-metadata p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+/* Print Styles */
+@media print {
+  .msu-sticker-final {
+    width: 4in;
+    height: 2.5in;
+    border: 5px solid #1a5f1e;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+  
+  .sticker-metadata {
+    display: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .msu-sticker-preview {
+    max-width: 100%;
+    height: 280px;
+  }
+  
+  .vehicle-code-top {
+    font-size: 60px;
+  }
+  
+  .gate-pass-text {
+    font-size: 45px;
+  }
+  
+  .msu-sticker-final {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1.714;
+  }
+}
