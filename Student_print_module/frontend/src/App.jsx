@@ -17,7 +17,7 @@ function AppContent() {
           <header className="App-header">
             <div className="container">
               <div className="header-content">
-                <h1>📄 Document Printing Order System</h1>
+                <h1>📄 MinSU Print Service</h1>
                 <a href={`${import.meta.env.VITE_STUDENT_PORTAL_URL}/dashboard`} className="btn btn-secondary btn-small">
                   ← Student Portal
                 </a>
@@ -56,7 +56,7 @@ function AppContent() {
           <div className="container">
             <div className="header-content">
               <div>
-                <h1>📄 Document Printing Order System</h1>
+                <h1>📄 MinSU Print Service</h1>
                 {studentInfo}
               </div>
               <a href={`${import.meta.env.VITE_STUDENT_PORTAL_URL}/dashboard`} className="btn btn-secondary btn-small">
