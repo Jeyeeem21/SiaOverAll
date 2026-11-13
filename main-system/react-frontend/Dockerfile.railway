@@ -1,0 +1,56 @@
+# Production Dockerfile for React Frontend (Railway)
+# Multi-stage build for optimized production image
+
+# ============================================
+# Stage 1: Build React Application
+# ============================================
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies (production only)
+RUN npm ci --only=production --ignore-scripts
+
+# Copy source code
+COPY . .
+
+# Build arguments (Railway provides these at build time)
+ARG VITE_API_URL
+ARG VITE_PRINT_API_URL
+ARG VITE_STAFF_ID_API_URL
+ARG VITE_STICKER_API_URL
+ARG VITE_STICKER_URL
+ARG VITE_STAFF_ID_URL
+ARG VITE_STUDENT_ACCOUNT_URL
+ARG VITE_STUDENT_REGISTER_URL
+
+# Build for production
+RUN npm run build
+
+# ============================================
+# Stage 2: Serve with Nginx
+# ============================================
+FROM nginx:alpine
+
+# Copy nginx configuration
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built assets from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Create nginx user and set permissions
+RUN chown -R nginx:nginx /usr/share/nginx/html \
+    && chmod -R 755 /usr/share/nginx/html
+
+# Expose port (Railway assigns PORT env var)
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
