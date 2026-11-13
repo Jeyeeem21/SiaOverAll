@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminStudentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\StaffStickerController;
 use App\Http\Controllers\StaffVerificationController;
 use App\Http\Controllers\StickerRequestController;
 use App\Http\Controllers\StudentController;
@@ -63,6 +64,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/staff/verifications', [StaffVerificationController::class, 'index']);
     Route::post('/staff/verifications/{id}/approve', [StaffVerificationController::class, 'approve'])->where('id', '[0-9]+');
     Route::post('/staff/verifications/{id}/reject', [StaffVerificationController::class, 'reject'])->where('id', '[0-9]+');
+    
+    // Staff sticker management routes
+    Route::prefix('staff/sticker-requests')->group(function () {
+        Route::get('/', [StaffStickerController::class, 'index']);
+        Route::get('/{id}', [StaffStickerController::class, 'show'])->where('id', '[0-9]+');
+        Route::get('/{id}/documents/{document}', [StaffStickerController::class, 'viewDocument'])->where('id', '[0-9]+');
+        Route::post('/{id}/approve', [StaffStickerController::class, 'approve'])->where('id', '[0-9]+');
+        Route::post('/{id}/decline', [StaffStickerController::class, 'decline'])->where('id', '[0-9]+');
+        Route::post('/{id}/generate', [StaffStickerController::class, 'generateSticker'])->where('id', '[0-9]+');
+        Route::post('/{id}/mark-printed', [StaffStickerController::class, 'markPrinted'])->where('id', '[0-9]+');
+    });
+    Route::get('/staff/stickers', [StaffStickerController::class, 'stickers']);
 });
 
 // Admin only routes

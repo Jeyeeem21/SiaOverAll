@@ -307,8 +307,8 @@ const Navigation = ({ userRole = 'student' }) => {
           <span className="text-[15px] font-bold text-gray-900">Student Portal</span>
         </Link>
 
-        {/* Primary nav */}
-        <nav className="flex items-center gap-1 flex-1">
+        {/* Primary nav - CENTERED */}
+        <nav className="flex items-center justify-center gap-1 flex-1">
           {[...mainNavItems, ...moreNavItems].map((item) => {
             const active = isActive(item.to);
             return (
@@ -473,7 +473,7 @@ const Navigation = ({ userRole = 'student' }) => {
         className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-gray-200 shadow-lg"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        <div className="grid grid-cols-5 h-16 relative">
+        <div className="flex h-16 relative overflow-x-auto">
 
           {/* 4 main items */}
           {mainNavItems.map((item) => {
@@ -483,7 +483,7 @@ const Navigation = ({ userRole = 'student' }) => {
                 key={item.to}
                 to={item.to}
                 onClick={() => setIsMoreMenuOpen(false)}
-                className={`flex flex-col items-center justify-center gap-0.5 py-2 relative transition-colors ${
+                className={`flex flex-col items-center justify-center gap-0.5 py-2 px-6 relative transition-colors flex-shrink-0 ${
                   active ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
                 onMouseEnter={item.isOrders ? handleOrdersEnter : undefined}
@@ -494,7 +494,7 @@ const Navigation = ({ userRole = 'student' }) => {
                 <div className={`transition-transform duration-150 ${active ? 'scale-110' : ''}`}>
                   {item.icon(active)}
                 </div>
-                <span className="text-[9px] font-semibold">{item.label}</span>
+                <span className="text-[9px] font-semibold whitespace-nowrap">{item.label}</span>
                 {item.isOrders && (
                   <OrdersPreview isVisible={isOrdersPreviewVisible} onMouseEnter={() => { if (orderHoverTimeout) clearTimeout(orderHoverTimeout); }} onMouseLeave={handleOrdersLeave} />
                 )}
@@ -505,7 +505,7 @@ const Navigation = ({ userRole = 'student' }) => {
           {/* More button (5th slot) */}
           <button
             onClick={() => { setIsMoreMenuOpen(p => !p); setShowNotifPanel(false); }}
-            className={`flex flex-col items-center justify-center gap-0.5 py-2 relative transition-colors ${
+            className={`flex flex-col items-center justify-center gap-0.5 py-2 px-6 relative transition-colors flex-shrink-0 ${
               isMoreActive() || isMoreMenuOpen ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'
             }`}
           >
@@ -515,7 +515,7 @@ const Navigation = ({ userRole = 'student' }) => {
             <svg className={`w-6 h-6 transition-transform duration-200 ${isMoreMenuOpen ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
-            <span className="text-[9px] font-semibold">More</span>
+            <span className="text-[9px] font-semibold whitespace-nowrap">More</span>
           </button>
         </div>
 

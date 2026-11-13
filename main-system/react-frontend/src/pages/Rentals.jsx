@@ -1012,7 +1012,7 @@ const Rentals = () => {
  else if (activeTab === 'payments') setShowPaymentModal(true);
  else if (activeTab === 'maintenance') setShowMaintenanceModal(true);
  }}
- className="px-4 py-2 text-[13px] bg-emerald-600 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+ className="px-4 py-2 text-[11px] bg-emerald-600 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-2"
  >
  <Plus className="w-5 h-5" />
  Add {activeTab === 'properties' ? 'Property' : activeTab === 'tenants' ? 'Tenant' : activeTab === 'contracts' ? 'Contract' : activeTab === 'payments' ? 'Payment' : 'Maintenance Request'}
@@ -1090,7 +1090,7 @@ const Rentals = () => {
  <button 
  type="submit" 
  disabled={stallNumberError}
- className={`px-4 py-2 text-[13px] rounded-lg font-semibold shadow-sm hover:shadow-md transition-all ${
+ className={`px-4 py-2 text-[11px] rounded-lg font-semibold shadow-sm hover:shadow-md transition-all ${
  stallNumberError 
  ? 'bg-gray-400 cursor-not-allowed' 
  : 'bg-emerald-600 text-white'
@@ -1177,7 +1177,7 @@ const Rentals = () => {
  </div>
  <div className="flex justify-end gap-2 pt-4">
  <button type="button" onClick={() => setShowTenantModal(false)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancel</button>
- <button type="submit" className="px-4 py-2 text-[13px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Tenant</button>
+ <button type="submit" className="px-4 py-2 text-[11px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Tenant</button>
  </div>
  </form>
  </Modal>
@@ -1284,7 +1284,7 @@ const Rentals = () => {
  </div>
  <div className="flex justify-end gap-2 pt-4">
  <button type="button" onClick={() => setShowContractModal(false)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancel</button>
- <button type="submit" className="px-4 py-2 text-[13px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Contract</button>
+ <button type="submit" className="px-4 py-2 text-[11px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Contract</button>
  </div>
  </form>
  </Modal>
@@ -1398,7 +1398,7 @@ const Rentals = () => {
  </div>
  <div className="flex justify-end gap-2 pt-4">
  <button type="button" onClick={() => setShowPaymentModal(false)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancel</button>
- <button type="submit" className="px-4 py-2 text-[13px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Payment</button>
+ <button type="submit" className="px-4 py-2 text-[11px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Payment</button>
  </div>
  </form>
  </Modal>
@@ -1483,7 +1483,7 @@ const Rentals = () => {
  </div>
  <div className="flex justify-end gap-2 pt-4">
  <button type="button" onClick={() => setShowMaintenanceModal(false)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancel</button>
- <button type="submit" className="px-4 py-2 text-[13px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Request</button>
+ <button type="submit" className="px-4 py-2 text-[11px] rounded-lg bg-emerald-600 font-semibold hover:shadow-md transition-all">Add Request</button>
  </div>
  </form>
  </Modal>
@@ -3724,3 +3724,4 @@ const Rentals = () => {
 };
 
 export default Rentals;
+

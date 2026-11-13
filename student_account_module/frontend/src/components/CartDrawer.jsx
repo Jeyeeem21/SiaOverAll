@@ -79,33 +79,50 @@ const CartDrawer = () => {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+            className="fixed inset-0 bg-black/50 z-[100] transition-opacity"
             onClick={closeCart}
           />
 
           {/* Drawer */}
-          <div className="fixed right-0 top-0 bottom-0 w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col">
+          <div className="fixed right-0 top-14 md:top-0 bottom-0 w-full sm:w-96 bg-white shadow-2xl z-[101] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-emerald-600">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/20 rounded-lg">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0l-.4-2M16 19a2 2 0 100-4 2 2 0 000 4zm-7 0a2 2 0 100-4 2 2 0 000 4z" />
+        <div className="bg-emerald-600 border-b border-gray-100">
+          <div className="flex items-center px-5 py-4">
+            {/* Back button - visible only on mobile */}
+            <button
+              onClick={closeCart}
+              className="sm:hidden flex-shrink-0 p-2 -ml-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+              aria-label="Go back"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
+            </button>
+            
+            {/* Cart Icon & Title */}
+            <div className="flex items-center gap-3 flex-1">
+              <div className="p-2 bg-white/20 rounded-lg flex-shrink-0">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0l-.4-2M16 19a2 2 0 100-4 2 2 0 000 4zm-7 0a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-[15px] font-bold text-white truncate">Shopping Cart</h2>
+                <p className="text-[11px] text-emerald-100">{getCartCount()} items</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-[15px] font-bold text-white">Shopping Cart</h2>
-              <p className="text-[11px] text-emerald-100">{getCartCount()} items</p>
-            </div>
+            
+            {/* Close button - visible only on desktop */}
+            <button
+              onClick={closeCart}
+              className="hidden sm:block flex-shrink-0 p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+              aria-label="Close cart"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button
-            onClick={closeCart}
-            className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
         </div>
 
         {/* Cart Items */}

@@ -63,6 +63,7 @@ const StickerRequests = () => {
     const configs = {
       pending: 'bg-amber-100 text-amber-700 border border-amber-300',
       approved: 'bg-emerald-100 text-emerald-700 border border-emerald-300',
+      generated: 'bg-blue-100 text-blue-700 border border-blue-300',
       rejected: 'bg-rose-100 text-rose-700 border border-rose-300',
       completed: 'bg-emerald-100 text-emerald-700 border border-emerald-300'
     };
@@ -117,6 +118,8 @@ const StickerRequests = () => {
                     >
                       <option value="car">Car</option>
                       <option value="motorcycle">Motorcycle</option>
+                      <option value="suv">SUV</option>
+                      <option value="van">Van</option>
                       <option value="other">Other</option>
                     </select>
                   </div>

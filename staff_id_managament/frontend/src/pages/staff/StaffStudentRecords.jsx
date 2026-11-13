@@ -316,20 +316,9 @@ export default function StaffStudentRecords() {
     <div className="student-records-page">
       {/* Page Header */}
       <div className="records-header bg-white">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Student Records</h1>
-            <p className="text-sm text-gray-500 mt-2">Manage all student information and records</p>
-          </div>
-          <button
-            onClick={openAddForm}
-            className="self-start px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors shadow-sm flex items-center whitespace-nowrap"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add New Student
-          </button>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Student Records</h1>
+          <p className="text-sm text-gray-500 mt-2">Manage all student information and records</p>
         </div>
 
         {/* Summary Cards */}
@@ -362,7 +351,18 @@ export default function StaffStudentRecords() {
 
       {/* Filters and Search */}
       <div className="records-filters bg-white">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Search & Filter</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Search & Filter</h3>
+          <button
+            onClick={openAddForm}
+            className="px-4 py-2 text-[11px] bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors shadow-sm flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add New Student
+          </button>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
           {/* Search Bar */}

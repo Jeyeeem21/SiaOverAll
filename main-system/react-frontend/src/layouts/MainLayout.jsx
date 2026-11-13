@@ -21,6 +21,7 @@ const MainLayout = () => {
     '/rentals': 'Rental Management',
     '/toga-rentals': 'Toga Rental',
     '/staff-management': 'ID Management',
+    '/stickers': 'Sticker Management',
   }[pathname] || 'Business Center';
 
   // Close user menu when clicking outside

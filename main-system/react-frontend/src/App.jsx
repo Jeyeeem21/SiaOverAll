@@ -23,6 +23,7 @@ import Toast from './components/Toast'
 import Pos from './pages/Staff/Pos'
 import PrintOrders from './pages/PrintOrders'
 import StaffManagement from './pages/StaffManagement'
+import Stickers from './pages/Stickers'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
             <Route path="print-orders" element={<PrintOrders />} />
             <Route path="staff" element={<Staff />} />
             <Route path="staff-management" element={<StaffManagement />} />
+            <Route path="stickers" element={<Stickers />} />
             <Route path="customers" element={<Customers />} />
             <Route path="rentals" element={<Rentals />} />
             <Route path="toga-rentals" element={<TogaRentals />} />

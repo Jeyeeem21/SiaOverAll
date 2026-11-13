@@ -4,12 +4,26 @@ An integrated multi-module system for managing business center operations at Min
 
 ## 🚀 Quick Start
 
-**New Installation? It's super simple:**
+**New Installation? Three simple steps:**
 
-1. Clone the repository
-2. Run `docker compose up -d` (that's it - no .env needed!)
-3. Run `migrate-all.cmd` to set up databases
-4. Access http://localhost:5173
+```bash
+# 1. Clone the repository
+git clone [your-repo-url]
+cd integrated-system
+
+# 2. Start all services (wait 2-3 minutes for first-time dependency installation)
+docker compose up -d
+
+# 3. Run database migrations
+migrate-all.cmd         # Windows
+# OR
+./migrate-all.sh        # Linux/Mac
+
+# 4. Access the system
+# Main System: http://localhost:5173
+```
+
+**That's it!** No `.env` file needed - system uses sensible defaults.
 
 **Want to customize?** Copy `.env.example` to `.env` and change ports/passwords.
 
@@ -24,12 +38,13 @@ This system consists of 5 integrated modules:
 - Product catalog
 - Shopping cart and checkout
 - Order tracking
+- Integration hub for all modules
 
-### 2. **Student Account Module** (Port 5177)
-- Student registration and authentication
-- Order history
-- Profile management
-- Digital wallet
+### 2. **Staff ID Management** (Port 5174)
+- Staff ID generation
+- Student records management
+- ID card printing
+- Data export
 
 ### 3. **Print Service Module** (Port 5175)
 - Print job submission
@@ -37,17 +52,18 @@ This system consists of 5 integrated modules:
 - Print queue management
 - Payment processing
 
-### 4. **Sticker Module** (Port 5176)
-- Custom sticker orders
-- Design upload
-- Size and quantity selection
-- Order tracking
+### 4. **Sticker Module** (Port 5176) ⭐ NEW
+- Custom sticker request submission
+- Staff sticker workflow management
+- Request tracking and status updates
+- Size and quantity management
 
-### 5. **Staff ID Management** (Port 5174)
-- Staff ID generation
-- Student records management
-- ID card printing
-- Data export
+### 5. **Student Account Module** (Port 5177)
+- Student registration and authentication
+- Order history and tracking
+- Profile management
+- Digital wallet
+- Sticker request data storage
 
 ## 🛠️ Technology Stack
 
@@ -167,9 +183,14 @@ This is an academic project for Mindoro State University. For contributions or i
 - Solution: Wait 30-60 seconds for MySQL to fully initialize on first run
 
 **Problem: Frontend shows blank page**
-- Solution: Wait 30-60 seconds for npm dependencies to install on first run
+- Solution: Wait 2-3 minutes for npm dependencies to install on first run (check logs: `docker compose logs [service-name]`)
+
+**Problem: First run is slow**
+- Expected: First run takes 2-3 minutes to install Composer and npm dependencies for all 5 modules
 
 **📘 Full troubleshooting guide:** See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed solutions to all common issues.
+
+**📋 Before pushing to Git:** See [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)
 
 ## 📞 Support
 

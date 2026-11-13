@@ -28,7 +28,7 @@ class StickerRequestController extends Controller
 
         $validated = $request->validate([
             'plate_number' => ['required', 'string', 'max:255'],
-            'vehicle_type' => ['required', 'in:car,motorcycle,other'],
+            'vehicle_type' => ['required', 'in:car,motorcycle,suv,van,other'],
             'vehicle_model' => ['nullable', 'string', 'max:255'],
             'vehicle_color' => ['nullable', 'string', 'max:255'],
             'license' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],

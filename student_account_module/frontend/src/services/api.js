@@ -226,7 +226,10 @@ class ApiService {
   async createStickerRequest(formData) {
     const response = await fetch(`${this.baseURL}/me/sticker-requests`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${this.getAuthToken()}` },
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${this.getAuthToken()}`,
+      },
       body: formData,
     });
 
@@ -240,7 +243,10 @@ class ApiService {
 
   async viewStickerRequestDocument(requestId, document) {
     const response = await fetch(`${this.baseURL}/me/sticker-requests/${requestId}/documents/${document}`, {
-      headers: { Authorization: `Bearer ${this.getAuthToken()}` },
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${this.getAuthToken()}`,
+      },
     });
     if (!response.ok) throw new Error('Unable to open this document.');
     const url = URL.createObjectURL(await response.blob());

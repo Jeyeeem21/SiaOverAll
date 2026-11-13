@@ -69,7 +69,7 @@ echo     Student Account migrations completed!
 echo.
 
 REM Print Module - Print orders and pricing
-echo [6/6] Running Print Module migrations...
+echo [6/7] Running Print Module migrations...
 echo     - print_orders, print_order_files
 echo     - print_order_status_history, print_pricing_config
 docker compose exec -T print-backend php artisan migrate --force
@@ -80,9 +80,17 @@ if errorlevel 1 (
 echo     Print Module migrations completed!
 echo.
 
-REM Sticker Module (if needed)
-REM echo [7/7] Running Sticker Module migrations...
-REM docker compose exec -T sticker-backend php artisan migrate --force
+REM Sticker Module - Sticker requests and tracking
+echo [7/7] Running Sticker Module migrations...
+echo     - sticker_requests, sticker_categories (if any)
+docker compose exec -T sticker-backend php artisan migrate --force
+if errorlevel 1 (
+    echo WARNING: Sticker Module migration failed!
+    echo This might be expected if sticker tables are managed by student_account_module
+    echo Continuing...
+)
+echo     Sticker Module migrations completed!
+echo.
 
 echo ========================================
 echo  All migrations completed successfully!

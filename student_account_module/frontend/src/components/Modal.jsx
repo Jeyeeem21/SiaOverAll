@@ -43,11 +43,11 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
         <div className={`relative w-full ${sizeClasses[size]} transform rounded-xl bg-white shadow-xl transition-all`}>
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
-              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 bg-white">
+              <h3 className="text-[15px] font-bold text-gray-900">{title}</h3>
               <button
                 onClick={onClose}
-                className="rounded-md p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
+                className="rounded-lg p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -57,7 +57,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
           )}
           
           {/* Content */}
-          <div className="px-4 py-4 sm:px-6 sm:py-5">
+          <div className="px-6 py-5">
             {children}
           </div>
         </div>

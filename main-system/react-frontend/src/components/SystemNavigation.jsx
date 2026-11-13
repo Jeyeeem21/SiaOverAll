@@ -7,6 +7,7 @@ const systems = [
   { label: 'Rental', path: '/rentals' },
   { label: 'Toga Rental', path: '/toga-rentals' },
   { label: 'ID Management', path: '/staff-management' },
+  { label: 'Stickers', path: '/stickers' },
 ];
 
 const SystemNavigation = ({ dark = false, header = false }) => {

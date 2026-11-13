@@ -89,14 +89,6 @@ const Orders = () => {
               <p className="mt-1.5 text-[11px] text-gray-400">
                 Track your document requests and orders
               </p>
-              {/* Debug info - remove after fixing */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-2 text-xs text-gray-400">
-                  Debug: Email = {user?.email || user?.student_email || 'No email found'} | 
-                  Print Orders: {printOrders.length} | 
-                  Loading: {printOrdersLoading ? 'Yes' : 'No'}
-                </div>
-              )}
             </div>
           </div>
         </header>

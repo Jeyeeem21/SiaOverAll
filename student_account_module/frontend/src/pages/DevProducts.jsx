@@ -255,21 +255,9 @@ const DevProducts = () => {
       <LoadingBar isLoading={loading} />
       <Navigation userRole="student" />
       <div className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-5 lg:px-6 py-5">
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">Business Center Products</h1>
-            <p className="text-[11px] text-gray-400 mt-1.5">School supplies, uniforms, and accessories</p>
-          </div>
-        </header>
         
         <main className="mt-7 max-w-7xl mx-auto px-5 lg:px-6 pb-20">
           <div className="space-y-7">
-            
-            {/* Header */}
-            <div className="mb-6 sm:mb-8">
-              <h1 className="text-xl font-bold text-gray-900 tracking-tight">Business Center Products</h1>
-              <p className="text-[11px] text-gray-400 mt-1.5">School supplies, uniforms, and accessories</p>
-            </div>
 
             {/* Search and Filters */}
             <div className="card card-lg mb-6">
@@ -346,133 +334,89 @@ const DevProducts = () => {
             </div>
 
             {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
               {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 overflow-hidden group">
+                <div key={product.id} className="bg-white rounded-xl p-4 border border-gray-200 hover:shadow-sm hover:border-emerald-300 transition-all duration-300 group">
                   {/* Product Image */}
-                  <div className="w-full h-48 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden cursor-pointer" onClick={() => handleViewDetails(product)}>
+                  <div className="relative overflow-hidden rounded-lg mb-3 cursor-pointer" onClick={() => handleViewDetails(product)}>
                     {product.image_url || product.product_image ? (
                       <img 
                         src={product.image_url || product.product_image} 
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="text-gray-400 text-center">
-                        <svg className="w-12 h-12 mx-auto mb-2 group-hover:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2z" />
+                      <div className="w-full h-32 bg-gray-100 flex items-center justify-center">
+                        <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <p className="text-xs font-medium text-gray-500">No Image Available</p>
                       </div>
                     )}
                     
-                    {/* Status Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col space-y-1">
-                      {product.expiration_date && isExpired(product.expiration_date) && (
-                        <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-                          Expired
-                        </span>
-                      )}
-                      {(product.status !== 'active' && !product.is_active) && !isExpired(product.expiration_date) && (
-                        <span className="bg-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-                          Unavailable
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Quick View Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                      <div className="bg-white/95 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-full text-sm font-medium shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                        <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Click for details
-                      </div>
-                    </div>
+                    {/* Status Badges - Overlay on image */}
+                    {product.expiration_date && isExpired(product.expiration_date) && (
+                      <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        Expired
+                      </span>
+                    )}
+                    {(product.status !== 'active' && !product.is_active) && !isExpired(product.expiration_date) && (
+                      <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        Unavailable
+                      </span>
+                    )}
+                    
+                    {/* Gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-5">
+                  <div>
+                    <h3 className="text-[13px] font-semibold text-gray-900 mb-1 line-clamp-2 cursor-pointer group-hover:text-emerald-600 transition-colors" onClick={() => handleViewDetails(product)}>
+                      {product.name}
+                    </h3>
+                    
+                    {/* Category */}
+                    <p className="text-[11px] text-gray-600 mb-2">{product.category_name || 'Other'}</p>
+                    
+                    {/* Price Section */}
                     <div className="mb-3">
-                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-emerald-600 transition-colors cursor-pointer leading-snug" onClick={() => handleViewDetails(product)}>
-                        {product.name}
-                      </h3>
-                      
-                      {/* Barcode */}
-                      {product.barcode && (
-                        <p className="text-xs text-gray-500 font-mono bg-gray-50 px-2 py-1 rounded inline-block">
-                          {product.barcode}
-                        </p>
-                      )}
-                    </div>
-                    
-                    {product.description && (
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
-                    )}
-                    
-                    {/* Price and Cost */}
-                    <div className="mb-4 p-3 bg-emerald-50 rounded-lg">
-                      <div className="flex items-baseline justify-between mb-1">
-                        <span className="text-xl font-bold text-emerald-700">{formatPrice(product.price)}</span>
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-[15px] font-bold text-emerald-600">{formatPrice(product.price)}</span>
                         {product.unit && (
-                          <span className="text-xs text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full font-medium">
+                          <span className="text-[10px] text-emerald-600 font-medium">
                             per {product.unit}
                           </span>
                         )}
                       </div>
                       
-                      {/* Show cost for reference (optional) */}
+                      {/* Cost and margin */}
                       {product.cost && (
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-600">Cost: {formatPrice(product.cost)}</span>
-                          <span className="text-green-700 font-semibold bg-green-100 px-2 py-0.5 rounded-full">
+                        <div className="flex items-center justify-between text-[10px] mt-1">
+                          <span className="text-gray-500">Cost: {formatPrice(product.cost)}</span>
+                          <span className="text-emerald-700 font-semibold">
                             +{formatPrice(product.price - product.cost)}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Expiration Date */}
-                    {product.expiration_date && (
-                      <div className={`mb-4 p-3 rounded-lg ${
-                        isExpired(product.expiration_date) 
-                          ? 'bg-red-50 border border-red-200' 
-                          : 'bg-amber-50 border border-amber-200'
-                      }`}>
-                        <div className="flex items-center">
-                          <svg className={`w-4 h-4 mr-2 ${
-                            isExpired(product.expiration_date) ? 'text-red-500' : 'text-amber-500'
-                          }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <p className={`text-sm font-medium ${
-                            isExpired(product.expiration_date) 
-                              ? 'text-red-700' 
-                              : 'text-amber-700'
-                          }`}>
-                            {isExpired(product.expiration_date) ? 'Expired: ' : 'Expires: '}
-                            {formatExpirationDate(product.expiration_date)}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
                     {/* Category Badge */}
-                    <div className="flex items-center justify-center mb-4">
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${getCategoryColor(product.category_name)}`}>
+                    <div className="flex justify-center mb-3">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold ${getCategoryColor(product.category_name)}`}>
                         {product.category_name || 'Uncategorized'}
                       </span>
                     </div>
+                    
                     {/* Action Buttons */}
-                    <div className="flex flex-col space-y-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-2">
                       <button 
                         onClick={() => handleViewDetails(product)}
-                        className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 group/btn"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                       >
-                        <svg className="w-4 h-4 mr-2 group-hover/btn:text-emerald-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span className="group-hover/btn:text-emerald-600 transition-colors">View Details</span>
+                        View
                       </button>
                       
                       {isInCart(product.id) ? (
@@ -481,12 +425,12 @@ const DevProducts = () => {
                             e.stopPropagation();
                             openCart();
                           }}
-                          className="w-full inline-flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-lg shadow-sm bg-green-50 text-green-700 border-2 border-green-200 hover:bg-green-100 hover:border-green-300 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500 transition-all duration-200"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
                         >
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
-                          In Cart ({getItemQuantity(product.id)}) - View Cart
+                          In Cart ({getItemQuantity(product.id)})
                         </button>
                       ) : (
                         <button 
@@ -494,18 +438,17 @@ const DevProducts = () => {
                             e.stopPropagation();
                             handleAddToCart(product);
                           }}
-                          className={`w-full inline-flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-lg shadow-sm transition-all duration-200 ${
+                          className={`flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-semibold rounded-lg transition-colors ${
                             isExpired(product.expiration_date) || (product.status !== 'active' && !product.is_active)
                               ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
-                              : 'bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 transform hover:-translate-y-0.5 hover:shadow-md'
+                              : 'bg-emerald-600 text-white hover:bg-emerald-700'
                           }`}
                           disabled={isExpired(product.expiration_date) || (product.status !== 'active' && !product.is_active)}
                         >
-                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0l-.4-2M16 19a2 2 0 100-4 2 2 0 000 4zm-7 0a2 2 0 100-4 2 2 0 000 4z" />
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                           </svg>
-                          {isExpired(product.expiration_date) ? 'Product Expired' : 
-                           (product.status !== 'active' && !product.is_active) ? 'Currently Unavailable' : 'Add to Cart'}
+                          {isExpired(product.expiration_date) || (product.status !== 'active' && !product.is_active) ? 'Unavailable' : 'Add'}
                         </button>
                       )}
                     </div>

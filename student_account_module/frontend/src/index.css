@@ -114,6 +114,16 @@
     z-index: 60 !important;
   }
   
+  /* Hide scrollbar for mobile nav but keep scrolling functionality */
+  .bottom-nav::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .bottom-nav {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
   .bottom-nav-item {
     @apply relative flex flex-col items-center justify-center transition-all duration-200 ease-out;
     touch-action: manipulation;
