@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import OrderService from '../services/OrderService';
+import OrderService from '../services/orderService';
 
 const OrdersPreview = ({ isVisible, onMouseEnter, onMouseLeave, onTouchStart }) => {
   const [orders, setOrders] = useState([]);
