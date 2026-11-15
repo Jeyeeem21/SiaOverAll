@@ -93,4 +93,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
 # Start supervisor (manages PHP-FPM and Nginx)
-CMD ["sh", "-c", "mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache && chown -R www-data:www-data storage bootstrap/cache && php artisan storage:link --force || true; envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf; exec /usr/bin/supervisord -c /etc/supervisord.conf"]
+# Run migrations before starting services
+CMD ["sh", "-c", "mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache && chown -R www-data:www-data storage bootstrap/cache && php artisan storage:link --force || true; php artisan migrate --force; envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf; exec /usr/bin/supervisord -c /etc/supervisord.conf"]
