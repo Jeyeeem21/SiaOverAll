@@ -1,5 +1,8 @@
 # Railway deployment configuration
 
+For the click-by-click deployment order and every module's required variables,
+follow [`MODULE_BY_MODULE_DEPLOYMENT.md`](MODULE_BY_MODULE_DEPLOYMENT.md).
+
 This repository is a monorepo. Create one Railway project containing MySQL and
 the ten web services listed below. The optional `student_account_module/api-server`
 is not part of this deployment; the Laravel account backend is the supported API.

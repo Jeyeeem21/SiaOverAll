@@ -1,0 +1,51 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Railway CLI
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+          echo "$HOME/.railway/bin" >> $GITHUB_PATH
+      
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway up --service main-backend
+          railway up --service main-frontend
+          railway up --service staff-id-backend
+          railway up --service staff-id-frontend
+          railway up --service print-backend
+          railway up --service print-frontend
+          railway up --service sticker-backend
+          railway up --service sticker-frontend
+          railway up --service account-backend
+          railway up --service account-frontend
+      
+      - name: Run Database Migrations
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway run --service main-backend php artisan migrate --force
+          railway run --service staff-id-backend php artisan migrate --force
+          railway run --service print-backend php artisan migrate --force
+          railway run --service sticker-backend php artisan migrate --force
+          railway run --service account-backend php artisan migrate --force
+      
+      - name: Deployment Summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "All services have been deployed to Railway"

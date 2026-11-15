@@ -1,0 +1,94 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/integrated-system
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    strategy:
+      matrix:
+        service:
+          - name: main-backend
+            context: ./main-system/laravel-backend
+            dockerfile: Dockerfile.railway
+          - name: main-frontend
+            context: ./main-system/react-frontend
+            dockerfile: Dockerfile.railway
+          - name: staff-id-backend
+            context: ./staff_id_managament/backend
+            dockerfile: Dockerfile.railway
+          - name: staff-id-frontend
+            context: ./staff_id_managament/frontend
+            dockerfile: Dockerfile.railway
+          - name: print-backend
+            context: ./Student_print_module/backend
+            dockerfile: Dockerfile.railway
+          - name: print-frontend
+            context: ./Student_print_module/frontend
+            dockerfile: Dockerfile.railway
+          - name: sticker-backend
+            context: ./Staff_Sticker_module/backend
+            dockerfile: Dockerfile.railway
+          - name: sticker-frontend
+            context: ./Staff_Sticker_module/frontend
+            dockerfile: Dockerfile.railway
+          - name: account-backend
+            context: ./student_account_module/backend
+            dockerfile: Dockerfile.railway
+          - name: account-frontend
+            context: ./student_account_module/frontend
+            dockerfile: Dockerfile.railway
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.service.context }}
+          file: ${{ matrix.service.context }}/${{ matrix.service.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Image build summary
+        run: |
+          echo "✅ Successfully built and pushed: ${{ matrix.service.name }}"
+          echo "📦 Image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}"
+          echo "🏷️ Tags: ${{ steps.meta.outputs.tags }}"

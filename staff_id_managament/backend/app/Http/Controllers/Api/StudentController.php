@@ -39,41 +39,53 @@ class StudentController extends Controller
             return $response;
         }
 
-        $students = Student::query()
-            ->with('user') // Eager load user relationship for name and email
-            ->when($request->filled('search'), function ($query) use ($request): void {
-                $search = mb_strtolower(trim((string) $request->input('search')));
+        try {
+            $students = Student::query()
+                ->with('user') // Eager load user relationship for name and email
+                ->when($request->filled('search'), function ($query) use ($request): void {
+                    $search = mb_strtolower(trim((string) $request->input('search')));
 
-                foreach (preg_split('/\\s+/', $search, -1, PREG_SPLIT_NO_EMPTY) as $term) {
-                    $query->where(function ($studentQuery) use ($term): void {
-                        $studentQuery->whereRaw('LOWER(student_number) LIKE ?', ["%{$term}%"])
-                            ->orWhereRaw('LOWER(reference_no) LIKE ?', ["%{$term}%"])
-                            ->orWhereHas('user', function ($userQuery) use ($term) {
-                                $userQuery->whereRaw('LOWER(full_name) LIKE ?', ["%{$term}%"])
-                                    ->orWhereRaw('LOWER(email) LIKE ?', ["%{$term}%"]);
-                            });
-                    });
-                }
-            })
-            ->when($request->filled('program'), fn ($query) => $query->where('department', $request->string('program')->toString()))
-            ->when($request->filled('department'), fn ($query) => $query->where('department', $request->string('department')->toString()))
-            ->when($request->filled('verification_status'), fn ($query) => $query->where('status', $request->string('verification_status')->toString()))
-            ->orderByRaw('(SELECT full_name FROM users WHERE users.id = account_students.user_id)')
-            ->paginate(15)
-            ->withQueryString();
+                    foreach (preg_split('/\\s+/', $search, -1, PREG_SPLIT_NO_EMPTY) as $term) {
+                        $query->where(function ($studentQuery) use ($term): void {
+                            $studentQuery->whereRaw('LOWER(student_number) LIKE ?', ["%{$term}%"])
+                                ->orWhereRaw('LOWER(reference_no) LIKE ?', ["%{$term}%"])
+                                ->orWhereHas('user', function ($userQuery) use ($term) {
+                                    $userQuery->whereRaw('LOWER(full_name) LIKE ?', ["%{$term}%"])
+                                        ->orWhereRaw('LOWER(email) LIKE ?', ["%{$term}%"]);
+                                });
+                        });
+                    }
+                })
+                ->when($request->filled('program'), fn ($query) => $query->where('department', $request->string('program')->toString()))
+                ->when($request->filled('department'), fn ($query) => $query->where('department', $request->string('department')->toString()))
+                ->when($request->filled('verification_status'), fn ($query) => $query->where('status', $request->string('verification_status')->toString()))
+                ->orderBy('id', 'desc') // Simplified ordering - safe for empty tables
+                ->paginate(15)
+                ->withQueryString();
 
-        return StudentResource::collection($students)->additional([
-            'filter_options' => [
-                'programs' => Student::query()->distinct()->pluck('department')->filter()->values(),
-                'departments' => Student::query()->distinct()->pluck('department')->filter()->values(),
-                'year_levels' => Student::query()->distinct()->pluck('year_level')->filter()->values(),
-            ],
-            'summary' => [
-                'total_students' => Student::count(),
-                'verified_students' => Student::where('status', 'verified')->count(),
-                'pending_verification' => Student::where('status', 'pending')->count(),
-            ],
-        ]);
+            return StudentResource::collection($students)->additional([
+                'filter_options' => [
+                    'programs' => Student::query()->distinct()->pluck('department')->filter()->values(),
+                    'departments' => Student::query()->distinct()->pluck('department')->filter()->values(),
+                    'year_levels' => Student::query()->distinct()->pluck('year_level')->filter()->values(),
+                ],
+                'summary' => [
+                    'total_students' => Student::count(),
+                    'verified_students' => Student::where('status', 'verified')->count(),
+                    'pending_verification' => Student::where('status', 'pending')->count(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching students', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Error fetching students: ' . $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
     }
 
     public function show(Request $request, Student $student): StudentResource|JsonResponse
