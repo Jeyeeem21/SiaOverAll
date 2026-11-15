@@ -8,6 +8,7 @@ export function StudentProvider({ children }) {
 
   useEffect(() => {
     console.log('StudentContext: Initializing...');
+    const studentPortalOrigin = new URL(import.meta.env.VITE_STUDENT_PORTAL_URL).origin;
 
     // Try to get student from URL params (for integration with parent system)
     const params = new URLSearchParams(window.location.search);
@@ -47,16 +48,12 @@ export function StudentProvider({ children }) {
 
     // Listen for postMessage from parent system (for iframe integration)
     const handleMessage = (event) => {
-      // In development, accept messages from localhost with different ports
-      const isLocalhost = event.origin.startsWith('http://localhost:') || 
-                         event.origin.startsWith('http://127.0.0.1:');
-      
-      if (!isLocalhost) {
+      if (event.origin !== studentPortalOrigin) {
         console.warn('StudentContext: Rejected message from unknown origin:', event.origin);
         return;
       }
 
-      if (event.data.type === 'STUDENT_AUTH' && event.data.data) {
+      if (event.data?.type === 'STUDENT_AUTH' && event.data.data) {
         const studentData = event.data.data;
         console.log('StudentContext: Received student data via postMessage:', studentData);
         setStudent(studentData);
@@ -70,7 +67,7 @@ export function StudentProvider({ children }) {
     // Notify parent that we're ready to receive student data
     if (window.parent !== window) {
       console.log('StudentContext: Notifying parent that module is ready');
-      window.parent.postMessage({ type: 'PRINT_ORDER_MODULE_READY' }, '*');
+      window.parent.postMessage({ type: 'PRINT_ORDER_MODULE_READY' }, studentPortalOrigin);
     }
 
     return () => {

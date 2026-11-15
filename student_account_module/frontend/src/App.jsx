@@ -34,6 +34,8 @@ import CartDrawer from './components/CartDrawer';
 const PrintServices = () => {
   const { user } = useAuth();
   const iframeRef = React.useRef(null);
+  const printFrontendUrl = import.meta.env.VITE_PRINT_FRONTEND_URL;
+  const printFrontendOrigin = new URL(printFrontendUrl).origin;
 
   React.useEffect(() => {
     if (!user || !iframeRef.current) return;
@@ -50,15 +52,13 @@ const PrintServices = () => {
       };
 
       // Send message to iframe
-      const printFrontendUrl = import.meta.env.VITE_PRINT_FRONTEND_URL;
-      iframeRef.current.contentWindow.postMessage(studentData, printFrontendUrl);
+      iframeRef.current.contentWindow.postMessage(studentData, printFrontendOrigin);
     };
 
     // Listen for ready message from print module
     const handleMessage = (event) => {
-      const printFrontendUrl = import.meta.env.VITE_PRINT_FRONTEND_URL;
-      if (event.origin !== printFrontendUrl) return;
-      if (event.data.type === 'PRINT_ORDER_MODULE_READY') {
+      if (event.origin !== printFrontendOrigin) return;
+      if (event.data?.type === 'PRINT_ORDER_MODULE_READY') {
         sendStudentData();
       }
     };
@@ -81,8 +81,9 @@ const PrintServices = () => {
         <iframe
           ref={iframeRef}
           title="Student Print Services"
-          src={import.meta.env.VITE_PRINT_FRONTEND_URL}
+          src={printFrontendUrl}
           className="h-full w-full border-0"
+          onLoad={sendStudentData}
         />
       </main>
     </>

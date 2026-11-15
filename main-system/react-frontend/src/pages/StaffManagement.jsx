@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import usePageTitle from '../hooks/usePageTitle';
 
 const STAFF_ID_URL = import.meta.env.VITE_STAFF_ID_URL;
+const STAFF_ID_ORIGIN = new URL(STAFF_ID_URL).origin;
 
 export default function StaffManagement() {
   usePageTitle('ID Management');
@@ -12,7 +13,7 @@ export default function StaffManagement() {
     // Listen for messages from the iframe
     const handleMessage = (event) => {
       // Only accept messages from the staff ID system
-      if (event.origin !== STAFF_ID_URL) return;
+      if (event.origin !== STAFF_ID_ORIGIN) return;
       
       // Handle tab changes from iframe
       if (event.data.type === 'TAB_CHANGE') {
@@ -26,7 +27,7 @@ export default function StaffManagement() {
         if (token && iframeRef.current) {
           iframeRef.current.contentWindow?.postMessage(
             { type: 'AUTH_TOKEN', token },
-            STAFF_ID_URL
+            STAFF_ID_ORIGIN
           );
         }
       }
@@ -43,7 +44,7 @@ export default function StaffManagement() {
       if (token && iframeRef.current) {
         iframeRef.current.contentWindow?.postMessage(
           { type: 'AUTH_TOKEN', token },
-          STAFF_ID_URL
+          STAFF_ID_ORIGIN
         );
       }
     };
@@ -64,7 +65,7 @@ export default function StaffManagement() {
     // Send message to iframe to change tab
     iframeRef.current?.contentWindow?.postMessage(
       { type: 'CHANGE_TAB', tab },
-      STAFF_ID_URL
+      STAFF_ID_ORIGIN
     );
   };
 
