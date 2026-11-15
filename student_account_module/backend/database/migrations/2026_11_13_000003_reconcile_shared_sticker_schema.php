@@ -26,8 +26,16 @@ return new class extends Migration
                 ->references('id')
                 ->on('account_students')
                 ->cascadeOnDelete();
-            $table->index(['student_id', 'created_at']);
         });
+
+        // This migration can follow a previous sticker schema that already
+        // created the conventional composite index. Avoid failing production
+        // deployment when the index is already present.
+        if (! Schema::hasIndex('sticker_requests', 'sticker_requests_student_id_created_at_index')) {
+            Schema::table('sticker_requests', function (Blueprint $table): void {
+                $table->index(['student_id', 'created_at']);
+            });
+        }
 
         // The existing stickers table is empty and has the obsolete standalone
         // module fields. Replace only those fields with the columns used by
