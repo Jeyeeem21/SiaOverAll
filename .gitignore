@@ -9,6 +9,7 @@ vendor/
 
 # Environment files with sensitive data
 .env
+.env.railway
 .env.local
 .env.*.local
 

@@ -1,8 +1,13 @@
 #!/bin/bash
-# Run all database migrations in correct order for Railway deployment
-# Usage: railway run bash railway/scripts/migrate-all.sh
+# Deprecated for Railway service images. Each deployed image contains one
+# backend module only, so it cannot migrate all five modules. Follow the
+# per-service migration sequence in railway/RAILWAY_DEPLOYMENT.md instead.
 
 set -e
+
+echo "This cross-module script is not runnable inside a Railway service image."
+echo "Use railway/RAILWAY_DEPLOYMENT.md and run migrate --force in each backend shell."
+exit 1
 
 echo "==========================================="
 echo " Railway Migration - All Services"

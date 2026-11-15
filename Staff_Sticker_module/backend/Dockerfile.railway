@@ -35,12 +35,17 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     icu-dev \
+    libxml2-dev \
+    oniguruma-dev \
+    gettext \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         bcmath \
         zip \
         intl \
+        mbstring \
+        xml \
         gd \
         opcache \
     && rm -rf /var/cache/apk/*
@@ -49,7 +54,7 @@ RUN apk add --no-cache \
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
 
 # Copy Nginx configuration
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx.conf /etc/nginx/nginx.conf.template
 
 # Copy Supervisor configuration
 COPY docker/supervisord.conf /etc/supervisord.conf
@@ -62,6 +67,8 @@ COPY . .
 
 # Copy vendor from composer stage
 COPY --from=composer-stage /app/vendor ./vendor
+
+RUN php artisan package:discover --ansi
 
 # Set permissions
 RUN mkdir -p storage/framework/{sessions,views,cache} \
@@ -77,7 +84,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/api/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
 # Start supervisor (manages PHP-FPM and Nginx)
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["sh", "-c", "mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache && chown -R www-data:www-data storage bootstrap/cache && php artisan storage:link --force || true; envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf; exec /usr/bin/supervisord -c /etc/supervisord.conf"]

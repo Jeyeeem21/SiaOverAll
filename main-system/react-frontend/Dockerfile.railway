@@ -12,7 +12,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies (production only)
-RUN npm ci --only=production --ignore-scripts
+RUN npm ci --ignore-scripts
 
 # Copy source code
 COPY . .
@@ -26,6 +26,11 @@ ARG VITE_STICKER_URL
 ARG VITE_STAFF_ID_URL
 ARG VITE_STUDENT_ACCOUNT_URL
 ARG VITE_STUDENT_REGISTER_URL
+ARG VITE_MAIN_SYSTEM_API_URL
+ARG VITE_MAIN_SYSTEM_URL
+ARG VITE_PRINT_FRONTEND_URL
+ARG VITE_STUDENT_PORTAL_URL
+ARG VITE_ID_MANAGEMENT_API_URL
 
 # Build for production
 RUN npm run build
@@ -36,7 +41,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy nginx configuration
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -50,7 +55,7 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]

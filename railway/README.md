@@ -1,4 +1,9 @@
 # 🚂 Railway Deployment Guide
+> **Use [`RAILWAY_DEPLOYMENT.md`](RAILWAY_DEPLOYMENT.md) as the authoritative
+> guide.** This older document describes files and environment templates that
+> are not present in the repository and must not be followed for a production
+> deploy.
+
 ## Business Center Integrated System
 
 **Last Updated:** November 13, 2026
