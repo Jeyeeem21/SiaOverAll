@@ -8,7 +8,8 @@ import ApiService from '../services/api';
 let ssoExchangePromise = null;
 
 const mainSystemLoginUrl = () => {
-  const configuredMainSystemUrl = import.meta.env.VITE_MAIN_SYSTEM_URL;
+  const configuredMainSystemUrl = import.meta.env.VITE_MAIN_SYSTEM_URL
+    || 'https://minsu-businesscenter.up.railway.app';
   const returnTo = new URLSearchParams(window.location.search).get('return_to');
 
   try {
