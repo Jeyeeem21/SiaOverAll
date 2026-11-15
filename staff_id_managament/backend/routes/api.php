@@ -22,6 +22,108 @@ Route::get('/test', function () {
     ]);
 });
 
+// Debug endpoint to check database and model status
+Route::get('/debug/database', function () {
+    try {
+        $debug = [
+            'status' => 'ok',
+            'database_connected' => false,
+            'tables_exist' => [],
+            'models_work' => [],
+            'errors' => [],
+        ];
+
+        // Test database connection
+        try {
+            \DB::connection()->getPdo();
+            $debug['database_connected'] = true;
+        } catch (\Exception $e) {
+            $debug['errors'][] = 'DB Connection: ' . $e->getMessage();
+        }
+
+        // Check if tables exist
+        $tables = ['users', 'account_students', 'student_id_cards'];
+        foreach ($tables as $table) {
+            try {
+                $count = \DB::table($table)->count();
+                $debug['tables_exist'][$table] = [
+                    'exists' => true,
+                    'count' => $count
+                ];
+            } catch (\Exception $e) {
+                $debug['tables_exist'][$table] = [
+                    'exists' => false,
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+
+        // Test models
+        try {
+            $studentCount = \App\Models\Student::count();
+            $debug['models_work']['Student'] = [
+                'works' => true,
+                'count' => $studentCount
+            ];
+        } catch (\Exception $e) {
+            $debug['models_work']['Student'] = [
+                'works' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        try {
+            $userCount = \App\Models\User::count();
+            $debug['models_work']['User'] = [
+                'works' => true,
+                'count' => $userCount
+            ];
+        } catch (\Exception $e) {
+            $debug['models_work']['User'] = [
+                'works' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        // Test Student with user relationship
+        try {
+            $student = \App\Models\Student::with('user')->first();
+            $debug['relationships']['Student->user'] = [
+                'works' => true,
+                'has_data' => !is_null($student),
+                'sample' => $student ? [
+                    'id' => $student->id,
+                    'student_number' => $student->student_number,
+                    'has_user' => !is_null($student->user)
+                ] : null
+            ];
+        } catch (\Exception $e) {
+            $debug['relationships']['Student->user'] = [
+                'works' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        // Environment info
+        $debug['environment'] = [
+            'APP_ENV' => config('app.env'),
+            'APP_DEBUG' => config('app.debug'),
+            'DB_CONNECTION' => config('database.default'),
+            'DB_HOST' => config('database.connections.mysql.host'),
+            'DB_DATABASE' => config('database.connections.mysql.database'),
+        ];
+
+        return response()->json($debug);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'trace' => config('app.debug') ? $e->getTraceAsString() : 'Enable APP_DEBUG to see trace'
+        ], 500);
+    }
+});
+
 // Public routes for ID card preview (no auth required for iframes)
 Route::get('student-id-cards/{card}/preview', [StudentIdCardController::class, 'preview']);
 Route::get('student-id-cards/{card}/pdf', [StudentIdCardController::class, 'generatePdf']);
