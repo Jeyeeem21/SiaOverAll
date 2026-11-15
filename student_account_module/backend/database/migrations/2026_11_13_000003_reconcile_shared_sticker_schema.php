@@ -40,23 +40,44 @@ return new class extends Migration
         // The existing stickers table is empty and has the obsolete standalone
         // module fields. Replace only those fields with the columns used by
         // StaffStickerController and the Student Account Sticker model.
-        Schema::table('stickers', function (Blueprint $table): void {
-            $table->dropColumn([
-                'plate_number',
-                'student_name',
-                'student_id_number',
-                'vehicle_type',
-                'file_path',
-                'file_format',
-                'generated_at',
-            ]);
-        });
+        $legacyColumns = [
+            'plate_number',
+            'student_name',
+            'student_id_number',
+            'vehicle_type',
+            'file_path',
+            'file_format',
+            'generated_at',
+        ];
 
-        Schema::table('stickers', function (Blueprint $table): void {
-            $table->string('vehicle_code', 20)->after('serial_number');
-            $table->string('valid_month', 3)->after('price');
-            $table->string('valid_year', 4)->after('valid_month');
-        });
+        $existingLegacyColumns = array_values(array_filter(
+            $legacyColumns,
+            fn (string $column): bool => Schema::hasColumn('stickers', $column),
+        ));
+
+        if ($existingLegacyColumns !== []) {
+            Schema::table('stickers', function (Blueprint $table) use ($existingLegacyColumns): void {
+                $table->dropColumn($existingLegacyColumns);
+            });
+        }
+
+        if (! Schema::hasColumn('stickers', 'vehicle_code')) {
+            Schema::table('stickers', function (Blueprint $table): void {
+                $table->string('vehicle_code', 20)->after('serial_number');
+            });
+        }
+
+        if (! Schema::hasColumn('stickers', 'valid_month')) {
+            Schema::table('stickers', function (Blueprint $table): void {
+                $table->string('valid_month', 3)->after('price');
+            });
+        }
+
+        if (! Schema::hasColumn('stickers', 'valid_year')) {
+            Schema::table('stickers', function (Blueprint $table): void {
+                $table->string('valid_year', 4)->after('valid_month');
+            });
+        }
     }
 
     public function down(): void
