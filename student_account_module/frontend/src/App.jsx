@@ -36,25 +36,23 @@ const PrintServices = () => {
   const iframeRef = React.useRef(null);
   const printFrontendUrl = import.meta.env.VITE_PRINT_FRONTEND_URL;
   const printFrontendOrigin = new URL(printFrontendUrl).origin;
+  const sendStudentData = React.useCallback(() => {
+    if (!user || !iframeRef.current) {
+      return;
+    }
+
+    iframeRef.current.contentWindow?.postMessage({
+      type: 'STUDENT_AUTH',
+      data: {
+        student_id: user.student_number || user.reference_no || '',
+        student_email: user.email || '',
+        student_name: user.name || '',
+        student_phone: user.phone || user.contact_number || '',
+      },
+    }, printFrontendOrigin);
+  }, [printFrontendOrigin, user]);
 
   React.useEffect(() => {
-    if (!user || !iframeRef.current) return;
-
-    const sendStudentData = () => {
-      const studentData = {
-        type: 'STUDENT_AUTH',
-        data: {
-          student_id: user.student_number || user.reference_no || '',
-          student_email: user.email || '',
-          student_name: user.name || '',
-          student_phone: user.phone || user.contact_number || ''
-        }
-      };
-
-      // Send message to iframe
-      iframeRef.current.contentWindow.postMessage(studentData, printFrontendOrigin);
-    };
-
     // Listen for ready message from print module
     const handleMessage = (event) => {
       if (event.origin !== printFrontendOrigin) return;
@@ -72,7 +70,7 @@ const PrintServices = () => {
       window.removeEventListener('message', handleMessage);
       clearTimeout(timer);
     };
-  }, [user]);
+  }, [printFrontendOrigin, sendStudentData]);
 
   return (
     <>
