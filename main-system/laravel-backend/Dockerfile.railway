@@ -4,7 +4,13 @@
 # ============================================
 # Stage 1: Composer Dependencies
 # ============================================
-FROM composer:2 AS composer-stage
+FROM php:8.3-cli-alpine AS composer-stage
+
+# Pin Composer's execution environment to PHP 8.3. The moving composer:2
+# image currently ships PHP 8.5, which is incompatible with this lockfile.
+RUN apk add --no-cache git unzip libzip-dev \
+    && docker-php-ext-install zip
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
