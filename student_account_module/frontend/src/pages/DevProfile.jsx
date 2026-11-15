@@ -493,6 +493,77 @@ const DevProfile = () => {
                     <label className="text-responsive-xs font-medium text-gray-500">Phone Number</label>
                     <p className="mt-1 text-responsive-sm text-gray-900">{profile?.contact_number || profile?.phone || 'Not provided'}</p>
                   </div>
+                  <div>
+                    <label className="text-responsive-xs font-medium text-gray-500">Signature</label>
+                    <div className="flex items-center gap-3 mt-1">
+                      {profile?.signature_path ? (
+                        <img 
+                          src={`${ID_MANAGEMENT_ORIGIN}/storage/${profile.signature_path}?t=${Date.now()}`} 
+                          alt="Signature" 
+                          className="h-12 w-36 object-contain border rounded bg-white" 
+                        />
+                      ) : (
+                        <span className="text-responsive-sm text-gray-400">Not uploaded</span>
+                      )}
+                      <label
+                        htmlFor="signature-upload"
+                        className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        {profile?.signature_path ? 'Change' : 'Upload'}
+                        <input
+                          id="signature-upload"
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            
+                            try {
+                              const formData = new FormData();
+                              formData.append('signature', file);
+                              
+                              const ID_MGMT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL;
+                              const uploadUrl = `${ID_MGMT_API}/public/students/${profile.student_number}/update-signature`;
+                              
+                              const response = await fetch(uploadUrl, {
+                                method: 'POST',
+                                body: formData,
+                              });
+                              
+                              const responseData = await response.json();
+                              
+                              if (!response.ok) {
+                                throw new Error(responseData.message || 'Failed to upload signature');
+                              }
+                              
+                              await new Promise(resolve => setTimeout(resolve, 500));
+                              
+                              const updated = await ApiService.getProfile();
+                              setProfile({
+                                ...updated,
+                                signature_path: responseData.signature_path || updated.signature_path
+                              });
+                              
+                              setEditForm(prev => ({
+                                ...prev,
+                                signature_path: responseData.signature_path || updated.signature_path
+                              }));
+                              
+                              toast.success('Signature updated successfully!');
+                            } catch (err) {
+                              console.error('Signature upload error:', err);
+                              toast.error('Failed to upload signature: ' + err.message);
+                            }
+                            e.target.value = '';
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
                   <div><label className="text-responsive-xs font-medium text-gray-500">Birthdate</label><p className="mt-1 text-responsive-sm text-gray-900">{profile?.birthdate ? formatDate(profile.birthdate) : 'Not provided'}</p></div>
                   <div><label className="text-responsive-xs font-medium text-gray-500">Address</label><p className="mt-1 text-responsive-sm text-gray-900">{profile?.address || 'Not provided'}</p></div>
                   <div><label className="text-responsive-xs font-medium text-gray-500">Emergency Contact</label><p className="mt-1 text-responsive-sm text-gray-900">{profile?.emergency_contact_name || 'Not provided'}{profile?.emergency_contact_number ? ` · ${profile.emergency_contact_number}` : ''}</p></div>
