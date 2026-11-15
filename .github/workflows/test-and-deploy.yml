@@ -29,7 +29,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           extensions: mbstring, xml, bcmath, pdo, mysql
           coverage: none
       
@@ -88,6 +88,9 @@ jobs:
     needs: [test, test-frontend]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    env:
+      RAILWAY_PROJECT_ID: 60e21c7e-3fd0-406d-80de-2f5d54addc12
+      RAILWAY_ENVIRONMENT: production
     
     steps:
       - name: Checkout code
@@ -97,6 +100,16 @@ jobs:
         run: |
           curl -fsSL https://railway.app/install.sh | sh
           echo "$HOME/.railway/bin" >> $GITHUB_PATH
+
+      - name: Link the Railway deployment target
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::error::Missing GitHub Actions secret RAILWAY_TOKEN. Add a Railway project token before deploying."
+            exit 1
+          fi
+          railway link --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT" --json
       
       - name: Deploy to Railway
         env:
