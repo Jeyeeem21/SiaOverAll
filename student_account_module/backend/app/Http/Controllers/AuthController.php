@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Student;
+use App\Models\User;
 use App\Services\MainSystemService;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Auth\Events\Registered;
-use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -20,6 +22,7 @@ class AuthController extends Controller
     {
         $this->mainSystemService = $mainSystemService;
     }
+
     /**
      * Register a new student user.
      */
@@ -63,7 +66,7 @@ class AuthController extends Controller
             ]);
 
             // Create student reference number (STU-YYYY-XXXXXX)
-            $referenceNo = 'STU-' . date('Y') . '-' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $referenceNo = 'STU-'.date('Y').'-'.str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
 
             // Create student
             $student = Student::create([
@@ -87,7 +90,7 @@ class AuthController extends Controller
                     'contact_number' => $request->contact_number,
                 ]);
 
-                if (!$syncResult['success']) {
+                if (! $syncResult['success']) {
                     Log::warning('Student registration succeeded locally but failed to sync to main system', [
                         'email' => $request->email,
                         'sync_result' => $syncResult,
@@ -170,33 +173,56 @@ class AuthController extends Controller
         try {
             Log::info('SSO Token Exchange: Starting', [
                 'main_system_url' => $mainSystemUrl,
-                'token_preview' => substr($request->input('token'), 0, 20) . '...'
+                'token_preview' => substr($request->input('token'), 0, 20).'...',
             ]);
 
-            // Verify the token with Main System
-            $response = \Illuminate\Support\Facades\Http::timeout(10)
-                ->withToken($request->input('token'))
-                ->get("{$mainSystemUrl}/user");
+            try {
+                $response = Http::timeout(10)
+                    ->withToken($request->input('token'))
+                    ->get("{$mainSystemUrl}/user");
 
-            if (! $response->successful()) {
-                Log::warning('SSO Token Exchange: Main System rejected token', [
-                    'status' => $response->status(),
-                    'body' => $response->body()
+                if (! $response->successful()) {
+                    Log::warning('SSO Token Exchange: Main System rejected token', [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ]);
+
+                    return response()->json(['message' => 'Main System session is invalid. Please sign in again.'], 401);
+                }
+
+                $mainUser = $response->json();
+            } catch (ConnectionException $exception) {
+                // Railway services share the users and Sanctum token tables.
+                // Use that trusted shared store if the Main System private
+                // domain is temporarily unavailable or misconfigured.
+                $accessToken = PersonalAccessToken::findToken($request->input('token'));
+                $tokenUser = $accessToken?->tokenable;
+
+                if ($accessToken?->name !== 'auth-token' || ! $tokenUser instanceof User) {
+                    throw $exception;
+                }
+
+                Log::warning('SSO Token Exchange: using shared token validation', [
+                    'error' => $exception->getMessage(),
+                    'user_id' => $tokenUser->id,
                 ]);
-                return response()->json(['message' => 'Main System session is invalid. Please sign in again.'], 401);
-            }
 
-            $mainUser = $response->json();
+                $mainUser = [
+                    'email' => $tokenUser->email,
+                    'role' => strtolower($tokenUser->role),
+                ];
+            }
             Log::info('SSO Token Exchange: Main System verified user', [
                 'email' => $mainUser['email'] ?? 'unknown',
-                'role' => $mainUser['role'] ?? 'unknown'
+                'role' => $mainUser['role'] ?? 'unknown',
             ]);
 
             // Verify it's a student (Customer role)
             if (($mainUser['role'] ?? null) !== 'customer') {
                 Log::warning('SSO Token Exchange: Not a student account', [
-                    'role' => $mainUser['role'] ?? 'unknown'
+                    'role' => $mainUser['role'] ?? 'unknown',
                 ]);
+
                 return response()->json(['message' => 'This sign-in is not a student account.'], 403);
             }
 
@@ -207,8 +233,9 @@ class AuthController extends Controller
 
             if (! $user) {
                 Log::warning('SSO Token Exchange: Student not found locally', [
-                    'email' => $mainUser['email'] ?? 'unknown'
+                    'email' => $mainUser['email'] ?? 'unknown',
                 ]);
+
                 return response()->json(['message' => 'Student Account profile was not found. Please register first.'], 404);
             }
 
@@ -220,7 +247,7 @@ class AuthController extends Controller
 
             Log::info('SSO Token Exchange: Success', [
                 'user_id' => $user->id,
-                'email' => $user->email
+                'email' => $user->email,
             ]);
 
             return response()->json([
@@ -230,7 +257,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error('SSO Token Exchange: Exception', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json(['message' => 'Student sign-in is temporarily unavailable. Please try again.'], 503);
@@ -250,34 +277,34 @@ class AuthController extends Controller
         try {
             // Authenticate against main system
             $mainSystemUrl = env('MAIN_SYSTEM_API_URL', 'http://main-backend:8000/api');
-            
-            $response = \Illuminate\Support\Facades\Http::timeout(10)
+
+            $response = Http::timeout(10)
                 ->post("{$mainSystemUrl}/login", [
                     'email' => $request->email,
                     'password' => $request->password,
                 ]);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return response()->json([
-                    'message' => 'Invalid credentials'
+                    'message' => 'Invalid credentials',
                 ], 401);
             }
 
             $mainSystemData = $response->json();
-            
+
             // Check if user is a student and exists locally
             $user = User::where('email', $request->email)->first();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return response()->json([
-                    'message' => 'Student account not found. Please register first.'
+                    'message' => 'Student account not found. Please register first.',
                 ], 404);
             }
 
             // Check if student is suspended
             if ($user->student && $user->student->status === 'suspended') {
                 return response()->json([
-                    'message' => 'Account suspended'
+                    'message' => 'Account suspended',
                 ], 403);
             }
 
@@ -297,7 +324,7 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Authentication service unavailable. Please try again later.'
+                'message' => 'Authentication service unavailable. Please try again later.',
             ], 503);
         }
     }
@@ -326,7 +353,7 @@ class AuthController extends Controller
             'full_name' => $user->full_name,
             'email' => $user->email,
             'avatar' => $user->avatar,
-            'avatar_url' => $user->avatar ? url('storage/' . $user->avatar) : null,
+            'avatar_url' => $user->avatar ? url('storage/'.$user->avatar) : null,
             'student_number' => $student?->student_number,
             'reference_no' => $student?->reference_no,
             'college' => $student?->college,
