@@ -7,8 +7,7 @@ function RequestDetail({ request, onBack, onApprove, onDecline }) {
   const [declineReason, setDeclineReason] = useState('');
   const statusClass = request.status === 'completed' ? 'completed' : ['declined', 'rejected'].includes(request.status) ? 'declined' : 'pending';
 
-  const handleViewDocument = (docName) => {
-    setSelectedDocument(docName);
+  const handleViewDocument = (docName) => { setSelectedDocument(docName);
   };
 
   const closeModal = () => {
