@@ -8,7 +8,7 @@ import ApiService from '../services/api';
 const Navigation = ({ userRole = 'student' }) => {
   const location  = useLocation();
   const navigate  = useNavigate();
-  const { logout, user } = useAuth();
+  const { user } = useAuth();
   const { getCartCount, toggleCart } = useCart();
 
   const [isMoreMenuOpen, setIsMoreMenuOpen]         = useState(false);
@@ -29,6 +29,15 @@ const Navigation = ({ userRole = 'student' }) => {
 
   const devMode = location.pathname.includes('/dev/');
   const p = (main, dev) => devMode ? dev : main;
+  const mainSystemLoginUrl = `${(
+    import.meta.env.VITE_MAIN_SYSTEM_URL
+    || 'https://minsu-businesscenter.up.railway.app'
+  ).replace(/\/$/, '')}/login`;
+
+  const handleLogout = () => {
+    ApiService.logout();
+    window.location.replace(mainSystemLoginUrl);
+  };
 
   // ── Nav items ───────────────────────────────────────────
   const mainNavItems = [
@@ -690,8 +699,7 @@ const Navigation = ({ userRole = 'student' }) => {
               <button
                 onClick={() => { 
                   setShowLogoutConfirm(false); 
-                  logout(); 
-                  window.location.href = `${import.meta.env.VITE_MAIN_SYSTEM_URL}/login`;
+                  handleLogout();
                 }}
                 className="w-full py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition"
               >
