@@ -8,7 +8,10 @@ export function StudentProvider({ children }) {
 
   useEffect(() => {
     console.log('StudentContext: Initializing...');
-    const studentPortalOrigin = new URL(import.meta.env.VITE_STUDENT_PORTAL_URL).origin;
+    const studentPortalOrigin = new URL(
+      import.meta.env.VITE_STUDENT_PORTAL_URL
+        || 'https://account-frontend-production.up.railway.app'
+    ).origin;
 
     // Try to get student from URL params (for integration with parent system)
     const params = new URLSearchParams(window.location.search);

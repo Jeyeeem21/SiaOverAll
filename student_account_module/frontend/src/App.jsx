@@ -34,7 +34,8 @@ import CartDrawer from './components/CartDrawer';
 const PrintServices = () => {
   const { user } = useAuth();
   const iframeRef = React.useRef(null);
-  const printFrontendUrl = import.meta.env.VITE_PRINT_FRONTEND_URL;
+  const printFrontendUrl = import.meta.env.VITE_PRINT_FRONTEND_URL
+    || 'https://print-frontend-production-60cfdb67.up.railway.app';
   const printFrontendOrigin = new URL(printFrontendUrl).origin;
   const sendStudentData = React.useCallback(() => {
     if (!user || !iframeRef.current) {
