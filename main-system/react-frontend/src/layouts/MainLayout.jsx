@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import MobileBottomNav from '../components/MobileBottomNav';
@@ -46,9 +46,53 @@ const MainLayout = () => {
 
       {/* Main Content */}
       <main className={`flex-1 overflow-y-auto overflow-x-hidden ${isAdmin ? 'md:pb-0' : ''} pb-16 md:pb-0`}>
+        {/* Mobile Header - keeps account actions reachable when the sidebar is hidden. */}
+        {(isAdmin || isStaff) && (
+          <header className="md:hidden sticky top-0 z-40 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
+            <Link to="/dashboard" className="flex items-center gap-2" aria-label="Go to dashboard">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-sm font-bold text-white">S</span>
+              <span>
+                <span className="block text-sm font-bold leading-tight text-gray-900">InvenTrack</span>
+                <span className="block text-[11px] leading-tight text-gray-500">Management System</span>
+              </span>
+            </Link>
+
+            <div className="relative" ref={userMenuRefPos}>
+              <button
+                onClick={() => setShowUserMenuPos(!showUserMenuPos)}
+                className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-1.5 transition-colors hover:bg-gray-100"
+                aria-label="Open account menu"
+                aria-expanded={showUserMenuPos}
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white">
+                  {(user?.name || 'User').split(' ').map((name) => name[0]).join('').slice(0, 2).toUpperCase()}
+                </span>
+                <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform ${showUserMenuPos ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showUserMenuPos && (
+                <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                  <div className="border-b border-gray-100 p-3">
+                    <p className="truncate text-sm font-semibold text-gray-900">{user?.name || 'User'}</p>
+                    <p className="truncate text-xs text-gray-500">{user?.email || 'user@minsu.edu.ph'}</p>
+                  </div>
+                  <Link to="/settings" onClick={() => setShowUserMenuPos(false)} className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </Link>
+                  <button onClick={() => { setShowUserMenuPos(false); setShowLogoutModal(true); }} className="flex w-full items-center gap-2 border-t border-gray-100 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
+                    <LogOut className="h-4 w-4" />
+                    Log Out
+                  </button>
+                </div>
+              )}
+            </div>
+          </header>
+        )}
+
         {/* Staff Navigation Header - Always visible for Staff */}
         {isStaff && (
-          <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+          <div className="hidden md:block bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
             <div className="px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div>
