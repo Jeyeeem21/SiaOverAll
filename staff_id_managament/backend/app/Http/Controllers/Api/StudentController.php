@@ -315,32 +315,50 @@ class StudentController extends Controller
      */
     public function updateSignature(Request $request, string $studentNumber): JsonResponse
     {
-        $request->validate([
-            'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        try {
+            $request->validate([
+                'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
 
-        $student = Student::where('student_number', $studentNumber)->first();
+            $student = Student::where('student_number', $studentNumber)->first();
 
-        if (!$student) {
+            if (!$student) {
+                \Log::error('Student not found for signature upload', ['student_number' => $studentNumber]);
+                return response()->json([
+                    'message' => 'Student not found.'
+                ], 404);
+            }
+
+            // Delete old signature if exists
+            if ($student->signature_path && \Storage::disk('public')->exists($student->signature_path)) {
+                \Storage::disk('public')->delete($student->signature_path);
+            }
+
+            // Store new signature
+            $signaturePath = $request->file('signature')->store('student-signatures', 'public');
+            $student->signature_path = $signaturePath;
+            $student->save();
+
+            \Log::info('Signature updated successfully', [
+                'student_number' => $studentNumber,
+                'signature_path' => $signaturePath
+            ]);
+
             return response()->json([
-                'message' => 'Student not found.'
-            ], 404);
+                'message' => 'Signature updated successfully',
+                'signature_path' => $signaturePath,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Signature upload failed', [
+                'student_number' => $studentNumber,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'message' => 'Failed to upload signature: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Delete old signature if exists
-        if ($student->signature_path) {
-            \Storage::disk('public')->delete($student->signature_path);
-        }
-
-        // Store new signature
-        $signaturePath = $request->file('signature')->store('student-signatures', 'public');
-        $student->signature_path = $signaturePath;
-        $student->save();
-
-        return response()->json([
-            'message' => 'Signature updated successfully',
-            'signature_path' => $signaturePath,
-        ]);
     }
 
     /**
@@ -348,32 +366,50 @@ class StudentController extends Controller
      */
     public function updatePhoto(Request $request, string $studentNumber): JsonResponse
     {
-        $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
-        ]);
+        try {
+            $request->validate([
+                'photo' => 'required|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
+            ]);
 
-        $student = Student::where('student_number', $studentNumber)->first();
+            $student = Student::where('student_number', $studentNumber)->first();
 
-        if (!$student) {
+            if (!$student) {
+                \Log::error('Student not found for photo upload', ['student_number' => $studentNumber]);
+                return response()->json([
+                    'message' => 'Student not found.'
+                ], 404);
+            }
+
+            // Delete old photo if exists
+            if ($student->photo_path && \Storage::disk('public')->exists($student->photo_path)) {
+                \Storage::disk('public')->delete($student->photo_path);
+            }
+
+            // Store new photo
+            $photoPath = $request->file('photo')->store('student-photos', 'public');
+            $student->photo_path = $photoPath;
+            $student->save();
+
+            \Log::info('Photo updated successfully', [
+                'student_number' => $studentNumber,
+                'photo_path' => $photoPath
+            ]);
+
             return response()->json([
-                'message' => 'Student not found.'
-            ], 404);
+                'message' => 'Photo updated successfully',
+                'photo_path' => $photoPath,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Photo upload failed', [
+                'student_number' => $studentNumber,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'message' => 'Failed to upload photo: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Delete old photo if exists
-        if ($student->photo_path) {
-            \Storage::disk('public')->delete($student->photo_path);
-        }
-
-        // Store new photo
-        $photoPath = $request->file('photo')->store('student-photos', 'public');
-        $student->photo_path = $photoPath;
-        $student->save();
-
-        return response()->json([
-            'message' => 'Photo updated successfully',
-            'photo_path' => $photoPath,
-        ]);
     }
 
     /**

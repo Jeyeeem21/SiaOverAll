@@ -4,10 +4,11 @@ echo Deploy Profile Fix to Railway Production
 echo ========================================
 echo.
 
-echo Files to be deployed:
-echo - DevProfile.jsx (Year Level + Photo upload)
-echo - StudentController.php (updatePhoto method)
-echo - api.php (new route)
+echo Changes being deployed:
+echo - Year Level field in Personal Info modal
+echo - Better Photo/Signature upload UI
+echo - Improved error handling
+echo - Visual improvements
 echo.
 
 echo Step 1: Add files to git...
@@ -17,7 +18,7 @@ git add staff_id_managament/backend/routes/api.php
 
 echo.
 echo Step 2: Commit changes...
-git commit -m "Fix: Add year_level to profile form and photo/signature upload endpoints"
+git commit -m "Fix: Profile form UI improvements, year_level field, and error handling"
 
 echo.
 echo Step 3: Push to GitHub (Railway will auto-deploy)...
@@ -31,8 +32,14 @@ echo.
 echo Railway is now deploying your changes...
 echo.
 echo Services being deployed:
-echo - Student Account Frontend (profile form updates)
-echo - ID Management Backend (photo upload endpoint)
+echo - Student Account Frontend (UI improvements)
+echo - ID Management Backend (error handling)
+echo.
+echo Expected changes:
+echo 1. Year Level field now in Personal Info
+echo 2. Better photo/signature upload layout
+echo 3. Placeholder icons when no upload
+echo 4. Better error messages
 echo.
 echo Wait 3-5 minutes then test on:
 echo https://student-account-frontend-production.up.railway.app

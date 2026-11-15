@@ -494,8 +494,8 @@ const DevProfile = () => {
                     <p className="mt-1 text-responsive-sm text-gray-900">{profile?.contact_number || profile?.phone || 'Not provided'}</p>
                   </div>
                   <div>
-                    <label className="text-responsive-xs font-medium text-gray-500">Photo</label>
-                    <div className="flex items-center gap-2 mt-1">
+                    <label className="text-responsive-xs font-medium text-gray-500 block mb-2">Photo</label>
+                    <div className="flex items-center gap-3 mt-1">
                       {profile?.photo_path ? (
                         <img 
                           src={`${ID_MANAGEMENT_ORIGIN}/storage/${profile.photo_path}?t=${Date.now()}`} 
@@ -506,81 +506,92 @@ const DevProfile = () => {
                             console.error('Photo failed to load:', e.target.src);
                           }}
                         />
-                      ) : <p className="text-responsive-sm text-gray-400">Not uploaded</p>}
-                      <label
-                        htmlFor="photo-upload"
-                        className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition"
-                        title="Upload photo"
-                      >
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        Upload
-                        <input
-                          id="photo-upload"
-                          type="file"
-                          accept="image/png,image/jpeg,image/jpg"
-                          className="hidden"
-                          onChange={async (e) => {
-                            const file = e.target.files[0];
-                            if (!file) return;
-                            
-                            try {
-                              console.log('Starting photo upload...');
-                              const formData = new FormData();
-                              formData.append('photo', file);
+                      ) : (
+                        <div className="h-16 w-16 flex items-center justify-center border rounded bg-gray-50">
+                          <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                      )}
+                      <div className="flex flex-col gap-1">
+                        <label
+                          htmlFor="photo-upload"
+                          className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition"
+                          title="Upload photo"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                          {profile?.photo_path ? 'Change Photo' : 'Upload Photo'}
+                          <input
+                            id="photo-upload"
+                            type="file"
+                            accept="image/png,image/jpeg,image/jpg"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
                               
-                              // Call ID Management API to upload photo
-                              const ID_MGMT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL;
-                              const uploadUrl = `${ID_MGMT_API}/public/students/${profile.student_number}/update-photo`;
-                              console.log('Upload URL:', uploadUrl);
-                              
-                              const response = await fetch(uploadUrl, {
-                                method: 'POST',
-                                body: formData,
-                              });
-                              
-                              console.log('Response status:', response.status);
-                              const responseData = await response.json();
-                              console.log('Response data:', responseData);
-                              
-                              if (!response.ok) {
-                                throw new Error(responseData.message || 'Failed to upload photo');
+                              try {
+                                console.log('Starting photo upload...');
+                                const formData = new FormData();
+                                formData.append('photo', file);
+                                
+                                // Call ID Management API to upload photo
+                                const ID_MGMT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL;
+                                const uploadUrl = `${ID_MGMT_API}/public/students/${profile.student_number}/update-photo`;
+                                console.log('Upload URL:', uploadUrl);
+                                
+                                const response = await fetch(uploadUrl, {
+                                  method: 'POST',
+                                  body: formData,
+                                });
+                                
+                                console.log('Response status:', response.status);
+                                const responseData = await response.json();
+                                console.log('Response data:', responseData);
+                                
+                                if (!response.ok) {
+                                  throw new Error(responseData.message || 'Failed to upload photo');
+                                }
+                                
+                                // Add a small delay to ensure file is written
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                                
+                                // Refresh profile to get updated photo
+                                const updated = await ApiService.getProfile();
+                                console.log('Updated profile after photo upload:', updated);
+                                
+                                // Force update with new photo_path
+                                setProfile({
+                                  ...updated,
+                                  photo_path: responseData.photo_path || updated.photo_path
+                                });
+                                
+                                // Also update editForm
+                                setEditForm(prev => ({
+                                  ...prev,
+                                  photo_path: responseData.photo_path || updated.photo_path
+                                }));
+                                
+                                toast.success('Photo updated successfully!');
+                              } catch (err) {
+                                console.error('Photo upload error:', err);
+                                toast.error('Failed to upload photo: ' + err.message);
                               }
-                              
-                              // Add a small delay to ensure file is written
-                              await new Promise(resolve => setTimeout(resolve, 500));
-                              
-                              // Refresh profile to get updated photo
-                              const updated = await ApiService.getProfile();
-                              console.log('Updated profile after photo upload:', updated);
-                              
-                              // Force update with new photo_path
-                              setProfile({
-                                ...updated,
-                                photo_path: responseData.photo_path || updated.photo_path
-                              });
-                              
-                              // Also update editForm
-                              setEditForm(prev => ({
-                                ...prev,
-                                photo_path: responseData.photo_path || updated.photo_path
-                              }));
-                              
-                              toast.success('Photo updated successfully!');
-                            } catch (err) {
-                              console.error('Photo upload error:', err);
-                              toast.error('Failed to upload photo: ' + err.message);
-                            }
-                            e.target.value = '';
-                          }}
-                        />
-                      </label>
+                              e.target.value = '';
+                            }}
+                          />
+                        </label>
+                        {!profile?.photo_path && (
+                          <span className="text-xs text-gray-400">Max 5MB (JPG, PNG)</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <label className="text-responsive-xs font-medium text-gray-500">Signature</label>
-                    <div className="flex items-center gap-2 mt-1">
+                    <label className="text-responsive-xs font-medium text-gray-500 block mb-2">Signature</label>
+                    <div className="flex items-center gap-3 mt-1">
                       {profile?.signature_path ? (
                         <img 
                           src={`${ID_MANAGEMENT_ORIGIN}/storage/${profile.signature_path}?t=${Date.now()}`} 
@@ -591,76 +602,87 @@ const DevProfile = () => {
                             console.error('Signature failed to load:', e.target.src);
                           }}
                         />
-                      ) : <p className="text-responsive-sm text-gray-400">Not uploaded</p>}
-                      <label
-                        htmlFor="signature-upload"
-                        className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition"
-                        title="Upload signature"
-                      >
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        Upload
-                        <input
-                          id="signature-upload"
-                          type="file"
-                          accept="image/png,image/jpeg,image/jpg"
-                          className="hidden"
-                          onChange={async (e) => {
-                            const file = e.target.files[0];
-                            if (!file) return;
-                            
-                            try {
-                              console.log('Starting signature upload...');
-                              const formData = new FormData();
-                              formData.append('signature', file);
+                      ) : (
+                        <div className="h-12 w-36 flex items-center justify-center border rounded bg-gray-50">
+                          <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </div>
+                      )}
+                      <div className="flex flex-col gap-1">
+                        <label
+                          htmlFor="signature-upload"
+                          className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition"
+                          title="Upload signature"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                          {profile?.signature_path ? 'Change Signature' : 'Upload Signature'}
+                          <input
+                            id="signature-upload"
+                            type="file"
+                            accept="image/png,image/jpeg,image/jpg"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
                               
-                              // Call ID Management API to upload signature
-                              const ID_MGMT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL;
-                              const uploadUrl = `${ID_MGMT_API}/public/students/${profile.student_number}/update-signature`;
-                              console.log('Upload URL:', uploadUrl);
-                              
-                              const response = await fetch(uploadUrl, {
-                                method: 'POST',
-                                body: formData,
-                              });
-                              
-                              console.log('Response status:', response.status);
-                              const responseData = await response.json();
-                              console.log('Response data:', responseData);
-                              
-                              if (!response.ok) {
-                                throw new Error(responseData.message || 'Failed to upload signature');
+                              try {
+                                console.log('Starting signature upload...');
+                                const formData = new FormData();
+                                formData.append('signature', file);
+                                
+                                // Call ID Management API to upload signature
+                                const ID_MGMT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL;
+                                const uploadUrl = `${ID_MGMT_API}/public/students/${profile.student_number}/update-signature`;
+                                console.log('Upload URL:', uploadUrl);
+                                
+                                const response = await fetch(uploadUrl, {
+                                  method: 'POST',
+                                  body: formData,
+                                });
+                                
+                                console.log('Response status:', response.status);
+                                const responseData = await response.json();
+                                console.log('Response data:', responseData);
+                                
+                                if (!response.ok) {
+                                  throw new Error(responseData.message || 'Failed to upload signature');
+                                }
+                                
+                                // Add a small delay to ensure file is written
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                                
+                                // Refresh profile to get updated signature with cache busting
+                                const updated = await ApiService.getProfile();
+                                console.log('Updated profile after signature upload:', updated);
+                                
+                                // Force update with new signature_path
+                                setProfile({
+                                  ...updated,
+                                  signature_path: responseData.signature_path || updated.signature_path
+                                });
+                                
+                                // Also update editForm
+                                setEditForm(prev => ({
+                                  ...prev,
+                                  signature_path: responseData.signature_path || updated.signature_path
+                                }));
+                                
+                                toast.success('Signature updated successfully!');
+                              } catch (err) {
+                                console.error('Signature upload error:', err);
+                                toast.error('Failed to upload signature: ' + err.message);
                               }
-                              
-                              // Add a small delay to ensure file is written
-                              await new Promise(resolve => setTimeout(resolve, 500));
-                              
-                              // Refresh profile to get updated signature with cache busting
-                              const updated = await ApiService.getProfile();
-                              console.log('Updated profile after signature upload:', updated);
-                              
-                              // Force update with new signature_path
-                              setProfile({
-                                ...updated,
-                                signature_path: responseData.signature_path || updated.signature_path
-                              });
-                              
-                              // Also update editForm
-                              setEditForm(prev => ({
-                                ...prev,
-                                signature_path: responseData.signature_path || updated.signature_path
-                              }));
-                              
-                              toast.success('Signature updated successfully!');
-                            } catch (err) {
-                              console.error('Signature upload error:', err);
-                              toast.error('Failed to upload signature: ' + err.message);
-                            }
-                            e.target.value = '';
-                          }}
-                        />
-                      </label>
+                              e.target.value = '';
+                            }}
+                          />
+                        </label>
+                        {!profile?.signature_path && (
+                          <span className="text-xs text-gray-400">Max 2MB (JPG, PNG)</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div><label className="text-responsive-xs font-medium text-gray-500">Birthdate</label><p className="mt-1 text-responsive-sm text-gray-900">{profile?.birthdate ? formatDate(profile.birthdate) : 'Not provided'}</p></div>
