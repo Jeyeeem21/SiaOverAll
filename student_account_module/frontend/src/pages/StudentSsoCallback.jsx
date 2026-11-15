@@ -7,6 +7,30 @@ import ApiService from '../services/api';
 // /login after the first instance had already signed the student in.
 let ssoExchangePromise = null;
 
+const mainSystemLoginUrl = () => {
+  const configuredMainSystemUrl = import.meta.env.VITE_MAIN_SYSTEM_URL;
+  const returnTo = new URLSearchParams(window.location.search).get('return_to');
+
+  try {
+    const configuredOrigin = configuredMainSystemUrl
+      ? new URL(configuredMainSystemUrl).origin
+      : null;
+    const requestedUrl = returnTo ? new URL(returnTo) : null;
+
+    if (requestedUrl && configuredOrigin && requestedUrl.origin === configuredOrigin) {
+      return `${requestedUrl.origin}/login`;
+    }
+
+    if (configuredOrigin) {
+      return `${configuredOrigin}/login`;
+    }
+  } catch {
+    // Fall through to the local login only when no Main System URL is configured.
+  }
+
+  return '/login';
+};
+
 const StudentSsoCallback = () => {
   const [message, setMessage] = useState('Signing you in to Student Account...');
 
@@ -23,8 +47,8 @@ const StudentSsoCallback = () => {
       || new URLSearchParams(window.location.hash.slice(1)).get('token');
 
     if (!token) {
-      setMessage('The sign-in link is invalid. Returning to login...');
-      window.setTimeout(() => window.location.replace('/login'), 1200);
+      setMessage('The sign-in link is invalid. Returning to Main System login...');
+      window.setTimeout(() => window.location.replace(mainSystemLoginUrl()), 1200);
       return undefined;
     }
 
@@ -41,8 +65,8 @@ const StudentSsoCallback = () => {
         // Permit an explicit retry if the exchange itself failed.
         ssoExchangePromise = null;
         ApiService.removeAuthToken();
-        setMessage(error.message || 'Unable to sign in to Student Account. Returning to login...');
-        window.setTimeout(() => window.location.replace('/login'), 1500);
+        setMessage(error.message || 'Unable to sign in to Student Account. Returning to Main System login...');
+        window.setTimeout(() => window.location.replace(mainSystemLoginUrl()), 1500);
       });
 
     return undefined;

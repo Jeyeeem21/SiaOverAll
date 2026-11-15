@@ -132,9 +132,10 @@ export const AuthProvider = ({ children }) => {
         // shared users table. They authenticate here, then continue in the
         // Student Account module rather than entering the business dashboard.
         if (userData.role === 'customer') {
-        const studentModuleUrl = import.meta.env.VITE_STUDENT_ACCOUNT_URL.replace(/\/$/, '');
+          const studentModuleUrl = import.meta.env.VITE_STUDENT_ACCOUNT_URL.replace(/\/$/, '');
+          const mainSystemLoginUrl = `${window.location.origin}/login`;
           // Use query parameter instead of hash fragment to avoid React Router stripping it
-          const redirectUrl = `${studentModuleUrl}/sso?token=${encodeURIComponent(token)}`;
+          const redirectUrl = `${studentModuleUrl}/sso?token=${encodeURIComponent(token)}&return_to=${encodeURIComponent(mainSystemLoginUrl)}`;
           console.log('[MAIN SYSTEM] Student detected, redirecting to:', redirectUrl);
           console.log('[MAIN SYSTEM] Token length:', token.length);
           console.log('[MAIN SYSTEM] Full redirect URL:', redirectUrl);
