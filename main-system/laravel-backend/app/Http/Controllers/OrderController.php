@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Inventory;
 use App\Models\Payment;
-use Illuminate\Http\Request;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Str;
+use App\Services\CacheService;
 use Carbon\Carbon;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use App\Services\CacheService;
 
 class OrderController extends Controller
 {
@@ -25,24 +24,24 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         // Cache key based on order_number search
-        $cacheKey = 'orders_' . ($request->has('order_number') ? 'search_' . $request->order_number : 'active');
-        
+        $cacheKey = 'orders_'.($request->has('order_number') ? 'search_'.$request->order_number : 'active');
+
         return Cache::remember($cacheKey, 1, function () use ($request) {
             $query = Order::select('order_id', 'order_number', 'customer_name', 'service_type', 'status', 'total_amount', 'is_voided', 'created_at', 'completed_date')
                 ->with(['orderItems:order_item_id,order_id,product_id,quantity,unit_price', 'orderItems.product:product_id,product_name']);
-            
+
             // If searching by order_number for void, only return Completed orders
             if ($request->has('order_number')) {
                 $query->where('order_number', $request->order_number)
-                      ->where('status', 'Completed')
-                      ->where('is_voided', false);
+                    ->where('status', 'Completed')
+                    ->where('is_voided', false);
             } else {
                 // Default behavior: only show active orders
                 $query->whereIn('status', ['Pending', 'In Progress', 'Cancelled']);
             }
-            
+
             $orders = $query->orderBy('created_at', 'desc')->get();
-            
+
             return response()->json($orders);
         });
     }
@@ -75,12 +74,12 @@ class OrderController extends Controller
 
             $lastOrder = Order::orderByDesc('order_id')->lockForUpdate()->first();
             $nextNumber = $lastOrder ? ($lastOrder->order_id + 1) : 1;
-            $orderNumber = 'ORD-' . date('Y') . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            $orderNumber = 'ORD-'.date('Y').'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
             foreach ($validated['order_items'] as $item) {
                 $inventory = Inventory::where('product_id', $item['product_id'])->lockForUpdate()->first();
 
-                if (!$inventory) {
+                if (! $inventory) {
                     throw new HttpResponseException(response()->json([
                         'error' => 'Product not found in inventory',
                         'product_id' => $item['product_id'],
@@ -142,7 +141,7 @@ class OrderController extends Controller
                     'reference_type' => 'order',
                     'reference_id' => $order->order_id,
                     'user_id' => Auth::id(),
-                    'notes' => 'Order ' . $orderNumber . ' - ' . (isset($validated['payment']) ? 'Paid' : 'Pending Payment'),
+                    'notes' => 'Order '.$orderNumber.' - '.(isset($validated['payment']) ? 'Paid' : 'Pending Payment'),
                 ]);
             }
 
@@ -223,13 +222,13 @@ class OrderController extends Controller
             foreach ($order->orderItems as $item) {
                 // Deduct stock from inventory
                 $inventory = Inventory::where('product_id', $item->product_id)->first();
-                
-                if (!$inventory || $inventory->quantity < $item->quantity) {
+
+                if (! $inventory || $inventory->quantity < $item->quantity) {
                     return response()->json([
-                        'error' => "Insufficient stock for product: {$item->product_name}"
+                        'error' => "Insufficient stock for product: {$item->product_name}",
                     ], 400);
                 }
-                
+
                 $inventory->decrement('quantity', $item->quantity);
 
                 // Create OUT transaction to record the deduction
@@ -242,7 +241,7 @@ class OrderController extends Controller
                     'reference_type' => 'order_processing',
                     'reference_id' => $order->order_id,
                     'user_id' => Auth::id(),
-                    'notes' => 'Order ' . $order->order_number . ' - Started processing',
+                    'notes' => 'Order '.$order->order_number.' - Started processing',
                 ]);
             }
         }
@@ -264,7 +263,7 @@ class OrderController extends Controller
                     'reference_type' => 'order_cancelled',
                     'reference_id' => $order->order_id,
                     'user_id' => Auth::id(),
-                    'notes' => 'Order ' . $order->order_number . ' cancelled - Stock returned',
+                    'notes' => 'Order '.$order->order_number.' cancelled - Stock returned',
                 ]);
             }
         }
@@ -364,7 +363,7 @@ class OrderController extends Controller
                 'reference_type' => 'order',
                 'reference_id' => $order->order_id,
                 'user_id' => Auth::id(),
-                'notes' => 'Sale - Order ' . $order->order_number,
+                'notes' => 'Sale - Order '.$order->order_number,
             ]);
         }
 
@@ -386,7 +385,7 @@ class OrderController extends Controller
         // Check if order has payments
         if ($order->payment()->exists()) {
             return response()->json([
-                'message' => 'Cannot delete order. This order has payment records. Please remove the payment first or mark the order as cancelled instead.'
+                'message' => 'Cannot delete order. This order has payment records. Please remove the payment first or mark the order as cancelled instead.',
             ], 422);
         }
 
@@ -410,10 +409,10 @@ class OrderController extends Controller
     public function getSalesHistory(Request $request)
     {
         // Cache key based on filters
-        $cacheKey = 'sales_history_' . md5(json_encode($request->all()));
-        
+        $cacheKey = 'sales_history_'.md5(json_encode($request->all()));
+
         return Cache::remember($cacheKey, 1, function () use ($request) {
-            $query = OrderItem::with(['product', 'order.payment'])
+            $query = OrderItem::with(['product.category', 'order.payment'])
                 ->whereHas('order', function ($q) {
                     $q->where('status', 'Completed');
                 });
@@ -440,7 +439,7 @@ class OrderController extends Controller
                             break;
                         case 'monthly':
                             $q->whereYear('completed_date', now()->year)
-                              ->whereMonth('completed_date', now()->month);
+                                ->whereMonth('completed_date', now()->month);
                             break;
                         case 'yearly':
                             $q->whereYear('completed_date', now()->year);
@@ -465,7 +464,9 @@ class OrderController extends Controller
                         'quantity' => $item->quantity,
                         'unit_price' => $item->unit_price,
                         'subtotal' => $item->subtotal,
-                        'service_type' => $item->order->service_type ?? 'Other',
+                        'service_type' => $item->product?->category?->category_name
+                            ?? $item->order?->service_type
+                            ?? 'Other',
                         'payment_method' => $item->order->payment->payment_method ?? 'N/A',
                         'completed_at' => $item->order->completed_date,
                         'created_at' => $item->order->created_at,
@@ -511,7 +512,7 @@ class OrderController extends Controller
                 'total_amount' => $orderItem->quantity * $orderItem->unit_price,
                 'reference_type' => 'order_void',
                 'reference_id' => $order->order_id,
-                'notes' => 'Voided Order: ' . $order->order_number,
+                'notes' => 'Voided Order: '.$order->order_number,
                 'user_id' => Auth::id(), // Current logged-in user
             ]);
         }
@@ -530,7 +531,7 @@ class OrderController extends Controller
 
         return response()->json([
             'message' => 'Order voided successfully',
-            'order' => $order->load('orderItems.product')
+            'order' => $order->load('orderItems.product'),
         ]);
     }
 }

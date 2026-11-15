@@ -344,6 +344,39 @@ class StudentController extends Controller
     }
 
     /**
+     * Update student photo (public endpoint for Student Portal)
+     */
+    public function updatePhoto(Request $request, string $studentNumber): JsonResponse
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
+        ]);
+
+        $student = Student::where('student_number', $studentNumber)->first();
+
+        if (!$student) {
+            return response()->json([
+                'message' => 'Student not found.'
+            ], 404);
+        }
+
+        // Delete old photo if exists
+        if ($student->photo_path) {
+            \Storage::disk('public')->delete($student->photo_path);
+        }
+
+        // Store new photo
+        $photoPath = $request->file('photo')->store('student-photos', 'public');
+        $student->photo_path = $photoPath;
+        $student->save();
+
+        return response()->json([
+            'message' => 'Photo updated successfully',
+            'photo_path' => $photoPath,
+        ]);
+    }
+
+    /**
      * Upload signature for authenticated staff
      */
     public function uploadSignature(Student $student, Request $request): JsonResponse

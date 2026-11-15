@@ -494,6 +494,91 @@ const DevProfile = () => {
                     <p className="mt-1 text-responsive-sm text-gray-900">{profile?.contact_number || profile?.phone || 'Not provided'}</p>
                   </div>
                   <div>
+                    <label className="text-responsive-xs font-medium text-gray-500">Photo</label>
+                    <div className="flex items-center gap-2 mt-1">
+                      {profile?.photo_path ? (
+                        <img 
+                          src={`${ID_MANAGEMENT_ORIGIN}/storage/${profile.photo_path}?t=${Date.now()}`} 
+                          alt="Student Photo" 
+                          className="h-16 w-16 object-cover border rounded bg-white" 
+                          onLoad={(e) => console.log('Photo loaded successfully:', e.target.src)}
+                          onError={(e) => {
+                            console.error('Photo failed to load:', e.target.src);
+                          }}
+                        />
+                      ) : <p className="text-responsive-sm text-gray-400">Not uploaded</p>}
+                      <label
+                        htmlFor="photo-upload"
+                        className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition"
+                        title="Upload photo"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        Upload
+                        <input
+                          id="photo-upload"
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            
+                            try {
+                              console.log('Starting photo upload...');
+                              const formData = new FormData();
+                              formData.append('photo', file);
+                              
+                              // Call ID Management API to upload photo
+                              const ID_MGMT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL;
+                              const uploadUrl = `${ID_MGMT_API}/public/students/${profile.student_number}/update-photo`;
+                              console.log('Upload URL:', uploadUrl);
+                              
+                              const response = await fetch(uploadUrl, {
+                                method: 'POST',
+                                body: formData,
+                              });
+                              
+                              console.log('Response status:', response.status);
+                              const responseData = await response.json();
+                              console.log('Response data:', responseData);
+                              
+                              if (!response.ok) {
+                                throw new Error(responseData.message || 'Failed to upload photo');
+                              }
+                              
+                              // Add a small delay to ensure file is written
+                              await new Promise(resolve => setTimeout(resolve, 500));
+                              
+                              // Refresh profile to get updated photo
+                              const updated = await ApiService.getProfile();
+                              console.log('Updated profile after photo upload:', updated);
+                              
+                              // Force update with new photo_path
+                              setProfile({
+                                ...updated,
+                                photo_path: responseData.photo_path || updated.photo_path
+                              });
+                              
+                              // Also update editForm
+                              setEditForm(prev => ({
+                                ...prev,
+                                photo_path: responseData.photo_path || updated.photo_path
+                              }));
+                              
+                              toast.success('Photo updated successfully!');
+                            } catch (err) {
+                              console.error('Photo upload error:', err);
+                              toast.error('Failed to upload photo: ' + err.message);
+                            }
+                            e.target.value = '';
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <div>
                     <label className="text-responsive-xs font-medium text-gray-500">Signature</label>
                     <div className="flex items-center gap-2 mt-1">
                       {profile?.signature_path ? (
@@ -515,7 +600,7 @@ const DevProfile = () => {
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
-                        Change
+                        Upload
                         <input
                           id="signature-upload"
                           type="file"
@@ -1222,6 +1307,18 @@ const DevProfile = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact Number</label>
                   <input type="tel" name="emergency_contact_number" value={editForm.emergency_contact_number || ''} onChange={handleEditFormChange} className="input w-full" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Year Level</label>
+                  <input
+                    type="text"
+                    name="year_level"
+                    value={editForm.year_level || ''}
+                    onChange={handleEditFormChange}
+                    className="input w-full"
+                    placeholder="e.g., 1st Year, 2nd Year, 3rd Year, 4th Year"
+                  />
                 </div>
                 
                 <div className="flex gap-3 pt-4">

@@ -135,6 +135,7 @@ Route::get('public/students/{studentNumber}/id-status', [StudentIdCardController
 Route::get('public/students/{studentNumber}/id-card-requirements', [StudentIdCardController::class, 'getPublicRequestRequirements']);
 Route::post('public/students/{studentNumber}/id-card-request', [StudentIdCardController::class, 'publicRequest']);
 Route::post('public/students/{studentNumber}/update-signature', [StudentController::class, 'updateSignature']);
+Route::post('public/students/{studentNumber}/update-photo', [StudentController::class, 'updatePhoto']);
 
 // Protected routes requiring authentication
 Route::middleware('auth:sanctum')->group(function () {
