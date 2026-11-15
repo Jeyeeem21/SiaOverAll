@@ -12,13 +12,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasTable('account_students') || Schema::hasColumn('account_students', 'signature_path')) {
+        if (! Schema::hasTable('account_students')) {
             return;
         }
 
-        Schema::table('account_students', function (Blueprint $table) {
-            $table->string('signature_path')->nullable()->after('photo_path');
-        });
+        if (! Schema::hasColumn('account_students', 'photo_path')) {
+            Schema::table('account_students', function (Blueprint $table) {
+                $table->string('photo_path')->nullable();
+            });
+        }
+
+        if (! Schema::hasColumn('account_students', 'signature_path')) {
+            Schema::table('account_students', function (Blueprint $table) {
+                $table->string('signature_path')->nullable();
+            });
+        }
     }
 
     public function down(): void
