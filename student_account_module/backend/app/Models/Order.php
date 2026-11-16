@@ -104,15 +104,17 @@ class Order extends Model
      */
     public static function generateOrderNumber(): string
     {
-        $prefix = 'ORD';
-        $date = now()->format('Ymd');
-        $lastOrder = static::whereDate('created_at', today())
-            ->orderBy('order_id', 'desc')
+        // Orders are shared with the Main/POS module. Use its canonical
+        // sequence so a student cart checkout never produces a second ID
+        // format such as ORD202611160001.
+        $lastOrder = static::query()
+            ->lockForUpdate()
+            ->orderByDesc('order_id')
             ->first();
-        
-        $sequence = $lastOrder ? (int) substr($lastOrder->order_number, -4) + 1 : 1;
-        
-        return $prefix . $date . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+
+        $nextNumber = $lastOrder ? $lastOrder->order_id + 1 : 1;
+
+        return 'ORD-'.now()->format('Y').'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**
