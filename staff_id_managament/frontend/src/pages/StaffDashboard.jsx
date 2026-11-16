@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { apiRequest } from '../api/client'
 import StaffIdGeneration from './staff/StaffIdGeneration'
 import StaffIdStatus from './staff/StaffIdStatus'
@@ -10,6 +10,25 @@ export default function StaffDashboard() {
   const [activeTab, setActiveTab] = useState('student-records')
   const [currentUser, setCurrentUser] = useState(null)
   const [isEmbedded, setIsEmbedded] = useState(false)
+  const userRequestRef = useRef(0)
+
+  const loadCurrentUser = useCallback(async () => {
+    const requestId = ++userRequestRef.current
+
+    try {
+      const user = await apiRequest('/user')
+      if (requestId === userRequestRef.current) {
+        console.log('User loaded successfully:', user)
+        setCurrentUser(user)
+      }
+    } catch (err) {
+      // A stale request must never erase a user loaded by a newer parent token.
+      if (requestId === userRequestRef.current) {
+        console.error('Failed to load user:', err)
+        setCurrentUser(null)
+      }
+    }
+  }, [])
 
   // Check if we're embedded in an iframe
   useEffect(() => {
@@ -30,18 +49,7 @@ export default function StaffDashboard() {
       if (event.data.type === 'AUTH_TOKEN' && event.data.token) {
         console.log('Received AUTH_TOKEN from parent', event.data.token.substring(0, 20) + '...')
         localStorage.setItem('auth_token', event.data.token)
-        // Reload user data with new token - use setTimeout to ensure token is saved
-        setTimeout(() => {
-          apiRequest('/user')
-            .then((user) => {
-              console.log('User loaded successfully:', user)
-              setCurrentUser(user)
-            })
-            .catch((err) => {
-              console.error('Failed to load user:', err)
-              setCurrentUser(null)
-            })
-        }, 100)
+        void loadCurrentUser()
       }
       
       // Handle tab change from parent
@@ -78,23 +86,9 @@ export default function StaffDashboard() {
       return
     }
     
-    let active = true
     console.log('Fetching user with token:', token.substring(0, 20) + '...')
-    apiRequest('/user')
-      .then((user) => { 
-        if (active) {
-          console.log('User loaded:', user)
-          setCurrentUser(user)
-        }
-      })
-      .catch((err) => { 
-        if (active) {
-          console.error('Failed to load user:', err)
-          setCurrentUser(null)
-        }
-      })
-    return () => { active = false }
-  }, [isEmbedded])
+    loadCurrentUser()
+  }, [isEmbedded, loadCurrentUser])
 
   const isStaff = ['Admin', 'Staff'].includes(currentUser?.role)
 

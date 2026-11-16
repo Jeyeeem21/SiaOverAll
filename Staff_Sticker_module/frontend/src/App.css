@@ -107,3 +107,21 @@ button { cursor: pointer; }
   .logo-image { width: 90px !important; }
   .preview-note, .sticker-metadata, .sticker-info-column { display: none !important; }
 }
+
+.reprint-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .15s ease;
+}
+
+.reprint-button:hover { background: #d1fae5; }
+.reprint-button:active { transform: scale(.98); }

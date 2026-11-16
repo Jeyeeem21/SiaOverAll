@@ -94,7 +94,7 @@ function RequestList({ requests, onViewRequest, onApprove, onOpenGenerated, load
           <td><span className={`status-badge ${variant}`}>{variant === 'pending' ? 'Pending' : variant === 'generated' ? 'Ready to print' : variant === 'completed' ? 'Completed' : 'Declined'}</span></td>
           {variant === 'pending' && <td><div className="table-actions"><button className="icon-button" onClick={() => onViewRequest(request)} title="View request details" aria-label="View request details"><Eye size={16} /></button><button className="icon-button" onClick={() => onApprove(request)} title="Approve and customize sticker" aria-label="Approve and customize sticker"><CheckCircle size={16} /></button></div></td>}
           {variant === 'generated' && <td><div className="table-actions"><button className="icon-button" onClick={() => onOpenGenerated(request)} title="Open sticker for printing" aria-label="Open sticker for printing"><Printer size={16} /></button></div></td>}
-          {variant === 'completed' && <td><div className="table-actions"><button className="icon-button" onClick={() => onOpenGenerated(request)} title="Reprint completed sticker" aria-label="Reprint completed sticker"><Printer size={16} /></button></div></td>}
+          {variant === 'completed' && <td><div className="table-actions"><button className="reprint-button" onClick={() => onOpenGenerated(request)} title="Reprint completed sticker" aria-label="Reprint completed sticker"><Printer size={16} /><span>Reprint</span></button></div></td>}
         </tr>)}</tbody>
       </table>
     </div>

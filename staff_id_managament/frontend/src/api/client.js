@@ -15,7 +15,10 @@ export async function apiRequest(path, options = {}) {
   }
 
   const response = await fetch(`${apiUrl}${path}`, {
-    credentials: 'include',
+    // Staff ID authentication is bearer-token based. Omitting cross-site
+    // cookies avoids third-party-cookie failures when this app is embedded in
+    // the Main System on a different Railway domain.
+    credentials: 'omit',
     ...options,
     headers,
   })
