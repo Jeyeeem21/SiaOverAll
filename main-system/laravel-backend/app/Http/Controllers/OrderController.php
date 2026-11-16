@@ -493,7 +493,11 @@ class OrderController extends Controller
             return response()->json(['message' => 'Order is already voided'], 400);
         }
 
-        // Allow voiding any order (including Completed) - admin authentication required on frontend
+        if ($order->status !== 'Completed') {
+            return response()->json([
+                'message' => 'Only completed orders can be voided.',
+            ], 422);
+        }
 
         // Restore inventory for all order items
         foreach ($order->orderItems as $orderItem) {

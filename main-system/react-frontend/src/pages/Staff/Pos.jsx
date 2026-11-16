@@ -1287,7 +1287,10 @@ const Pos = () => {
                   </h3>
 
                   {/* Order Info Grid */}
-                  <div className="grid grid-cols-2 gap-3 mb-3">`n                    <div>`n                      <p className="text-[10px] text-gray-500">Order ID</p>`n                      <p className="text-[13px] font-semibold text-gray-900">{searchModal.order.order_id}</p>
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <p className="text-[10px] text-gray-500">Order ID</p>
+                      <p className="text-[13px] font-semibold text-gray-900">{searchModal.order.order_id}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Order Number</p>
@@ -1329,7 +1332,9 @@ const Pos = () => {
                     <h4 className="text-[11px] font-bold text-gray-700 mb-2">Order Items ({searchModal.order.order_items?.length || 0})</h4>
                     <div className="space-y-2 max-h-60 overflow-y-auto">
                       {searchModal.order.order_items?.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg">`n                          <div className="flex-1">`n                            <p className="text-[13px] font-medium text-gray-900">{item.product?.product_name || 'Product'}</p>
+                        <div key={index} className="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-[13px] font-medium text-gray-900">{item.product?.product_name || item.product_name || 'Product'}</p>
                             <p className="text-[11px] text-gray-500">Quantity: {item.quantity} × ₱{parseFloat(item.unit_price).toFixed(2)}</p>
                           </div>
                           <p className="font-bold text-gray-900">₱{parseFloat(item.subtotal).toFixed(2)}</p>
