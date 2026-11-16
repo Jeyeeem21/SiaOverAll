@@ -24,7 +24,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         // Cache key based on order_number search
-        $cacheKey = 'orders_'.($request->has('order_number') ? 'search_'.$request->order_number : 'active');
+        $cacheKey = 'orders_'.($request->has('order_number') ? 'search_'.md5($request->order_number) : 'active');
 
         return Cache::remember($cacheKey, 1, function () use ($request) {
             $query = Order::select('order_id', 'order_number', 'customer_name', 'service_type', 'status', 'total_amount', 'is_voided', 'created_at', 'completed_date')
@@ -32,9 +32,12 @@ class OrderController extends Controller
 
             // If searching by order_number for void, only return Completed orders
             if ($request->has('order_number')) {
-                $query->where('order_number', $request->order_number)
+                $orderNumber = trim($request->order_number);
+
+                $query->where('order_number', 'like', '%'.addcslashes($orderNumber, '\\%_').'%')
                     ->where('status', 'Completed')
-                    ->where('is_voided', false);
+                    ->where('is_voided', false)
+                    ->limit(10);
             } else {
                 // Default behavior: only show active orders
                 $query->whereIn('status', ['Pending', 'In Progress', 'Cancelled']);

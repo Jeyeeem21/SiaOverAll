@@ -70,6 +70,7 @@ const Pos = () => {
   // Search and void modal state
   const [searchModal, setSearchModal] = useState({ isOpen: false, order: null });
   const [voidOrderNumber, setVoidOrderNumber] = useState('');
+  const [voidMatches, setVoidMatches] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [voidModal, setVoidModal] = useState({ isOpen: false, order: null, reason: '' });
   const [authModal, setAuthModal] = useState({ isOpen: false, order: null });
@@ -330,11 +331,12 @@ const Pos = () => {
     });
   };
 
-  const handleFindOrderToVoid = async () => {
-    const orderNum = voidOrderNumber.trim();
+  const handleFindOrderToVoid = async (value = voidOrderNumber) => {
+    const orderNum = value.trim();
     
     if (!orderNum) {
       setSearchModal(prev => ({ ...prev, order: null }));
+      setVoidMatches([]);
       return;
     }
 
@@ -344,26 +346,40 @@ const Pos = () => {
       // Search by order number - backend filters for Completed, not voided
       const response = await ordersAPI.searchByOrderNumber(orderNum);
       
-      // Backend returns array
-      const order = (Array.isArray(response.data) && response.data.length > 0) ? response.data[0] : null;
-      
-      if (!order) {
-        toast.error(`Order ${orderNum} not found or not eligible for voiding (must be Completed, not voided)`);
-        setSearchModal(prev => ({ ...prev, order: null }));
-        return;
-      }
+      const matches = Array.isArray(response.data) ? response.data : [];
+      setVoidMatches(matches);
 
-      // Update modal with order
-      setSearchModal({ isOpen: true, order: { ...order } });
-      toast.success(`Found: ${order.order_number} - ${order.customer_name || 'Walk-in'}`);
+      // Keep the details panel only when the currently selected order still
+      // matches the text being typed.
+      setSearchModal(prev => (
+        prev.order?.order_number === orderNum ? prev : { ...prev, order: null }
+      ));
     } catch (error) {
-      toast.error('Failed to fetch order. Please check your connection.');
+      setVoidMatches([]);
       console.error('Error fetching order:', error);
-      setSearchModal(prev => ({ ...prev, order: null }));
     } finally {
       setSearchLoading(false);
     }
   };
+
+  const handleSelectOrderToVoid = (order) => {
+    setVoidOrderNumber(order.order_number);
+    setVoidMatches([]);
+    setSearchModal({ isOpen: true, order });
+  };
+
+  useEffect(() => {
+    if (!searchModal.isOpen) return undefined;
+
+    const searchTerm = voidOrderNumber.trim();
+    if (!searchTerm) {
+      setVoidMatches([]);
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => handleFindOrderToVoid(searchTerm), 250);
+    return () => window.clearTimeout(timer);
+  }, [voidOrderNumber, searchModal.isOpen]);
 
   const handleProceedToVoid = () => {
     // Close search modal and show auth modal
@@ -1218,6 +1234,7 @@ const Pos = () => {
                 onClick={() => {
                   setSearchModal({ isOpen: false, order: null });
                   setVoidOrderNumber('');
+                  setVoidMatches([]);
                 }}
                 className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
               >
@@ -1236,28 +1253,14 @@ const Pos = () => {
                     onChange={(e) => {
                       const value = e.target.value.toUpperCase();
                       setVoidOrderNumber(value);
-                      
-                      // Clear previous order when typing
+
                       if (searchModal.order && value !== searchModal.order.order_number) {
                         setSearchModal(prev => ({ ...prev, order: null }));
                       }
-                      
-                      // Auto-search after user stops typing (1 second delay to be safe)
-                      clearTimeout(window.searchTimeout);
-                      window.searchTimeout = setTimeout(() => {
-                        // Only search when format looks complete: ORD-YYYY-NNNN (at least 14 chars)
-                        // This prevents searching partial numbers like "ORD-2025-001"
-                        const trimmed = value.trim();
-                        if (trimmed.length >= 14 && /^ORD-\d{4}-\d{4}/.test(trimmed)) {
-                          handleFindOrderToVoid();
-                        }
-                      }, 1000);
                     }}
                     onKeyPress={(e) => {
-                      // Allow manual search with Enter key
                       if (e.key === 'Enter') {
-                        clearTimeout(window.searchTimeout);
-                        handleFindOrderToVoid();
+                        handleFindOrderToVoid(voidOrderNumber);
                       }
                     }}
                     placeholder="Type order number (e.g., ORD-2025-0010)"
@@ -1273,8 +1276,34 @@ const Pos = () => {
                     <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   )}
                 </div>
+                {voidMatches.length > 0 && !searchModal.order && (
+                  <div className="mt-2 overflow-hidden rounded-lg border border-emerald-200 bg-white shadow-sm">
+                    <p className="border-b border-emerald-100 bg-emerald-50 px-3 py-2 text-[10px] font-semibold text-emerald-800">
+                      Select a completed order to void
+                    </p>
+                    <div className="max-h-52 overflow-y-auto">
+                      {voidMatches.map((order) => (
+                        <button
+                          key={order.order_id}
+                          type="button"
+                          onClick={() => handleSelectOrderToVoid(order)}
+                          className="flex w-full items-center justify-between gap-3 border-b border-gray-100 px-3 py-2.5 text-left last:border-b-0 hover:bg-emerald-50"
+                        >
+                          <span>
+                            <span className="block text-[12px] font-semibold text-gray-900">{order.order_number}</span>
+                            <span className="block text-[10px] text-gray-500">{order.customer_name || 'Walk-in customer'}</span>
+                          </span>
+                          <span className="text-[11px] font-bold text-emerald-700">₱{parseFloat(order.total_amount || 0).toFixed(2)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {voidOrderNumber.trim() && !searchLoading && voidMatches.length === 0 && !searchModal.order && (
+                  <p className="mt-2 text-[10px] text-gray-500">No completed, non-voided order matches this search.</p>
+                )}
                 <p className="text-[10px] text-gray-500 mt-1.5">
-                  <span className="font-semibold text-amber-600">Only Completed orders</span> can be voided • Auto-searches as you type
+                  <span className="font-semibold text-amber-600">Only Completed orders</span> can be voided • Search by any part of the order number
                 </p>
               </div>
 
@@ -1353,6 +1382,7 @@ const Pos = () => {
                   onClick={() => {
                     setSearchModal({ isOpen: false, order: null });
                     setVoidOrderNumber('');
+                    setVoidMatches([]);
                   }}
                   className="flex-1 px-4 py-2 text-[11px] border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all"
                 >
