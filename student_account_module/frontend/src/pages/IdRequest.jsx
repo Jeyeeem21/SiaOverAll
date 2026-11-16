@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navigation from '../components/Navigation';
 
-const ID_MANAGEMENT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL || 'http://localhost:8001/api';
+const ID_MANAGEMENT_API = import.meta.env.VITE_ID_MANAGEMENT_API_URL || 'https://staff-id-backend-production.up.railway.app/api';
 
 export default function IdRequest() {
   const { user } = useAuth();

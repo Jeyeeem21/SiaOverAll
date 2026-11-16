@@ -3,7 +3,12 @@ import { apiRequest } from '../../api/client'
 import Toast from '../../components/Toast'
 import { CardGridSkeleton } from '../../components/LoadingSkeletons'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001'
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL?.replace(/\/api$/, '') ||
+  'https://staff-id-backend-production.up.railway.app'
+).replace(/\/$/, '')
+const MAIN_SYSTEM_ORIGIN = new URL(API_BASE_URL).origin
 
 export default function StudentIdCards() {
   const [cards, setCards] = useState([])

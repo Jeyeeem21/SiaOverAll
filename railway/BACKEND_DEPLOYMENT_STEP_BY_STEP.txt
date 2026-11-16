@@ -226,7 +226,6 @@ Generate Domain Port:
 
   8080
 
-
 2. STUDENT ACCOUNT API
 ----------------------
 
@@ -309,6 +308,7 @@ Raw Editor variable block:
   CACHE_STORE=database
   QUEUE_CONNECTION=database
   SESSION_SECURE_COOKIE=true
+  STUDENT_ACCOUNT_URL=https://student-account-backend-production.up.railway.app
 
 Healthcheck Path:
 
@@ -317,6 +317,12 @@ Healthcheck Path:
 Generate Domain Port:
 
   8080
+
+STUDENT_ACCOUNT_URL must be the Student Account backend's public HTTPS domain.
+For this deployment it is https://student-account-backend-production.up.railway.app.
+Do not use localhost, a Railway private domain, or an /api suffix. Student
+avatar URLs are sent to the browser, so they must use the account backend's
+public URL. Redeploy staff-id-backend after saving this variable.
 
 
 4. STUDENT PRINT API

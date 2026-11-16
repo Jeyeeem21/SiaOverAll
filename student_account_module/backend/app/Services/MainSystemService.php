@@ -13,7 +13,7 @@ class MainSystemService
     public function __construct()
     {
         // Main system API endpoint
-        $this->baseUrl = env('MAIN_SYSTEM_API_URL', 'http://localhost:8000/api');
+        $this->baseUrl = env('MAIN_SYSTEM_API_URL', 'https://main-backend.up.railway.app/api');
         $this->timeout = 10; // seconds
     }
 

@@ -7,7 +7,7 @@ import ApiService from '../services/api';
 import { useToast } from '../components/ToastProvider';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '');
-const ID_MANAGEMENT_ORIGIN = new URL(import.meta.env.VITE_ID_MANAGEMENT_API_URL || 'http://localhost:8001/api').origin;
+const ID_MANAGEMENT_ORIGIN = new URL(import.meta.env.VITE_ID_MANAGEMENT_API_URL || 'https://staff-id-backend-production.up.railway.app/api').origin;
 
 const DevProfile = () => {
   const navigate = useNavigate();

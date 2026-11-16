@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const STICKER_URL = import.meta.env.VITE_STICKER_URL || 'http://localhost:5176';
+const STICKER_URL = import.meta.env.VITE_STICKER_URL || 'https://sticker-frontend-production.up.railway.app';
 
 const Stickers = () => {
   const [iframeHeight, setIframeHeight] = useState('calc(100vh - 64px)');

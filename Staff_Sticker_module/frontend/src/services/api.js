@@ -4,7 +4,7 @@
 // The staff sticker workflow is served by the Student Account API. Docker
 // provides VITE_API_URL; this fallback keeps standalone Vite development on
 // the same API instead of accidentally targeting the print service.
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8004/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://student-account-backend-production.up.railway.app/api';
 
 class StickerAPI {
   constructor() {

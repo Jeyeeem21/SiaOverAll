@@ -17,7 +17,7 @@ function App() {
 
   // Fetch real data from API
   useEffect(() => {
-    const mainSystemOrigin = import.meta.env.VITE_MAIN_SYSTEM_URL || 'http://localhost:5173'
+    const mainSystemOrigin = import.meta.env.VITE_MAIN_SYSTEM_URL || 'https://minsu-businesscenter.up.railway.app'
     const embedded = window.self !== window.top
 
     const receiveAuthToken = (event) => {

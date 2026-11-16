@@ -146,9 +146,10 @@ class Student extends Model
                 
                 // Priority 2: Use user's avatar if exists (uploaded by student in portal)
                 if ($this->user && $this->user->avatar) {
-                    // Avatar is from student account module at localhost:8004
-                    // We need to return the full URL from that service
-                    $studentAccountUrl = env('STUDENT_ACCOUNT_URL', 'http://localhost:8004');
+                    // Avatar files are served by the Student Account service.
+                    // In production STUDENT_ACCOUNT_URL must be that service's
+                    // public HTTPS domain (never a Railway private domain).
+                    $studentAccountUrl = rtrim(env('STUDENT_ACCOUNT_URL', 'https://student-account-backend-production.up.railway.app'), '/');
                     return $studentAccountUrl . '/storage/' . $this->user->avatar;
                 }
                 
@@ -162,7 +163,8 @@ class Student extends Model
         return Attribute::make(
             get: function () {
                 if ($this->user && $this->user->avatar) {
-                    $studentAccountUrl = env('STUDENT_ACCOUNT_URL', 'http://localhost:8004');
+                    // See photoUrl(): this URL is consumed directly by browsers.
+                    $studentAccountUrl = rtrim(env('STUDENT_ACCOUNT_URL', 'https://student-account-backend-production.up.railway.app'), '/');
                     return $studentAccountUrl . '/storage/' . $this->user->avatar;
                 }
                 return null;

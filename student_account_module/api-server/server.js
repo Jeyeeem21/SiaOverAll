@@ -12,7 +12,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const app = express();
 const PORT = process.env.PORT || 3002;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const PUBLIC_API_URL = process.env.PUBLIC_API_URL || process.env.ACCOUNT_NODE_API_URL || `http://localhost:${PORT}`;
+const PUBLIC_API_URL = process.env.PUBLIC_API_URL || process.env.ACCOUNT_NODE_API_URL || 'https://student-account-backend-production.up.railway.app';
 
 // Read Laravel .env file for database configuration
 function readLaravelEnv() {
