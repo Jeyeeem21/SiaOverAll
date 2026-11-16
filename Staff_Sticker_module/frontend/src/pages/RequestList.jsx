@@ -86,7 +86,7 @@ function RequestList({ requests, onViewRequest, onApprove, onOpenGenerated, load
   const RequestTable = ({ rows, variant, showReason = false }) => (
     <div className="table-scroll">
       <table className="data-table">
-        <thead><tr><th>Student</th><th>Vehicle</th>{showReason ? <th>Reason</th> : <><th>Plate number</th><th>Submitted</th></>}<th>Status</th>{['pending', 'generated'].includes(variant) && <th className="text-right">Actions</th>}</tr></thead>
+        <thead><tr><th>Student</th><th>Vehicle</th>{showReason ? <th>Reason</th> : <><th>Plate number</th><th>Submitted</th></>}<th>Status</th>{['pending', 'generated', 'completed'].includes(variant) && <th className="text-right">Actions</th>}</tr></thead>
         <tbody>{rows.map((request) => <tr key={request.id}>
           <td><div className="student-cell"><span className="student-name">{request.studentName}</span><span className="student-id">ID: {request.studentId}</span></div></td>
           <td><span className="vehicle-badge">{vehicleIcon(request.vehicleType)} {request.vehicleType}</span></td>
@@ -94,6 +94,7 @@ function RequestList({ requests, onViewRequest, onApprove, onOpenGenerated, load
           <td><span className={`status-badge ${variant}`}>{variant === 'pending' ? 'Pending' : variant === 'generated' ? 'Ready to print' : variant === 'completed' ? 'Completed' : 'Declined'}</span></td>
           {variant === 'pending' && <td><div className="table-actions"><button className="icon-button" onClick={() => onViewRequest(request)} title="View request details" aria-label="View request details"><Eye size={16} /></button><button className="icon-button" onClick={() => onApprove(request)} title="Approve and customize sticker" aria-label="Approve and customize sticker"><CheckCircle size={16} /></button></div></td>}
           {variant === 'generated' && <td><div className="table-actions"><button className="icon-button" onClick={() => onOpenGenerated(request)} title="Open sticker for printing" aria-label="Open sticker for printing"><Printer size={16} /></button></div></td>}
+          {variant === 'completed' && <td><div className="table-actions"><button className="icon-button" onClick={() => onOpenGenerated(request)} title="Reprint completed sticker" aria-label="Reprint completed sticker"><Printer size={16} /></button></div></td>}
         </tr>)}</tbody>
       </table>
     </div>

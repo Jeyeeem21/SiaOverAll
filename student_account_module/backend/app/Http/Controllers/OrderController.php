@@ -172,13 +172,22 @@ class OrderController extends Controller
 
                 // Get student name from user's full_name
                 $studentName = $user->full_name ?? 'Student';
+                // The Main System order list groups orders by this field. Keep
+                // the product category selected in the cart instead of giving
+                // every student checkout the generic "Other" label.
+                $serviceType = collect($orderItems)
+                    ->pluck('category_name')
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->implode(', ') ?: 'Other';
 
                 // Create the order with full schema
                 $order = Order::create([
                     'student_id' => $student->id,
                     'order_number' => Order::generateOrderNumber(),
                     'customer_name' => $studentName,
-                    'service_type' => 'Other', // Default service type - can be made dynamic
+                    'service_type' => $serviceType,
                     'status' => 'Pending',
                     'payment_status' => 'unpaid',
                     'payment_method' => $validated['payment_method'] ?? null,

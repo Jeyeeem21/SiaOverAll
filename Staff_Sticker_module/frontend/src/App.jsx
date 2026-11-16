@@ -14,6 +14,7 @@ function App() {
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [feedback, setFeedback] = useState(null)
 
   // Fetch real data from API
   useEffect(() => {
@@ -92,7 +93,7 @@ function App() {
       setSelectedRequest(approvedRequest)
       setCurrentPage('customize')
     } catch (error) {
-      alert('Failed to approve request: ' + error.message)
+      setFeedback({ type: 'error', message: `Failed to approve request: ${error.message}` })
     }
   }
 
@@ -107,14 +108,14 @@ function App() {
           : r
       ))
       
-      alert(`Request from ${request.studentName} has been declined.`)
+      setFeedback({ type: 'success', message: `Request from ${request.studentName} has been declined.` })
       setCurrentPage('list')
       setSelectedRequest(null)
       
       // Refresh data
       fetchRequests()
     } catch (error) {
-      alert('Failed to decline request: ' + error.message)
+      setFeedback({ type: 'error', message: `Failed to decline request: ${error.message}` })
     }
   }
 
@@ -152,7 +153,7 @@ function App() {
       // Refresh data
       fetchRequests()
     } catch (error) {
-      alert('Failed to generate sticker: ' + error.message)
+      setFeedback({ type: 'error', message: `Failed to generate sticker: ${error.message}` })
     }
   }
 
@@ -163,9 +164,9 @@ function App() {
         request.id === requestId ? { ...request, status: 'completed' } : request
       ))
       setGeneratedSticker((current) => current ? { ...current, status: 'completed' } : current)
-      alert('Sticker marked as printed.')
+      setFeedback({ type: 'success', message: 'Sticker marked as printed.' })
     } catch (error) {
-      alert('Failed to mark sticker as printed: ' + error.message)
+      setFeedback({ type: 'error', message: `Failed to mark sticker as printed: ${error.message}` })
     }
   }
 
@@ -187,11 +188,14 @@ function App() {
         serialNumber: details.sticker?.serial_number,
         generatedDate: details.sticker?.generated_at || request.submittedDate,
         generatedTime: '',
-        status: 'generated',
+        // A completed sticker can be reopened and printed again, but it must
+        // remain completed so the staff member is not prompted to mark it
+        // printed a second time.
+        status: request.status === 'completed' ? 'completed' : 'generated',
       })
       setCurrentPage('preview')
     } catch (error) {
-      alert('Failed to open generated sticker: ' + error.message)
+      setFeedback({ type: 'error', message: `Failed to open generated sticker: ${error.message}` })
     }
   }
 
@@ -241,7 +245,7 @@ function App() {
           )}
 
           {currentPage === 'customize' && (
-            <WorkflowModal title="Customize sticker">
+            <WorkflowModal title="Customize sticker" onClose={handleBack}>
               <StickerCustomization 
                 request={selectedRequest}
                 onBack={handleBack}
@@ -251,7 +255,7 @@ function App() {
           )}
 
           {currentPage === 'preview' && (
-            <WorkflowModal title="Generated sticker">
+            <WorkflowModal title="Generated sticker" onClose={handleBack}>
               <StickerPreview 
                 sticker={generatedSticker}
                 onBack={handleBack}
@@ -261,11 +265,50 @@ function App() {
           )}
         </>
       )}
+      {feedback && (
+        <FeedbackModal
+          type={feedback.type}
+          message={feedback.message}
+          onClose={() => setFeedback(null)}
+        />
+      )}
     </div>
   )
 }
 
-const WorkflowModal = ({ title, children, onClose }) => (
+const FeedbackModal = ({ type, message, onClose }) => {
+  const isError = type === 'error'
+
+  return (
+    <div className="modal-overlay workflow-overlay" onClick={onClose} role="presentation">
+      <section
+        className="modal-content workflow-modal-content"
+        onClick={(event) => event.stopPropagation()}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="feedback-modal-title"
+      >
+        <div className="workflow-modal-header no-print">
+          <div>
+            <p className="eyebrow">Sticker workflow</p>
+            <h2 id="feedback-modal-title">{isError ? 'Action failed' : 'Update complete'}</h2>
+          </div>
+          <button className="modal-close" onClick={onClose} aria-label="Close notification">
+            <X size={20} />
+          </button>
+        </div>
+        <div className="workflow-modal-body">
+          <p className={isError ? 'text-red-700' : 'text-emerald-700'}>{message}</p>
+          <div className="mt-6 flex justify-end">
+            <button className="button-primary" onClick={onClose}>OK</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+const WorkflowModal = ({ title, children, onClose = () => {} }) => (
   <div className="modal-overlay workflow-overlay" onClick={onClose}>
     <section className="modal-content workflow-modal-content" onClick={(event) => event.stopPropagation()} aria-modal="true" role="dialog" aria-label={title}>
       <div className="workflow-modal-header no-print">
