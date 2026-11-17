@@ -240,10 +240,20 @@ class StudentIdCardController extends Controller
     {
         $card->load(['student.user']);
 
-        return response()->view('id-cards.student-preview', [
+        $response = response()->view('id-cards.student-preview', [
             'card' => $card,
             'student' => $card->student,
         ]);
+
+        // The preview is intentionally embedded by the trusted business-center
+        // and Staff ID frontends. A legacy SAMEORIGIN header prevents that.
+        $response->headers->remove('X-Frame-Options');
+        $response->headers->set(
+            'Content-Security-Policy',
+            "frame-ancestors 'self' https://minsu-businesscenter.up.railway.app https://staff-id-frontend-production.up.railway.app http://localhost:5173 http://localhost:5174",
+        );
+
+        return $response;
     }
 
     /**
