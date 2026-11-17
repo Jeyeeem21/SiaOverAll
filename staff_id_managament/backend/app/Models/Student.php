@@ -151,7 +151,7 @@ class Student extends Model
             get: function () {
                 // Priority 1: Use photo_path if exists (uploaded by staff in ID Management)
                 if ($this->photo_path) {
-                    return url('storage/' . $this->photo_path);
+                    return $this->publicStorageUrl($this->photo_path);
                 }
                 
                 // Priority 2: Use user's avatar if exists (uploaded by student in portal)
@@ -185,8 +185,15 @@ class Student extends Model
     protected function signatureUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->signature_path ? url('storage/' . $this->signature_path) : null,
+            get: fn () => $this->signature_path ? $this->publicStorageUrl($this->signature_path) : null,
         );
+    }
+
+    private function publicStorageUrl(string $path): string
+    {
+        return app()->environment('production')
+            ? secure_url('storage/' . $path)
+            : url('storage/' . $path);
     }
 
     protected function registrarSignatureUrl(): Attribute

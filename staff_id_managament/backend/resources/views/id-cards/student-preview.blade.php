@@ -712,7 +712,7 @@
                             <div class="photo-section">
                                 <div class="photo-pole"></div>
                                 <div class="photo" id="photoPreview">
-                                    @if($student->photo_path)
+                                    @if($student->photo_url)
                                         <img src="{{ $student->photo_url }}" alt="{{ $student->full_name }}">
                                     @else
                                         <div class="photo-placeholder">No Photo</div>
