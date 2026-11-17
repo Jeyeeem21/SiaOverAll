@@ -61,17 +61,11 @@ class StudentIdCardController extends Controller
         }
 
         $card = DB::transaction(function () use ($student, $request): StudentIdCard {
-            // Create the card with PENDING card number initially
             $card = $student->idCards()->create([
-                'card_number' => 'PENDING',
+                'card_number' => $this->nextCardNumber($student),
                 'status' => 'requested',
                 'requested_at' => now(),
                 'requested_by' => $request->user()?->id,
-            ]);
-
-            // Use student's ID number as the card number
-            $card->update([
-                'card_number' => $student->student_number
             ]);
 
             // Create history record
@@ -475,9 +469,8 @@ class StudentIdCardController extends Controller
         }
 
         $card = DB::transaction(function () use ($student): StudentIdCard {
-            // Create the card with student's ID number (same card number for all requests)
             $card = $student->idCards()->create([
-                'card_number' => $student->student_number,
+                'card_number' => $this->nextCardNumber($student),
                 'status' => 'requested',
                 'requested_at' => now(),
                 'requested_by' => null, // Student portal doesn't have staff user ID
@@ -540,5 +533,20 @@ class StudentIdCardController extends Controller
             'complete' => collect($items)->every(fn (array $item) => $item['complete']),
             'items' => $items,
         ];
+    }
+
+    /**
+     * Keep the first card number equal to the student number, while allowing
+     * replacement/re-issued cards to work even on databases that retain the
+     * legacy unique constraint on student_id_cards.card_number.
+     */
+    private function nextCardNumber(Student $student): string
+    {
+        $existingCount = $student->idCards()->count();
+        if ($existingCount === 0) {
+            return $student->student_number;
+        }
+
+        return substr($student->student_number, 0, 43) . '-R' . ($existingCount + 1);
     }
 }
