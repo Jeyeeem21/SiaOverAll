@@ -34,23 +34,9 @@ yarn-error.log*
 # Docker volumes
 *_data/
 
-# Documentation and notes (root level only)
-/*.txt
-/*.md
+# Keep documentation and text files out of the repository, except for the
+# two project-level files intentionally retained.
+*.txt
+*.md
 !README.md
-!SETUP_GUIDE.md
 !TROUBLESHOOTING.md
-!DEPLOYMENT_CHECKLIST.md
-!GITHUB_DEPLOY_SETUP.md
-!ALTERNATIVE_DEPLOY_PLATFORMS.md
-!README_DEPLOYMENT.md
-!PRE_DEPLOY_CHECKLIST.md
-!GITHUB_AUTODEPLOY_SUMMARY.md
-!QUICK_START_DEPLOY.md
-!START_HERE.md
-!FRONTEND_DEPLOYMENT_RAILWAY.md
-!CORS_CONFIGURATION_CHECKLIST.md
-!COMPLETE_DEPLOYMENT_GUIDE.md
-!MY_RAILWAY_URLS_AND_VARIABLES.md
-!RAILWAY_VARIABLES_ALL_FRONTENDS.md
-!FINAL_RAILWAY_CONFIGURATION.md

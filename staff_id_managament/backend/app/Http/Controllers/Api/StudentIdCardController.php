@@ -533,9 +533,13 @@ class StudentIdCardController extends Controller
             ->pluck('document_type')
             ->all();
 
+        // A student may upload the photo in the Account Profile before staff
+        // copies it into ID Management. Both fields identify a valid ID photo.
+        $hasIdPhoto = filled($student->photo_path) || filled($student->user?->avatar);
+
         $items = [
             ['key' => 'profile', 'label' => 'Profile details', 'complete' => $profileComplete, 'action' => 'Update your name, phone, college, and program.'],
-            ['key' => 'photo', 'label' => 'ID photo', 'complete' => filled($student->photo_path), 'action' => 'Upload an ID photo through ID Management.'],
+            ['key' => 'photo', 'label' => 'ID photo', 'complete' => $hasIdPhoto, 'action' => 'Upload a profile or ID photo.'],
             ['key' => 'school_id', 'label' => 'Approved school ID', 'complete' => in_array('school_id', $approvedDocuments, true), 'action' => 'Upload your school ID in Profile and wait for approval.'],
             ['key' => 'registration_form', 'label' => 'Approved registration form', 'complete' => in_array('registration_form', $approvedDocuments, true), 'action' => 'Upload your registration form in Profile and wait for approval.'],
         ];
