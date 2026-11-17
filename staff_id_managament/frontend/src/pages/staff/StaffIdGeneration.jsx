@@ -391,7 +391,7 @@ function IDCardItem({ card, canManageCards, statusColors, onUpdateStatus, onRele
 
 function Modal({ onClose, title, children, large = false }) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onClick={onClose}>
+    <div className="app-modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onClick={onClose}>
       <div className={`bg-white rounded-2xl shadow-xl ${large ? 'max-w-4xl' : 'max-w-md'} w-full max-h-[92vh] overflow-hidden mx-8`} onClick={e => e.stopPropagation()}>
         <div className="px-8 py-6 mx-8 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
@@ -535,7 +535,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 bg-white rounded-t-2xl">
+        <div className="app-modal-header px-6 py-4 border-b border-gray-200 bg-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
@@ -575,7 +575,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto max-h-[calc(90vh-180px)] p-5 bg-gray-50">
+        <div className="app-modal-body p-5 bg-gray-50">
           <div className="space-y-4">
             {/* Photos Section */}
             <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -851,7 +851,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
         </div>
 
         {/* Footer Actions */}
-        <div className="px-8 py-6 bg-white border-t border-gray-200">
+        <div className="app-modal-footer px-6 py-4 bg-white border-t border-gray-200">
           {!isDataComplete() && !isEditing && (
             <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
               <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -864,7 +864,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
             </div>
           )}
           
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             {isEditing ? (
               <>
                 <button

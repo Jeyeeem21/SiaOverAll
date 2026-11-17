@@ -362,7 +362,7 @@ export default function IdRequestManagement() {
 
       {/* Status Update Modal */}
       {showStatusModal && selectedCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="app-modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Update Status</h3>
             
@@ -467,7 +467,7 @@ export default function IdRequestManagement() {
 
       {/* History Modal */}
       {showHistoryModal && selectedCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="app-modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Status History</h3>
             

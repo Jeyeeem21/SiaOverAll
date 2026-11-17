@@ -40,7 +40,17 @@ class Student extends Model
         'verified_by',
     ];
 
-    protected $appends = ['full_name', 'email', 'program', 'photo_url', 'signature_url', 'avatar_url'];
+    protected $appends = [
+        'full_name',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'email',
+        'program',
+        'photo_url',
+        'signature_url',
+        'avatar_url',
+    ];
 
     // Original fillable for ID card photo uploads - stored separately
     // 'photo_path', 'signature_path', 'registrar_signature_path'

@@ -366,7 +366,7 @@ export default function StudentIdCards() {
 
       {/* ID Card Preview Modal - Front and Back Side-by-Side */}
       {previewCard && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setPreviewCard(null)}>
+        <div className="app-modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setPreviewCard(null)}>
           <div 
             className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
@@ -546,7 +546,7 @@ function IDCardItem({ card, canManageCards, statusColors, onUpdateStatus, onRele
 
 function Modal({ onClose, title, children, large = false }) {
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="app-modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className={`bg-white rounded-3xl shadow-2xl ${large ? 'max-w-4xl' : 'max-w-md'} w-full max-h-[90vh] overflow-hidden`} onClick={e => e.stopPropagation()}>
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900">{title}</h2>

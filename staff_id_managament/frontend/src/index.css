@@ -234,6 +234,23 @@ body {
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
 }
 
+/*
+ * Some legacy Staff ID dialogs predate the reusable modal panel classes.
+ * Give every direct dialog panel the same bounded, header/body/footer layout
+ * so long student records scroll within the dialog and never hide its actions.
+ */
+.app-modal-overlay > div {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 2rem);
+}
+
+.app-modal-overlay > div > .overflow-y-auto {
+  min-height: 0;
+  flex: 1 1 auto;
+  max-height: none !important;
+}
+
 .app-modal-header,
 .app-modal-footer {
   flex: none;

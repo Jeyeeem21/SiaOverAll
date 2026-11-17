@@ -378,7 +378,7 @@ function Pagination({ meta, onPageChange }) {
 
 function ViewModal({ student, onClose, onEdit, canEdit }) {
   return (
-    <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
+    <div className="app-modal-overlay fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-100" onClick={(e) => e.stopPropagation()}>
         <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-3xl">
           <h2 className="text-xl font-bold text-gray-900">Student Details</h2>
@@ -425,7 +425,7 @@ function EditModal({ student, saving, fieldErrors, onSave, onChange, onClose }) 
   }
   
   return (
-    <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
+    <div className="app-modal-overlay fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-100" onClick={(e) => e.stopPropagation()}>
         <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-3xl">
           <h2 className="text-xl font-bold text-gray-900">{student.id ? 'Edit Student' : 'Add New Student'}</h2>
@@ -495,7 +495,7 @@ function EditModal({ student, saving, fieldErrors, onSave, onChange, onClose }) 
 
 function DeleteModal({ student, saving, onConfirm, onClose }) {
   return (
-    <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
+    <div className="app-modal-overlay fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full border border-gray-100" onClick={(e) => e.stopPropagation()}>
         <div className="p-8 text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">

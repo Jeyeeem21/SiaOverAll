@@ -374,7 +374,7 @@ export default function StaffIdRequests() {
 
       {/* Details Modal */}
       {showDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setShowDetails(null)}>
+        <div className="app-modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setShowDetails(null)}>
           <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
               <h3 className="text-xl font-bold text-gray-900">Request Details</h3>

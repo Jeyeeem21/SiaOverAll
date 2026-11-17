@@ -332,7 +332,7 @@ export default function IdRequests() {
 
       {/* Student Search Modal */}
       {showStudentSearch && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setShowStudentSearch(false)}>
+        <div className="app-modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setShowStudentSearch(false)}>
           <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">Search Student</h2>
@@ -387,7 +387,7 @@ export default function IdRequests() {
 
       {/* ID Preview Modal */}
       {showPreview && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onClick={() => setShowPreview(null)}>
+        <div className="app-modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onClick={() => setShowPreview(null)}>
           <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-8" onClick={(e) => e.stopPropagation()}>
             <div className="px-8 py-6 mx-8 border-b border-gray-200">
               <h2 className="text-2xl font-semibold text-gray-900">ID Card Preview</h2>
@@ -426,7 +426,7 @@ export default function IdRequests() {
 
       {/* Release Modal */}
       {showRelease && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onClick={() => setShowRelease(null)}>
+        <div className="app-modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50" onClick={() => setShowRelease(null)}>
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full mx-8" onClick={(e) => e.stopPropagation()}>
             <div className="px-8 py-6 mx-8 border-b border-gray-200">
               <h2 className="text-2xl font-semibold text-gray-900">Release ID Card</h2>

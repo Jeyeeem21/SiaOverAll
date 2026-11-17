@@ -4,7 +4,7 @@ export default function NotificationModal({ type = 'success', message, onClose }
   const isError = type === 'error'
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="app-modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div 
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200"
         onClick={(e) => e.stopPropagation()}

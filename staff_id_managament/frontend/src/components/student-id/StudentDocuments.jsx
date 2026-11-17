@@ -491,7 +491,7 @@ function DocumentUploadModal({ onClose, onUpload, uploading }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <div className="app-modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full" onClick={e => e.stopPropagation()}>
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900">Upload Document</h2>
