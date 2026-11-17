@@ -4,6 +4,7 @@ use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetCacheHeaders;
 use App\Http\Middleware\CompressResponse;
+use App\Http\Middleware\RecordAuditTrail;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: [
             CompressResponse::class,  // Compress responses > 1KB
             SetCacheHeaders::class,   // Add cache headers for static data
+            RecordAuditTrail::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

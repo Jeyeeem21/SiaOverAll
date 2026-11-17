@@ -3,13 +3,100 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\AuditLog;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class SettingsController extends Controller
 {
+    public function getAuditTrail(Request $request)
+    {
+        $actor = $request->user();
+        if (!$actor || strtolower((string) $actor->role) !== 'admin') {
+            return response()->json(['message' => 'Only administrators can view the audit trail.'], 403);
+        }
+
+        $validated = $request->validate([
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:10', 'max:100'],
+            'module' => ['nullable', 'string', 'max:100'],
+            'action' => ['nullable', 'string', 'max:100'],
+            'search' => ['nullable', 'string', 'max:100'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date'],
+        ]);
+
+        $logs = AuditLog::query()
+            ->when($validated['module'] ?? null, fn ($query, $module) => $query->where('module', $module))
+            ->when($validated['action'] ?? null, fn ($query, $action) => $query->where('action', $action))
+            ->when($validated['search'] ?? null, function ($query, $search) {
+                $query->where(function ($nested) use ($search) {
+                    $nested->where('actor_name', 'like', "%{$search}%")
+                        ->orWhere('entity_type', 'like', "%{$search}%")
+                        ->orWhere('endpoint', 'like', "%{$search}%");
+                });
+            })
+            ->when($validated['from'] ?? null, fn ($query, $from) => $query->where('occurred_at', '>=', Carbon::parse($from, 'Asia/Manila')->startOfDay()->format('Y-m-d H:i:s')))
+            ->when($validated['to'] ?? null, fn ($query, $to) => $query->where('occurred_at', '<=', Carbon::parse($to, 'Asia/Manila')->endOfDay()->format('Y-m-d H:i:s')))
+            ->orderByDesc('occurred_at')
+            ->orderByDesc('id')
+            ->paginate($validated['per_page'] ?? 20);
+
+        $logs->through(function (AuditLog $log) {
+            if (!$log->actor_id && preg_match('#/public/students/([^/]+)#', $log->endpoint, $matches)) {
+                $student = DB::table('account_students')
+                    ->join('users', 'users.id', '=', 'account_students.user_id')
+                    ->where('account_students.student_number', urldecode($matches[1]))
+                    ->first(['users.id', 'users.full_name']);
+
+                if ($student) {
+                    $log->actor_id = $student->id;
+                    $log->actor_name = $student->full_name;
+                    $log->actor_role = 'Student';
+                }
+            }
+
+            $log->setAttribute('description', $this->auditDescription($log));
+            $log->setAttribute(
+                'occurred_at_manila',
+                Carbon::parse($log->getRawOriginal('occurred_at'), 'Asia/Manila')
+                    ->toIso8601String(),
+            );
+
+            return $log;
+        });
+
+        return response()->json($logs);
+    }
+
+    private function auditDescription(AuditLog $log): string
+    {
+        $properties = $log->properties ?? [];
+        $result = $properties['result'] ?? $properties;
+        $request = $properties['request'] ?? $properties;
+        $record = is_array($result) ? $result : [];
+        $input = is_array($request) ? $request : [];
+        $entity = strtolower(str_replace('-', ' ', $log->entity_type ?: 'record'));
+        $identifier = $record['order_number'] ?? $input['order_number']
+            ?? $record['student_number'] ?? $input['student_number']
+            ?? $record['reference_no'] ?? $input['reference_no']
+            ?? $record['product_name'] ?? $input['product_name']
+            ?? $log->entity_id;
+        $verb = ucfirst(str_replace('_', ' ', $log->action));
+        $description = trim("{$verb} {$entity}" . ($identifier ? " {$identifier}" : ''));
+        $amount = $record['total_amount'] ?? $input['total_amount'] ?? $input['amount'] ?? null;
+
+        if (is_numeric($amount)) {
+            $description .= ' for PHP ' . number_format((float) $amount, 2);
+        }
+
+        return $description;
+    }
+
     // Get current user profile
     public function getProfile()
     {

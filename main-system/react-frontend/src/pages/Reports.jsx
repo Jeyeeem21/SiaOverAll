@@ -110,6 +110,17 @@ const Reports = () => {
 
  // Handle export functions
  const handleExport = (type) => {
+ // Exports are generated in the browser. Record the request in the server-side
+ // audit trail without delaying the print window or browser download.
+ void reportsAPI.export({
+ type,
+ report_tab: activeTab,
+ start_date: startDate,
+ end_date: endDate,
+ }).catch(() => {
+ console.warn('Unable to record report export in the audit trail.');
+ });
+
  const transactions = getTransactionsByTab();
  const { productTotals, grandTotal } = calculateExportTotals(transactions);
  

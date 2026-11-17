@@ -712,7 +712,7 @@
                             <div class="photo-section">
                                 <div class="photo-pole"></div>
                                 <div class="photo" id="photoPreview">
-                                    <?php if($student->photo_path): ?>
+                                    <?php if($student->photo_url): ?>
                                         <img src="<?php echo e($student->photo_url); ?>" alt="<?php echo e($student->full_name); ?>">
                                     <?php else: ?>
                                         <div class="photo-placeholder">No Photo</div>

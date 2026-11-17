@@ -126,7 +126,7 @@ export const dashboardAPI = {
 // Reports API
 export const reportsAPI = {
   getReports: (params) => api.get('/reports', { params }),
-  export: (type) => api.post('/reports/export', { type }),
+  export: (payload) => api.post('/reports/export', payload),
 };
 
 // Settings API
@@ -144,6 +144,7 @@ export const settingsAPI = {
   deleteUser: (id) => api.delete(`/settings/users/${id}`),
   resetPassword: (id, data) => api.post(`/settings/users/${id}/reset-password`, data),
   checkEmail: (email, userId = null) => api.post('/settings/check-email', { email, user_id: userId }),
+  getAuditTrail: (params) => api.get('/settings/audit-trail', { params }),
 };
 
 // Staff API

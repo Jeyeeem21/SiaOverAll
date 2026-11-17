@@ -154,8 +154,11 @@ class StudentIdCardController extends Controller
                 }
             }
 
-            $timestampColumn = $attributes['status'] . '_at';
-            $actorColumn = $attributes['status'] . '_by';
+            // Invalid is the permanent replacement/cancellation state. Reuse
+            // the expiry audit columns rather than writing non-existent
+            // invalid_at/invalid_by fields.
+            $timestampColumn = $attributes['status'] === 'invalid' ? 'expired_at' : $attributes['status'] . '_at';
+            $actorColumn = $attributes['status'] === 'invalid' ? 'expired_by' : $attributes['status'] . '_by';
 
             $updateData = [
                 'status' => $attributes['status'],

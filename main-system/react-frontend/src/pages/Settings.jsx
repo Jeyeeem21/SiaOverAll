@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import usePageTitle from '../hooks/usePageTitle';
-import { User, Lock, Users, Save, Plus, Edit, Trash2, Shield, Key, X, Check } from 'lucide-react';
+import { User, Lock, Users, Save, Plus, Edit, Trash2, Shield, Key, X, Check, Activity, Search, Clock, Eye } from 'lucide-react';
 import { settingsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import Pagination from '../components/Pagination';
+
+const formatManilaTime = (value) => {
+ if (!value) return 'Not available';
+ const normalized = /(?:Z|[+-]\d{2}:?\d{2})$/.test(value) ? value : `${value.replace(' ', 'T')}+08:00`;
+ return new Intl.DateTimeFormat('en-PH', { dateStyle: 'medium', timeStyle: 'medium', timeZone: 'Asia/Manila' }).format(new Date(normalized));
+};
 
 const Settings = () => {
   usePageTitle('Settings');
@@ -15,6 +21,12 @@ const Settings = () => {
  const [users, setUsers] = useState([]);
  const [usersPage, setUsersPage] = useState(1);
  const [usersPerPage, setUsersPerPage] = useState(10);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [auditMeta, setAuditMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
+  const [auditPage, setAuditPage] = useState(1);
+  const [auditPerPage, setAuditPerPage] = useState(10);
+  const [auditFilters, setAuditFilters] = useState({ search: '', module: '', action: '', from: '', to: '' });
+  const [selectedAuditLog, setSelectedAuditLog] = useState(null);
  
  // Profile form state
  const [profileForm, setProfileForm] = useState({
@@ -58,7 +70,8 @@ const Settings = () => {
  const tags = [
  { id: 'profile', label: 'Profile', icon: User },
  { id: 'security', label: 'Security', icon: Lock },
- { id: 'accounts', label: 'Account Management', icon: Users },
+  { id: 'accounts', label: 'Account Management', icon: Users },
+  ...(String(user?.role || '').toLowerCase() === 'admin' ? [{ id: 'audit', label: 'Audit Trail', icon: Activity }] : []),
  ];
 
  // Initialize profile form with logged-in user data
@@ -75,10 +88,25 @@ const Settings = () => {
  useEffect(() => {
  if (activeTag === 'profile' || activeTag === 'security') {
  fetchProfile();
- } else if (activeTag === 'accounts') {
+  } else if (activeTag === 'accounts') {
  fetchUsers();
+  } else if (activeTag === 'audit') {
+  fetchAuditTrail();
  }
- }, [activeTag]);
+  }, [activeTag, auditPage, auditPerPage, auditFilters]);
+
+  const fetchAuditTrail = async () => {
+  try {
+  setLoading(true);
+  const response = await settingsAPI.getAuditTrail({ ...auditFilters, page: auditPage, per_page: auditPerPage });
+  setAuditLogs(response.data.data || []);
+  setAuditMeta({ current_page: response.data.current_page, last_page: response.data.last_page, total: response.data.total });
+  } catch (error) {
+  toast.error(error.response?.data?.message || 'Failed to load audit trail');
+  } finally {
+  setLoading(false);
+  }
+  };
 
  const fetchProfile = async () => {
  try {
@@ -767,7 +795,79 @@ const Settings = () => {
   )}
  </div>
  )}
+
+  {activeTag === 'audit' && (
+  <div className="space-y-5">
+  <style>{`.audit-entry > div:nth-child(5) { display: none; }`}</style>
+  <div>
+  <h2 className="text-[15px] font-bold text-gray-900 mb-1">Audit Trail</h2>
+  <p className="text-[11px] text-gray-400">A protected record of successful changes across all connected modules.</p>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3 p-4 bg-gray-50 border border-gray-100 rounded-xl">
+  <div className="xl:col-span-2 relative">
+  <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+  <input value={auditFilters.search} onChange={(e) => { setAuditFilters({ ...auditFilters, search: e.target.value }); setAuditPage(1); }} placeholder="Search actor, record, or endpoint" className="w-full pl-9 pr-3 py-2.5 text-[11px] border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+  </div>
+  <select value={auditFilters.module} onChange={(e) => { setAuditFilters({ ...auditFilters, module: e.target.value }); setAuditPage(1); }} className="px-3 py-2.5 text-[11px] border border-gray-200 rounded-lg bg-white">
+  <option value="">All modules</option><option>Main System</option><option>Staff ID Management</option><option>Student Account</option><option>Student Print</option>
+  </select>
+  <select value={auditFilters.action} onChange={(e) => { setAuditFilters({ ...auditFilters, action: e.target.value }); setAuditPage(1); }} className="px-3 py-2.5 text-[11px] border border-gray-200 rounded-lg bg-white">
+  <option value="">All actions</option><option value="created">Created</option><option value="updated">Updated</option><option value="deleted">Deleted</option><option value="approve">Approve</option><option value="release">Release</option><option value="complete">Complete</option><option value="void">Void</option>
+  </select>
+  <div className="flex gap-2">
+  <input type="date" value={auditFilters.from} onChange={(e) => { setAuditFilters({ ...auditFilters, from: e.target.value }); setAuditPage(1); }} aria-label="From date" className="min-w-0 flex-1 px-2 py-2.5 text-[11px] border border-gray-200 rounded-lg bg-white" />
+  <input type="date" value={auditFilters.to} onChange={(e) => { setAuditFilters({ ...auditFilters, to: e.target.value }); setAuditPage(1); }} aria-label="To date" className="min-w-0 flex-1 px-2 py-2.5 text-[11px] border border-gray-200 rounded-lg bg-white" />
+  </div>
+  </div>
+
+  <div className="rounded-xl border border-gray-200 overflow-hidden">
+  <div className="hidden md:grid grid-cols-[1.2fr_1fr_1fr_1.5fr_1fr] gap-4 px-5 py-3 bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+  <span>Actor</span><span>Module</span><span>Action</span><span>Record</span><span>When</span>
+  </div>
+  <div className="divide-y divide-gray-100">
+  {auditLogs.map((log) => (
+  <div key={log.id} className="audit-entry grid grid-cols-1 md:grid-cols-[1.2fr_1fr_1fr_1.5fr_1fr] gap-2 md:gap-4 px-5 py-4 hover:bg-gray-50 transition-colors text-[11px]">
+  <div><p className="font-semibold text-gray-900">{log.actor_name || 'System'}</p><p className="text-gray-400 mt-0.5">{log.actor_role || 'Unattributed'}</p></div>
+  <div className="text-gray-600">{log.module}</div>
+  <div><span className={`inline-flex px-2.5 py-1 rounded-full border text-[10px] font-bold ${log.action === 'deleted' || log.action === 'void' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>{log.action}</span></div>
+  <div><p className="font-medium text-gray-800">{log.description || `${String(log.action || 'updated').replaceAll('_', ' ')} ${String(log.entity_type || 'record').replaceAll('-', ' ')}`}</p><p className="text-gray-400 truncate mt-0.5" title={log.endpoint}>{log.endpoint}{log.entity_id ? ` · #${log.entity_id}` : ''}</p></div>
+  <div className="flex items-center gap-1.5 text-gray-500"><Clock className="w-3.5 h-3.5" />{log.occurred_at ? new Date(log.occurred_at).toLocaleString() : '—'}</div>
+  <div className="md:col-start-5 md:row-start-1 flex items-center gap-1.5 text-gray-500"><Clock className="w-3.5 h-3.5" />{formatManilaTime(log.occurred_at_manila || log.occurred_at)}</div>
+  <button type="button" onClick={() => setSelectedAuditLog(log)} className="md:col-span-5 justify-self-start inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 font-semibold"><Eye className="w-3.5 h-3.5" />View details</button>
+  </div>
+  ))}
+  {!loading && auditLogs.length === 0 && <div className="py-14 text-center text-gray-400"><Activity className="w-10 h-10 mx-auto mb-3 text-gray-200" /><p className="text-[11px]">No audit entries match these filters.</p></div>}
+  </div>
+  </div>
+  <div className="flex items-center justify-between text-[11px] text-gray-400">
+  <span>{auditMeta.total} recorded actions</span>
+  <div className="flex items-center gap-2"><label className="hidden sm:flex items-center gap-2">Rows<select value={auditPerPage} onChange={(event) => { setAuditPerPage(Number(event.target.value)); setAuditPage(1); }} className="rounded-lg border border-gray-200 bg-white px-2 py-2"><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label><button disabled={auditMeta.current_page <= 1} onClick={() => setAuditPage(auditPage - 1)} className="px-3 py-2 border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">Previous</button><span className="whitespace-nowrap">Page {auditMeta.current_page} of {auditMeta.last_page}</span><button disabled={auditMeta.current_page >= auditMeta.last_page} onClick={() => setAuditPage(auditPage + 1)} className="px-3 py-2 border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">Next</button></div>
+  </div>
+  </div>
+  )}
  </div>
+
+ {selectedAuditLog && (
+ <div className="fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedAuditLog(null)}>
+ <div className="w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-2xl bg-white shadow-2xl" onClick={(event) => event.stopPropagation()}>
+ <div className="sticky top-0 flex items-center justify-between border-b border-gray-100 bg-white px-6 py-4">
+ <div><p className="text-xs font-bold uppercase tracking-wider text-emerald-600">Audit record</p><h3 className="mt-1 text-lg font-bold text-gray-900">{selectedAuditLog.description || 'Action details'}</h3></div>
+ <button type="button" onClick={() => setSelectedAuditLog(null)} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700"><X className="h-5 w-5" /></button>
+ </div>
+ <div className="space-y-5 p-6 text-sm">
+ <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Manila time</p><p className="mt-1 font-semibold text-emerald-950">{formatManilaTime(selectedAuditLog.occurred_at_manila || selectedAuditLog.occurred_at)}</p></div>
+ <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+ <div className="rounded-xl bg-gray-50 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Performed by</p><p className="mt-1 font-semibold text-gray-900">{selectedAuditLog.actor_name || 'System'}</p><p className="text-xs text-gray-500">{selectedAuditLog.actor_role || 'Unattributed'}</p></div>
+ <div className="rounded-xl bg-gray-50 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-gray-400">When</p><p className="mt-1 font-semibold text-gray-900">{selectedAuditLog.occurred_at ? new Date(selectedAuditLog.occurred_at).toLocaleString() : 'Not available'}</p><p className="text-xs text-gray-500">HTTP {selectedAuditLog.status_code} · {selectedAuditLog.method}</p></div>
+ </div>
+ <div className="rounded-xl border border-gray-200 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Affected record</p><p className="mt-1 font-semibold capitalize text-gray-900">{String(selectedAuditLog.entity_type || 'system').replaceAll('-', ' ')}</p><p className="mt-1 break-all text-xs text-gray-500">{selectedAuditLog.endpoint}{selectedAuditLog.entity_id ? ` · ID ${selectedAuditLog.entity_id}` : ''}</p></div>
+ <div><p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Recorded request details</p><pre className="max-h-64 overflow-auto rounded-xl bg-slate-900 p-4 text-xs leading-5 text-slate-100">{JSON.stringify(selectedAuditLog.properties || {}, null, 2)}</pre></div>
+ </div>
+ <div className="sticky bottom-0 border-t border-gray-100 bg-white px-6 py-4"><button type="button" onClick={() => setSelectedAuditLog(null)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">Close</button></div>
+ </div>
+ </div>
+ )}
 
  {/* Add User Modal */}
  {showAddUserModal && (

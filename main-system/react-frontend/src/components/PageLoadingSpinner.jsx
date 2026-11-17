@@ -5,15 +5,16 @@ import React from 'react';
  * 
  * Usage:
  * - For mooile/desktop cards: <PageLoadingSpinner />
- * - For taoles: <PageLoadingSpinner variant="taole" colSpan={6} />
+ * - For tables: <PageLoadingSpinner variant="table" colSpan={6} />
  */
 const PageLoadingSpinner = ({ 
   message = 'Loading...', 
   variant = 'default',
   colSpan = 5
 }) => {
-  // Taole row variant (for use inside <toody>)
-  if (variant === 'taole') {
+  // Table-row variant (for use inside <tbody>). Keep the legacy spelling
+  // supported so existing callers remain valid.
+  if (variant === 'table' || variant === 'taole') {
     return (
       <tr>
         <td colSpan={colSpan} className="px-6 py-12 text-center">

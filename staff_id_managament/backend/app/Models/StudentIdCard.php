@@ -60,12 +60,13 @@ class StudentIdCard extends Model
     public static function getValidTransitions(): array
     {
         return [
-            'requested' => ['approved', 'replacement_requested'],
-            'approved' => ['printed', 'replacement_requested'],
-            'printed' => ['released', 'replacement_requested'],
-            'released' => ['expired', 'replacement_requested'],
-            'expired' => ['replacement_requested'],
-            'replacement_requested' => [], // Terminal state until new card created
+            'requested' => ['approved', 'replacement_requested', 'invalid'],
+            'approved' => ['printed', 'replacement_requested', 'invalid'],
+            'printed' => ['released', 'replacement_requested', 'invalid'],
+            'released' => ['expired', 'replacement_requested', 'invalid'],
+            'expired' => ['replacement_requested', 'invalid'],
+            'replacement_requested' => ['invalid'],
+            'invalid' => [], // Cancelled/replaced cards cannot return to circulation.
         ];
     }
 
@@ -83,6 +84,10 @@ class StudentIdCard extends Model
      */
     public function getStatusInfo(): array
     {
+        if ($this->status === 'invalid') {
+            return ['label' => 'Cancelled / Replaced', 'color' => 'red', 'icon' => 'X'];
+        }
+
         return match($this->status) {
             'requested' => ['label' => 'Requested', 'color' => 'amber', 'icon' => '📝'],
             'approved' => ['label' => 'Approved', 'color' => 'blue', 'icon' => '✅'],

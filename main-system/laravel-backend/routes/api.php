@@ -136,6 +136,7 @@ Route::prefix('settings')->group(function () {
     Route::delete('users/{id}', [\App\Http\Controllers\SettingsController::class, 'deleteUser']);
     Route::post('users/{id}/reset-password', [\App\Http\Controllers\SettingsController::class, 'resetUserPassword']);
     Route::post('check-email', [\App\Http\Controllers\SettingsController::class, 'checkEmail']);
+    Route::get('audit-trail', [\App\Http\Controllers\SettingsController::class, 'getAuditTrail']);
 });
 
 // Staff API routes
