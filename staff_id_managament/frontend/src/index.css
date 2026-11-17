@@ -234,6 +234,10 @@ body {
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
 }
 
+.id-details-modal {
+  height: min(820px, calc(100dvh - 2rem));
+}
+
 /*
  * Some legacy Staff ID dialogs predate the reusable modal panel classes.
  * Give every direct dialog panel the same bounded, header/body/footer layout

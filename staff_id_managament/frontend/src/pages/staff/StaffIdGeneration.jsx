@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { apiRequest } from '../../api/client'
 import Toast from '../../components/Toast'
 import { CardGridSkeleton } from '../../components/LoadingSkeletons'
@@ -528,10 +529,10 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
     )
   }
   
-  return (
-    <div className="app-modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center animate-fade-in" onClick={onClose}>
+  const modal = (
+    <div className="app-modal-overlay fixed inset-0 bg-slate-950/55 backdrop-blur-[3px] z-[9999] flex items-center justify-center animate-fade-in" onClick={onClose}>
       <div 
-        className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden animate-scale-in"
+        className="app-modal-panel id-details-modal bg-white max-w-5xl w-full mx-4 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -575,8 +576,8 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
         </div>
 
         {/* Content */}
-        <div className="app-modal-body p-5 bg-gray-50">
-          <div className="space-y-4">
+        <div className="app-modal-body p-6 bg-slate-50">
+          <div className="space-y-5">
             {/* Photos Section */}
             <div className="bg-white rounded-2xl p-4 shadow-sm">
               <h3 className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -851,7 +852,7 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
         </div>
 
         {/* Footer Actions */}
-        <div className="app-modal-footer px-6 py-4 bg-white border-t border-gray-200">
+        <div className="app-modal-footer px-6 py-4 bg-white border-t border-gray-200 shadow-[0_-8px_20px_rgba(15,23,42,0.04)]">
           {!isDataComplete() && !isEditing && (
             <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
               <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -927,6 +928,8 @@ function ViewDetailsModal({ card, onClose, onApprove, onCancel }) {
       </div>
     </div>
   )
+
+  return createPortal(modal, document.body)
 }
 
 function InfoField({ label, value, fullWidth = false, required = false, isEditing = false, onChange, type = 'text', name }) {
